@@ -9,7 +9,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPExceptio
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
-from database import init_db, get_db_connection
+from database import DB_PATH, init_db, get_db_connection
 from models import (
     Bus, Route, RoadDefect, TrafficEvent, SafetyIncident,
     ANPRDetection, MaintenanceTicket, SystemHealth, SimulationStatus, OverviewKPIs
@@ -21,11 +21,15 @@ from inference import active_inference_provider
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize DB on start if not already created
-    if not os.path.exists("urbanpulse.db"):
+    if not os.path.exists(DB_PATH):
         init_db()
     else:
         # Re-initialize to ensure fresh clean state for hackathon demo
-        init_db()
+        try:
+            init_db()
+        except Exception:
+            pass
+
     
     # Start simulation loop in background
     sim_task = asyncio.create_task(simulation_engine.run_loop())

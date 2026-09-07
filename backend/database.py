@@ -1,10 +1,16 @@
+import os
+import tempfile
 import sqlite3
 import json
 import random
 import math
 from datetime import datetime, timedelta
 
-DB_PATH = "urbanpulse.db"
+if os.environ.get("VERCEL"):
+    DB_PATH = os.path.join(tempfile.gettempdir(), "urbanpulse.db")
+else:
+    DB_PATH = os.environ.get("DB_PATH", "urbanpulse.db")
+
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
