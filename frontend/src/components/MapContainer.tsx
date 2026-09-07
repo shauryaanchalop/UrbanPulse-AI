@@ -53,8 +53,32 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     routes: true,
   });
 
-  const [filterSeverity, setFilterSeverity] = useState<string>('ALL');
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [mapProvider, setMapProvider] = useState<'esri' | 'carto' | 'carto-cdn' | 'osm'>('esri');
+  const [cartoKeyInput, setCartoKeyInput] = useState<string>(
+    import.meta.env.VITE_CARTO_API_KEY || 'cb1_30o4_1_f36aa14be1bc36fa7a2f8e48'
+  );
+
+  const getTileUrl = (provider: string, theme: string, apiKey: string) => {
+    const isLight = theme === 'light';
+    if (provider === 'esri') {
+      return isLight
+        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+        : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    }
+    if (provider === 'osm') {
+      return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    }
+    if (provider === 'carto-cdn') {
+      return isLight
+        ? 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
+        : 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png';
+    }
+    // Default CARTO Basemaps API key endpoint
+    const apiKeyParam = apiKey.trim() ? `?api_key=${apiKey.trim()}` : '';
+    return isLight
+      ? `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png${apiKeyParam}`
+      : `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${apiKeyParam}`;
+  };
 
   // Initialize Map
   useEffect(() => {
@@ -68,14 +92,12 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       attributionControl: false
     });
 
-    const isLight = resolvedTheme === 'light';
-    const tileUrl = isLight
-      ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    const initialUrl = getTileUrl(mapProvider, resolvedTheme, cartoKeyInput);
 
-    const tileLayer = L.tileLayer(tileUrl, {
+    const tileLayer = L.tileLayer(initialUrl, {
       maxZoom: 19,
-      subdomains: 'abcd'
+      subdomains: 'abcd',
+      attribution: '&copy; OpenStreetMap &copy; CARTO &copy; Esri'
     }).addTo(map);
 
     tileLayerRef.current = tileLayer;
@@ -99,16 +121,12 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     };
   }, []);
 
-  // Update Tile Layer on Theme Switch
+  // Update Tile Layer on Theme or Provider Switch
   useEffect(() => {
     if (!mapInstance.current || !tileLayerRef.current) return;
-    const isLight = resolvedTheme === 'light';
-    const tileUrl = isLight
-      ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
-    tileLayerRef.current.setUrl(tileUrl);
-  }, [resolvedTheme]);
+    const newUrl = getTileUrl(mapProvider, resolvedTheme, cartoKeyInput);
+    tileLayerRef.current.setUrl(newUrl);
+  }, [resolvedTheme, mapProvider, cartoKeyInput]);
 
   // Pan and Highlight Selected Item
   useEffect(() => {
@@ -364,6 +382,33 @@ export const MapContainer: React.FC<MapContainerProps> = ({
                 <span>{l.label}</span>
               </label>
             ))}
+
+            <div className="text-[9px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold">
+              Basemap Provider
+            </div>
+            <select
+              value={mapProvider}
+              onChange={(e) => setMapProvider(e.target.value as any)}
+              className="w-full bg-theme-bg border border-theme-border text-theme-primary text-[10px] p-1 font-mono rounded-none focus:outline-none focus:border-brand"
+            >
+              <option value="esri">Esri Canvas (Clean HD)</option>
+              <option value="carto-cdn">CartoDB CDN (Free)</option>
+              <option value="carto">CARTO Basemaps (Key)</option>
+              <option value="osm">OpenStreetMap</option>
+            </select>
+
+            {mapProvider === 'carto' && (
+              <div className="flex flex-col gap-1 pt-1">
+                <div className="text-[8px] text-theme-muted uppercase font-mono">CARTO API Key</div>
+                <input
+                  type="text"
+                  value={cartoKeyInput}
+                  onChange={(e) => setCartoKeyInput(e.target.value)}
+                  placeholder="Enter CARTO key..."
+                  className="w-full bg-theme-bg border border-theme-border text-theme-primary text-[9px] px-1 py-0.5 font-mono rounded-none focus:outline-none focus:border-brand"
+                />
+              </div>
+            )}
 
             <div className="text-[9px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold">
               Severity Filter
