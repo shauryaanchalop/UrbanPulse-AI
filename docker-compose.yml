@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: urbanpulse-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DB_PATH=/app/data/urbanpulse.db
+    volumes:
+      - sqlite_data:/app/data
+    restart: always
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.web
+    container_name: urbanpulse-web
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: always
+
+volumes:
+  sqlite_data:

@@ -1,39 +1,56 @@
-# UrbanPulse AI — Architecture Specification
+# URBANPULSE AI — SYSTEM ARCHITECTURE SPECIFICATION
 
-## 1. System Philosophy: Edge-First Metadata Streaming
+**Smart India Hackathon 2026 — Problem Statement ID: 26124**
 
-Fixed cameras in smart cities require expensive fiber optic backbones and draw continuous power. In contrast, municipal buses already possess electrical power, roof/dashboard mounting positions, and traverse the entire urban geography on predictable schedules.
-
-UrbanPulse AI establishes an **Edge-First, Metadata-Only architecture**:
-- Rather than streaming gigabytes of raw video per hour to the cloud, edge inference runs on an onboard compute module (e.g. NVIDIA Jetson Orin Nano).
-- Models detect objects, classify anomalies, estimate speeds, and crop license plates.
-- Only a structured JSON packet (~1.4 KB) containing bounding boxes, confidence, class, RTK coordinates, and timestamp is pushed over cellular 4G/5G.
-- This results in a **99.4% reduction in cellular bandwidth consumption**, enabling sustainable city-scale municipal fleet deployments.
+```
+                     +---------------------------------------+
+                     |      MULTI-LAYER SENSING NETWORK      |
+                     +---------------------------------------+
+                                         |
+     +-------------------+---------------+---------------+-------------------+
+     |                   |                               |                   |
+[Layer 1: Bus Fleet] [Layer 2: Service Vehicles] [Layer 3: Citizen Reports] [Layer 4: Survey Missions]
+ (32 Public Buses)    (10 Municipal Vehicles)       (Mobile /report)        (Sector Coverage Gaps)
+     |                   |                               |                   |
+     +-------------------+---------------+---------------+-------------------+
+                                         |
+                                         v
+                     +---------------------------------------+
+                     |        EDGE AI VISION ENGINE          |
+                     | (YOLOv9 + LPRNet ANPR + Trackers)     |
+                     +---------------------------------------+
+                                         |
+                                         v
+                     +---------------------------------------+
+                     |  MULTI-SOURCE EVIDENCE FUSION ENGINE  |
+                     | (Spatial Clustering + Haversine Match)|
+                     +---------------------------------------+
+                                         |
+                                         v
+                     +---------------------------------------+
+                     |      ROAD HEALTH GRID STATE MACHINE   |
+                     |   (GREEN / YELLOW / RED / GRAY States)|
+                     +---------------------------------------+
+                                         |
+                                         v
+                     +---------------------------------------+
+                     |  FASTAPI BACKEND & WEBSOCKET ENGINE   |
+                     +---------------------------------------+
+                                         |
+     +-------------------+---------------+---------------+-------------------+
+     |                   |                               |                   |
+[Portal 1: Citizen] [Portal 2: Command]         [Portal 3: Fleet]   [Portal 4: Admin]
+ (/report)           (/command)                  (/fleet)            (/admin)
+```
 
 ---
 
-## 2. Component Breakdown
+## Data Schema & Entities
 
-### A. Physical Perception Layer
-- **Front Camera**: Long-range telephoto lens for road surface defect classification (potholes, cracks, waterlogging) and ANPR plate OCR.
-- **Rear Camera**: Wide-angle lens tracking tailgating vehicles, aggressive overtake maneuvers, and exhaust emissions.
-- **Side Cameras**: Curbside lane boundary inspection, missing zebra markings, damaged dividers, and sidewalk pedestrian proximity.
-- **RTK GNSS / IMU**: Sub-meter spatial accuracy with dead reckoning under flyovers and tunnels.
-
-### B. Edge Compute Layer
-- **DeepStream / TensorRT Abstraction**: Hardware-accelerated pipeline decoding H.264/H.265 video streams directly into GPU memory.
-- **YOLOv9 INT8**: Quantized object detection inference executing at ~30 FPS per camera.
-- **ByteTrack**: Low-latency multi-object tracking preserving vehicle identity across occlusions.
-- **LPRNet OCR**: Specialized character recognition fine-tuned on Indian standard High Security Registration Plates (HSRP).
-
-### C. Ingestion & Multi-Bus Verification Engine (Backend)
-- **FastAPI Core**: Async REST API and WebSocket streaming gateway.
-- **EventBus**: Pub/sub abstraction decoupling message ingestion from persistent storage. Ready for MQTT broker substitution.
-- **Spatial Verification Engine**: Monitors incoming defect coordinates against existing active defects using Euclidean distance thresholds (±25m). When a second distinct bus detects the defect, it automatically increases confidence and promotes status to `Cross-verified`.
-- **Database**: SQLite WAL mode with spatial indexing for fast boundary box queries.
-
-### D. Central Command & Control Center (Frontend)
-- **Leaflet GIS Engine**: High-density dark cartographic view with custom SVG bus markers, heading indicators, and route overlays.
-- **H3 Hexagonal Aggregator**: Displays density distribution of urban events to spotlight chronic infrastructural decay.
-- **4-Angle Bus Inspector**: Live interactive switcher demonstrating multi-camera edge ingestion and hardware utilization.
-- **Maintenance Dispatch**: Priority matrix mapping defect severity and confirmation count into P1-P4 SLA work orders.
+1. **`users` & `sessions`**: User accounts, JWT tokens, RBAC roles.
+2. **`buses` & `service_vehicles`**: Fleet telemetry, GPS coordinates, speed, camera health.
+3. **`road_segments` & `road_defects`**: Health scores, coverage state, defect verifications.
+4. **`citizen_reports` & `reward_accounts`**: Public submissions, AI predictions, civic leaderboard points.
+5. **`incidents` & `video_clips`**: Safety alerts, spatial-temporal clip ranking.
+6. **`plate_detections` & `vehicle_watchlist`**: Local OCR detections and authorized watchlist matches.
+7. **`notifications` & `notification_rules`**: SendGrid email and Twilio SMS log deliveries.

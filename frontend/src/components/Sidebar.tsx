@@ -1,7 +1,8 @@
 import React from 'react';
 import { 
   LayoutDashboard, Map, Bus, Cpu, Wrench, 
-  TrendingUp, ShieldAlert, FileText, Network, HeartPulse, BarChart3
+  TrendingUp, ShieldAlert, FileText, Network, HeartPulse, BarChart3,
+  Video, UserCheck, Target, Settings, Heart, Camera
 } from 'lucide-react';
 
 export type NavTab = 
@@ -9,10 +10,16 @@ export type NavTab =
   | 'city-map'
   | 'bus-fleet'
   | 'ai-perception'
+  | 'live-vision'
   | 'road-intelligence'
   | 'traffic-intelligence'
   | 'safety-enforcement'
+  | 'womens-safety'
+  | 'evidence-retrieval'
+  | 'survey-missions'
+  | 'citizen-portal'
   | 'maintenance-tickets'
+  | 'admin-portal'
   | 'analytics'
   | 'architecture'
   | 'system-health';
@@ -32,17 +39,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const sections = [
     {
-      title: 'PRIMARY CONSOLE',
+      title: 'PRIMARY PORTALS',
       items: [
         { id: 'command-center' as NavTab, label: 'COMMAND CENTER', icon: LayoutDashboard },
-        { id: 'city-map' as NavTab, label: 'LIVE CITY MAP', icon: Map },
+        { id: 'citizen-portal' as NavTab, label: 'PUBLIC REPORTING', icon: UserCheck },
         { id: 'bus-fleet' as NavTab, label: 'FLEET MONITORING', icon: Bus },
+        { id: 'admin-portal' as NavTab, label: 'SYSTEM ADMIN', icon: Settings },
       ]
     },
     {
       title: 'URBAN INTELLIGENCE',
       items: [
+        { id: 'city-map' as NavTab, label: 'LIVE CITY MAP', icon: Map },
         { id: 'road-intelligence' as NavTab, label: 'ROAD DEFECTS', icon: Wrench },
+        { id: 'survey-missions' as NavTab, label: 'SURVEY MISSIONS', icon: Target },
         { id: 'traffic-intelligence' as NavTab, label: 'TRAFFIC FLOW', icon: TrendingUp },
         { 
           id: 'safety-enforcement' as NavTab, 
@@ -51,6 +61,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badge: criticalIncidentsCount > 0 ? criticalIncidentsCount : undefined,
           badgeColor: 'text-brand bg-brand/10 border-brand/40'
         },
+        { id: 'womens-safety' as NavTab, label: 'DISTRESS SAFETY', icon: Heart },
+        { id: 'evidence-retrieval' as NavTab, label: 'EVIDENCE PORTAL', icon: Video },
+        { id: 'live-vision' as NavTab, label: 'LIVE CAMERA VISION', icon: Camera },
         { id: 'ai-perception' as NavTab, label: 'EDGE AI PIPELINE', icon: Cpu },
       ]
     },
@@ -133,3 +146,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </aside>
   );
 };
+

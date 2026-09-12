@@ -12,6 +12,7 @@ import type { Bus, RoadDefect, OverviewKPIs } from '../types';
 
 interface LandingPageViewProps {
   onLaunchCommandCenter: () => void;
+  onLaunchCitizenPortal?: () => void;
   buses: Bus[];
   defects: RoadDefect[];
   kpis: OverviewKPIs;
@@ -19,6 +20,7 @@ interface LandingPageViewProps {
 
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
   onLaunchCommandCenter,
+  onLaunchCitizenPortal,
   buses,
   defects,
   kpis
@@ -123,7 +125,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
           <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-theme-panel border border-theme-border text-[11px] font-mono text-theme-secondary rounded-sm">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>32 FLEET NODES LIVE</span>
+            <span>30 FLEET NODES LIVE</span>
           </div>
 
           <button
@@ -133,6 +135,15 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             <ShieldCheck className="w-3.5 h-3.5 text-brand" />
             <span>ALGORITHM SPOTLIGHT</span>
           </button>
+
+          {onLaunchCitizenPortal && (
+            <button
+              onClick={onLaunchCitizenPortal}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-theme-surface hover:bg-theme-elevated text-amber-500 border border-amber-500/30 text-xs font-mono rounded-sm transition-colors"
+            >
+              <span>REPORT AN ISSUE</span>
+            </button>
+          )}
 
           <button
             onClick={onLaunchCommandCenter}
@@ -163,9 +174,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-theme-secondary font-sans leading-relaxed max-w-3xl">
-            Transform municipal bus fleets into autonomous edge-sensing networks. 
-            Automated road defect auditing, real-time arterial congestion telemetry, 
-            safety hazard detection, and civic work-order dispatch—without deploying dedicated survey vehicles.
+            UrbanPulse AI turns public and municipal fleets into a distributed sensing network for roads, traffic, safety and urban evidence.
           </p>
 
           {/* Hero CTAs */}
@@ -178,12 +187,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <a
-              href="#pipeline"
-              className="flex items-center gap-2 px-5 py-3 bg-theme-surface hover:bg-theme-elevated text-theme-primary border border-theme-border text-sm font-mono rounded-sm transition-colors"
-            >
-              <span>EXPLORE HOW IT WORKS</span>
-            </a>
+            {onLaunchCitizenPortal && (
+              <button
+                onClick={onLaunchCitizenPortal}
+                className="flex items-center gap-2 px-5 py-3 bg-amber-600/90 hover:bg-amber-500 text-slate-950 font-bold text-sm font-mono rounded-sm transition-colors shadow-lg"
+              >
+                <span>REPORT AN ISSUE →</span>
+              </button>
+            )}
 
             <button
               onClick={() => setIsVerificationModalOpen(true)}
@@ -194,6 +205,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             </button>
           </div>
         </div>
+
 
         {/* Live Hero Telemetry Strip */}
         <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-theme-border pt-8">

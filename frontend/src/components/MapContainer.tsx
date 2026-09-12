@@ -53,6 +53,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     routes: true,
   });
 
+  const [filterSeverity, setFilterSeverity] = useState<string>('ALL');
+  const [showLayerMenu, setShowLayerMenu] = useState<boolean>(false);
   const [mapProvider, setMapProvider] = useState<'esri' | 'carto' | 'carto-cdn' | 'osm'>('esri');
   const [cartoKeyInput, setCartoKeyInput] = useState<string>(
     import.meta.env.VITE_CARTO_API_KEY || 'cb1_30o4_1_f36aa14be1bc36fa7a2f8e48'

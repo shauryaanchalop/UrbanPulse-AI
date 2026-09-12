@@ -11,7 +11,7 @@ import { InspectorDrawer } from './components/InspectorDrawer';
 import { ScriptedDemoOverlay } from './components/ScriptedDemoOverlay';
 import { CommandPaletteModal } from './components/CommandPaletteModal';
 
-// Landing and ICCC Views
+// Landing and Portal Views
 import { LandingPageView } from './views/LandingPageView';
 import { CommandCenterView } from './views/CommandCenterView';
 import { CityMapView } from './views/CityMapView';
@@ -24,12 +24,25 @@ import { MaintenanceTicketsView } from './views/MaintenanceTicketsView';
 import { AnalyticsView } from './views/AnalyticsView';
 import { ArchitectureView } from './views/ArchitectureView';
 import { SystemHealthView } from './views/SystemHealthView';
+import { CitizenPortalView } from './views/CitizenPortalView';
+import { AdminPortalView } from './views/AdminPortalView';
+import { EvidencePortalView } from './views/EvidencePortalView';
+import { WomensSafetyView } from './views/WomensSafetyView';
+import { SurveyMissionsView } from './views/SurveyMissionsView';
+import { LoginView } from './views/LoginView';
+import { LiveVisionView } from './views/LiveVisionView';
+import { KioskView } from './views/KioskView';
+import { useAuth } from './context/AuthContext';
+
 
 export function App() {
-  // Dual-Surface Navigation State: 'landing' (Public Showcase) vs 'command' (ICCC Console)
-  const [appSurface, setAppSurface] = useState<'landing' | 'command'>(() => {
+  const { user } = useAuth();
+  const [appSurface, setAppSurface] = useState<'landing' | 'command' | 'login' | 'kiosk'>(() => {
     if (typeof window !== 'undefined') {
-      if (window.location.hash === '#command' || window.location.pathname === '/app') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'login') return 'login';
+      if (hash === 'kiosk') return 'kiosk';
+      if (hash === 'command' || hash === 'report' || hash === 'fleet' || hash === 'admin' || hash === 'evidence' || hash === 'safety' || hash === 'survey' || hash === 'vision') {
         return 'command';
       }
     }
@@ -121,15 +134,70 @@ export function App() {
   // Handle URL hash changes
   useEffect(() => {
     const handleHashChange = () => {
-      if (window.location.hash === '#command') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'login') {
+        setAppSurface('login');
+      } else if (hash === 'kiosk') {
+        setAppSurface('kiosk');
+      } else if (hash === 'vision' || hash === 'live-vision') {
         setAppSurface('command');
-      } else {
+        setActiveTab('live-vision');
+      } else if (hash === 'command' || hash === 'command-center') {
+        setAppSurface('command');
+        setActiveTab('command-center');
+      } else if (hash === 'report' || hash === 'citizen') {
+        setAppSurface('command');
+        setActiveTab('citizen-portal');
+      } else if (hash === 'fleet') {
+        setAppSurface('command');
+        setActiveTab('bus-fleet');
+      } else if (hash === 'admin') {
+        setAppSurface('command');
+        setActiveTab('admin-portal');
+      } else if (hash === 'evidence') {
+        setAppSurface('command');
+        setActiveTab('evidence-retrieval');
+      } else if (hash === 'safety') {
+        setAppSurface('command');
+        setActiveTab('womens-safety');
+      } else if (hash === 'survey' || hash === 'survey-missions') {
+        setAppSurface('command');
+        setActiveTab('survey-missions');
+      } else if (hash === '' || hash === 'landing') {
         setAppSurface('landing');
+      } else {
+        setAppSurface('command');
       }
     };
+    handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  const handleLoginSuccess = (role: string) => {
+    const r = role.toUpperCase();
+    if (r.includes('CITIZEN')) {
+      setAppSurface('command');
+      setActiveTab('citizen-portal');
+      window.location.hash = '#report';
+    } else if (r.includes('FLEET')) {
+      setAppSurface('command');
+      setActiveTab('bus-fleet');
+      window.location.hash = '#fleet';
+    } else if (r.includes('POLICE') || r.includes('INVESTIGATOR')) {
+      setAppSurface('command');
+      setActiveTab('evidence-retrieval');
+      window.location.hash = '#evidence';
+    } else if (r.includes('SUPER ADMIN') || r.includes('ADMIN')) {
+      setAppSurface('command');
+      setActiveTab('admin-portal');
+      window.location.hash = '#admin';
+    } else {
+      setAppSurface('command');
+      setActiveTab('command-center');
+      window.location.hash = '#command';
+    }
+  };
 
   const handleLaunchCommand = () => {
     setAppSurface('command');
@@ -346,10 +414,39 @@ export function App() {
     );
   }
 
-  // SURFACE 2: INDUSTRIAL SMART CITY INTEGRATED COMMAND & CONTROL CENTRE (ICCC)
+  // SURFACE 2: PORTAL AUTHENTICATION & DEMO SELECTOR
+  if (appSurface === 'login') {
+    return (
+      <LoginView
+        onLoginSuccess={handleLoginSuccess}
+        onNavigateLanding={handleNavigateHome}
+      />
+    );
+  }
+
+  // SURFACE 3: COMMAND CENTER KIOSK MODE (FULL SCREEN VIDEO WALL)
+  if (appSurface === 'kiosk') {
+    return (
+      <KioskView
+        buses={buses}
+        defects={defects}
+        trafficEvents={trafficEvents}
+        incidents={incidents}
+        tickets={tickets}
+        routes={routes}
+        kpis={kpis}
+        onExitKiosk={() => {
+          setAppSurface('command');
+          window.location.hash = '#command';
+        }}
+      />
+    );
+  }
+
+  // SURFACE 4: INDUSTRIAL SMART CITY INTEGRATED COMMAND & CONTROL CENTRE (ICCC)
   return (
     <div className="h-screen w-screen flex flex-col bg-theme-bg text-theme-primary font-sans overflow-hidden transition-colors">
-      {/* Top 40px Header Bar */}
+      {/* Top Header Bar */}
       <Header
         currentRole={currentRole}
         onRoleChange={setCurrentRole}
@@ -365,6 +462,10 @@ export function App() {
         recentAlerts={recentAlerts}
         onNavigateHome={handleNavigateHome}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onToggleKiosk={() => {
+          setAppSurface('kiosk');
+          window.location.hash = '#kiosk';
+        }}
       />
 
       {/* Main Workspace: Left Operational Rail + Main Content + Right Sliding Inspector */}
@@ -394,6 +495,30 @@ export function App() {
               onSelectBus={handleSelectBus}
               onSelectIncident={handleSelectIncident}
             />
+          )}
+
+          {activeTab === 'live-vision' && (
+            <LiveVisionView />
+          )}
+
+          {activeTab === 'citizen-portal' && (
+            <CitizenPortalView />
+          )}
+
+          {activeTab === 'admin-portal' && (
+            <AdminPortalView />
+          )}
+
+          {activeTab === 'evidence-retrieval' && (
+            <EvidencePortalView buses={buses} incidents={incidents} />
+          )}
+
+          {activeTab === 'womens-safety' && (
+            <WomensSafetyView buses={buses} incidents={incidents} />
+          )}
+
+          {activeTab === 'survey-missions' && (
+            <SurveyMissionsView />
           )}
 
           {activeTab === 'city-map' && (

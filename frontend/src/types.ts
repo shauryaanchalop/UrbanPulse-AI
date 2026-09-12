@@ -1,8 +1,22 @@
-export type UserRole = 
+export type UserRole =
+  | 'SUPER ADMIN'
+  | 'ICCC OPERATOR'
+  | 'ROAD ENGINEER'
+  | 'POLICE / AUTHORIZED INVESTIGATOR'
+  | 'FLEET OPERATOR'
+  | 'CITIZEN'
   | 'Command Center Operator'
   | 'Municipal Road Engineer'
   | 'Traffic Control Officer'
   | 'Fleet Administrator';
+
+export interface RewardRule {
+  id: string;
+  action: string;
+  points: number;
+  description: string;
+  active: boolean;
+}
 
 export interface CameraFeed {
   id: string;
@@ -31,6 +45,20 @@ export interface Bus {
   lastUpdateTime: string;
   currentPassengerLoad?: number;
   cameras: CameraFeed[];
+  vehicleType?: string;
+}
+
+export interface ServiceVehicle {
+  id: string;
+  vehicleCode: string;
+  department: string;
+  vehicleType: string;
+  latitude: number;
+  longitude: number;
+  speed: number;
+  status: string;
+  currentMissionId?: string;
+  lastActive: string;
 }
 
 export interface RouteWaypoint {
@@ -50,6 +78,23 @@ export interface Route {
   waypoints: RouteWaypoint[];
 }
 
+export interface RoadSegment {
+  id: string;
+  segmentId: string;
+  name: string;
+  sector: string;
+  healthScore: number;
+  condition: 'Healthy' | 'Degrading' | 'Attention' | 'Critical' | 'Unknown';
+  lastObservedAt: string;
+  observationCount: number;
+  defectCount: number;
+  criticality: 'Low' | 'Medium' | 'High' | 'Critical';
+  coverageState: 'RECENTLY_OBSERVED' | 'AGING_OBSERVATION' | 'INSUFFICIENT_COVERAGE' | 'UNOBSERVED';
+  openWorkOrders: number;
+  coordinates: { lat: number; lng: number }[];
+  assignedVehicleType: string;
+}
+
 export interface RoadDefect {
   id: string;
   defectType: string;
@@ -63,11 +108,44 @@ export interface RoadDefect {
   firstSeen: string;
   lastSeen: string;
   timesConfirmed: number;
-  status: 'Reported' | 'Cross-verified' | 'Ticket Created' | 'Under Repair' | 'Resolved';
+  status: 'Reported' | 'Cross-verified' | 'Ticket Created' | 'Under Repair' | 'Pending Verification' | 'Repair Verified' | 'Resolved';
   priority: 'P1' | 'P2' | 'P3' | 'P4';
   evidenceImageUrl?: string;
   dimensionsEstimated?: string;
   crossVerifyingBuses: string[];
+  segmentId?: string;
+}
+
+export interface CitizenReport {
+  id: string;
+  referenceNo: string;
+  reporterName: string;
+  category: 'Road Problem' | 'Accident / Incident' | 'Safety / Distress' | 'Traffic Issue' | 'Other';
+  latitude: number;
+  longitude: number;
+  address: string;
+  description?: string;
+  photoUrl?: string;
+  status: 'RECEIVED' | 'VERIFIED' | 'ASSIGNED' | 'REPAIR_IN_PROGRESS' | 'RESOLVED' | 'VERIFIED_REPAIR';
+  aiClassification?: string;
+  aiConfidence: number;
+  aiSeverity: string;
+  pointsAwarded: number;
+  submittedAt: string;
+  verificationSourcesCount: number;
+}
+
+export interface RewardAccount {
+  userId: string;
+  userName: string;
+  displayName: string;
+  points: number;
+  level: string;
+  badges: string[];
+  reportCount: number;
+  verifiedReportCount: number;
+  impactScore: number;
+  rank: number;
 }
 
 export interface TrafficEvent {
@@ -88,6 +166,7 @@ export interface TrafficEvent {
 export interface ANPRDetection {
   id: string;
   plateNumber: string;
+  rawPlateText?: string;
   vehicleType: string;
   confidence: number;
   color: string;
@@ -98,6 +177,34 @@ export interface ANPRDetection {
   busId: string;
   flaggedReason?: string;
   demoOcrCropUrl?: string;
+}
+
+export interface WatchlistItem {
+  id: string;
+  vehicleId: string;
+  plateNumber: string;
+  reason: string;
+  department: string;
+  active: boolean;
+  validFrom: string;
+  validUntil: string;
+  notes?: string;
+  addedBy: string;
+}
+
+export interface WatchlistMatch {
+  id: string;
+  watchlistId: string;
+  plateNumber: string;
+  detectedByBusId: string;
+  timestamp: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  confidence: number;
+  evidenceImageUrl?: string;
+  status: 'POTENTIAL_MATCH' | 'HUMAN_VERIFIED' | 'DISMISSED' | 'ESCALATED';
+  reviewedBy?: string;
 }
 
 export interface SafetyIncident {
@@ -120,6 +227,52 @@ export interface SafetyIncident {
   actionTaken?: string;
 }
 
+export interface DistressAlert {
+  id: string;
+  alertCode: string;
+  citizenName: string;
+  category: 'PERSONAL SAFETY' | 'HARASSMENT' | 'MEDICAL' | 'ROAD INCIDENT' | 'OTHER';
+  latitude: number;
+  longitude: number;
+  address: string;
+  timestamp: string;
+  status: 'ACTIVE' | 'ACKNOWLEDGED' | 'DISPATCHED' | 'RESOLVED';
+  mediaUrl?: string;
+  nearestBusId?: string;
+  nearestResponseUnit?: string;
+  notes?: string;
+}
+
+export interface SurveyMission {
+  id: string;
+  missionCode: string;
+  sector: string;
+  roadSegmentIds: string[];
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  reason: string;
+  recommendedVehicleId: string;
+  assignedVehicleCode?: string;
+  status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED';
+  assignedAt: string;
+}
+
+export interface VideoClip {
+  id: string;
+  busId: string;
+  cameraName: string;
+  startTime: string;
+  endTime: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  videoUrl: string;
+  thumbnailUrl: string;
+  relevanceScore: number;
+  matchedEvents: string[];
+  distanceMeters?: number;
+  timeDeltaSeconds?: number;
+}
+
 export interface MaintenanceTicket {
   id: string;
   ticketCode: string;
@@ -132,12 +285,35 @@ export interface MaintenanceTicket {
   address: string;
   reportedAt: string;
   targetResolutionDate: string;
-  status: 'Open' | 'Assigned' | 'In Progress' | 'Resolved' | 'Verified';
+  status: 'DETECTED' | 'VERIFIED' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'PENDING_VERIFICATION' | 'RE_VERIFIED' | 'CLOSED' | 'Open' | 'Resolved';
   assignedContractor: string;
+  assignedDepartment?: string;
   confirmingBusesCount: number;
   estimatedCostInr: number;
   evidenceImageUrl?: string;
   resolutionNotes?: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  fullName: string;
+  role: UserRole;
+  department: string;
+  email: string;
+  avatarUrl?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  userId: string;
+  username: string;
+  role: string;
+  action: string;
+  resource: string;
+  details: string;
+  timestamp: string;
+  ipAddress: string;
 }
 
 export interface SystemHealth {
@@ -174,4 +350,7 @@ export interface OverviewKPIs {
   roadCoveragePercent: number;
   multiBusVerifiedCount: number;
   safetyAlertsToday: number;
+  unverifiedReportsCount?: number;
+  offlineBusesCount?: number;
 }
+

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import type { UserRole } from '../types';
 import { 
   Play, Pause, RotateCcw, Zap, Bell, Shield, 
-  ChevronDown, ArrowLeft, Search, Command
+  ChevronDown, ArrowLeft, Search, Command, Monitor, LogOut
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { BrandLogo } from './common/BrandLogo';
 import { ThemeSwitcher } from './common/ThemeSwitcher';
 
@@ -22,6 +23,7 @@ interface HeaderProps {
   recentAlerts: string[];
   onNavigateHome?: () => void;
   onOpenCommandPalette?: () => void;
+  onToggleKiosk?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -38,8 +40,10 @@ export const Header: React.FC<HeaderProps> = ({
   unreadNotifications,
   recentAlerts,
   onNavigateHome,
-  onOpenCommandPalette
+  onOpenCommandPalette,
+  onToggleKiosk
 }) => {
+  const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune Smart City');
@@ -163,8 +167,19 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Right: Theme Switcher, Alerts & Operator Profile */}
+      {/* Right: Kiosk Button, Theme Switcher, Alerts & Operator Profile */}
       <div className="flex items-center gap-2">
+        {onToggleKiosk && (
+          <button
+            onClick={onToggleKiosk}
+            className="flex items-center gap-1 px-2 py-0.5 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-[10px] font-mono rounded-sm transition-colors"
+            title="Full-Screen Command Center Video Wall Display (Key 'K')"
+          >
+            <Monitor className="w-3 h-3 text-brand" />
+            <span className="hidden sm:inline">KIOSK</span>
+          </button>
+        )}
+
         {/* Application Theme Switcher */}
         <ThemeSwitcher compact />
 

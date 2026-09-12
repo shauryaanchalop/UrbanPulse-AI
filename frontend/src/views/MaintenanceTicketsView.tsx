@@ -39,8 +39,8 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
   };
 
   const p1Count = tickets.filter(t => t.priority === 'P1').length;
-  const inProgressCount = tickets.filter(t => t.status === 'In Progress').length;
-  const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
+  const inProgressCount = tickets.filter(t => (t.status as string) === 'In Progress' || t.status === 'IN_PROGRESS').length;
+  const resolvedCount = tickets.filter(t => (t.status as string) === 'Resolved' || t.status === 'COMPLETED' || t.status === 'RE_VERIFIED' || t.status === 'CLOSED').length;
 
   return (
     <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-mono select-none text-xs">
@@ -105,6 +105,8 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
           <tbody className="divide-y divide-graphite-700 text-theme-secondary text-[11px]">
             {filteredTickets.map(t => {
               const isP1 = t.priority === 'P1';
+              const isDone = (t.status as string) === 'Resolved' || t.status === 'COMPLETED' || t.status === 'RE_VERIFIED' || t.status === 'CLOSED';
+              const isInProgress = (t.status as string) === 'In Progress' || t.status === 'IN_PROGRESS';
 
               return (
                 <tr key={t.id} className="hover:bg-graphite-850 transition">
@@ -123,30 +125,30 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
                   <td className="py-2 px-3 text-graphite-400 text-[10px] font-mono">{t.targetResolutionDate}</td>
                   <td className="py-2 px-3 text-emerald-500 font-bold font-mono">₹{t.estimatedCostInr.toLocaleString('en-IN')}</td>
                   <td className="py-2 px-3">
-                    <span className={`text-[10px] ${t.status === 'Resolved' ? 'text-emerald-500 font-bold' : (t.status === 'In Progress' ? 'text-amber-500 font-bold' : 'text-theme-secondary')}`}>
+                    <span className={`text-[10px] ${isDone ? 'text-emerald-500 font-bold' : (isInProgress ? 'text-amber-500 font-bold' : 'text-theme-secondary')}`}>
                       {t.status.toUpperCase()}
                     </span>
                   </td>
                   <td className="py-2 px-3 text-right">
-                    {t.status === 'Open' && (
+                    {(t.status === 'Open' || t.status === 'DETECTED' || t.status === 'ASSIGNED') && (
                       <button
-                        onClick={() => handleUpdateStatus(t.id, 'In Progress')}
+                        onClick={() => handleUpdateStatus(t.id, 'IN_PROGRESS')}
                         disabled={updatingId === t.id}
                         className="px-2 py-0.5 bg-amber-500/10 border border-amber-600/40 text-amber-500 hover:bg-amber-500/20 text-[10px] font-bold rounded-none"
                       >
                         DISPATCH CREW
                       </button>
                     )}
-                    {t.status === 'In Progress' && (
+                    {isInProgress && (
                       <button
-                        onClick={() => handleUpdateStatus(t.id, 'Resolved')}
+                        onClick={() => handleUpdateStatus(t.id, 'COMPLETED')}
                         disabled={updatingId === t.id}
                         className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-600/40 text-emerald-500 hover:bg-emerald-500/20 text-[10px] font-bold rounded-none"
                       >
                         MARK RESOLVED
                       </button>
                     )}
-                    {t.status === 'Resolved' && (
+                    {isDone && (
                       <span className="text-emerald-500 font-bold text-[10px]">
                         ✓ VERIFIED
                       </span>

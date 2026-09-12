@@ -82,6 +82,78 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
       }
     },
     {
+      id: 'action-citizen',
+      title: 'Citizen Portal (/report) — Submit Problem & Earn Rewards',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('citizen-portal');
+        onClose();
+      }
+    },
+    {
+      id: 'action-evidence',
+      title: 'Evidence Portal (/evidence) — Video Search & Route Match',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('evidence-retrieval');
+        onClose();
+      }
+    },
+    {
+      id: 'action-safety',
+      title: 'Distress Safety Portal (/safety) — Emergency Signals',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('womens-safety');
+        onClose();
+      }
+    },
+    {
+      id: 'action-survey',
+      title: 'Survey Missions (/survey-missions) — Coverage Gap Intelligence',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('survey-missions');
+        onClose();
+      }
+    },
+    {
+      id: 'action-kiosk',
+      title: 'Kiosk Mode (/kiosk) — Full-Screen Video Wall Display',
+      icon: ArrowRight,
+      action: () => {
+        window.location.hash = '#kiosk';
+        onClose();
+      }
+    },
+    {
+      id: 'action-vision',
+      title: 'Live Camera Vision (/vision) — Browser Webcam & AI Inference',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('live-vision');
+        onClose();
+      }
+    },
+    {
+      id: 'action-login',
+      title: 'Portal Authentication (/login) — Switch Demo Account',
+      icon: ArrowRight,
+      action: () => {
+        window.location.hash = '#login';
+        onClose();
+      }
+    },
+    {
+      id: 'action-admin',
+      title: 'Admin Portal (/admin) — RBAC, Watchlist & Reward Rules',
+      icon: ArrowRight,
+      action: () => {
+        onNavigateTab('admin-portal');
+        onClose();
+      }
+    },
+    {
       id: 'action-theme',
       title: `Toggle Theme (Currently ${theme})`,
       icon: theme === 'dark' ? Sun : Moon,
