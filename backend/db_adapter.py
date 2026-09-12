@@ -64,18 +64,26 @@ class AbstractCursor:
 
     def _translate_query(self, query: str) -> str:
         if self.is_postgres:
+            # Preserve existing double percents
+            q = query.replace('%%', '__DB_ADAPTER_DBL_PCT__')
+            # Escape literal % that are not valid psycopg placeholders (%s, %b, %t)
+            q = re.sub(r'%(?![sbt])', '%%', q)
+            q = q.replace('__DB_ADAPTER_DBL_PCT__', '%%')
             # Replace ? with %s for Postgres psycopg DBAPI
-            return query.replace('?', '%s')
+            q = q.replace('?', '%s')
+            return q
         return query
 
-    def execute(self, query: str, params: Tuple = ()):
+    def execute(self, query: str, params: Optional[Tuple] = None):
         translated = self._translate_query(query)
-        if params is None:
-            params = ()
+        if params is None or (isinstance(params, (tuple, list)) and len(params) == 0):
+            return self._cursor.execute(translated)
         return self._cursor.execute(translated, params)
 
     def executemany(self, query: str, params_list: List[Tuple]):
         translated = self._translate_query(query)
+        if not params_list:
+            return
         return self._cursor.executemany(translated, params_list)
 
     def fetchone(self) -> Optional[RowAdapter]:

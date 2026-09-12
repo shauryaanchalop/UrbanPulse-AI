@@ -16,11 +16,17 @@ else:
 
 def init_db(force_reseed: bool = False):
     db_type = get_db_type()
-    print(f"[Database Init] Initializing UrbanPulse AI Database in {db_type.upper()} mode...")
+    if db_type == "postgresql":
+        print("Database backend detected: PostgreSQL")
+        print("Database host: configured")
+    else:
+        print("Database backend detected: SQLite")
     
     try:
         conn = get_db_connection()
+        print("Database connection successful")
         create_all_tables(conn)
+        print("Schema ready")
         
         cur = conn.cursor()
         should_seed = force_reseed

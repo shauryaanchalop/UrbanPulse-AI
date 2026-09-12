@@ -394,7 +394,8 @@ def upgrade() -> None:
             sqlite_ddl = ddl.replace("DOUBLE PRECISION", "REAL").replace("VARCHAR(255)", "TEXT").replace("VARCHAR(100)", "TEXT").replace("VARCHAR(50)", "TEXT").replace("VARCHAR(20)", "TEXT").replace("INT PRIMARY KEY", "INTEGER PRIMARY KEY")
             op.execute(sqlite_ddl)
         else:
-            op.execute(ddl)
+            pg_ddl = ddl.replace("%", "%%")
+            op.execute(pg_ddl)
 
 def downgrade() -> None:
     for tbl, _ in reversed(TABLE_DEFINITIONS):
