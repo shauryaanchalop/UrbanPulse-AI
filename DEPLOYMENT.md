@@ -1,64 +1,98 @@
-# URBANPULSE AI — PRODUCTION DEPLOYMENT MANUAL
+# UrbanPulse AI — Production Deployment Guide
 
-**Smart India Hackathon 2026 — Problem Statement ID: 26124**
-
----
-
-## 1. Cloud Architecture Overview
-
-UrbanPulse AI is designed for dual deployment modes:
-- **Frontend**: Vercel (React 19 + Vite + TypeScript)
-- **Backend API & WebSockets**: Render (FastAPI + Python 3.14 + Uvicorn)
-- **Database**: Supabase PostgreSQL (Production) / embedded SQLite (Local)
-- **Migrations**: Alembic (`python -m alembic upgrade head`)
-- **Seed Utility**: `python seed_demo.py`
+> **Vercel (Frontend) + Render (FastAPI Backend) + Supabase (PostgreSQL Database)**
 
 ---
 
-## 2. Step-by-Step Production Deployment
+## 🏗️ Architecture & Cloud Infrastructure
 
-### Step 1: Supabase Database Setup
-1. Create a PostgreSQL project on [Supabase](https://supabase.com).
-2. Copy the Connection String under Settings -> Database (`postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres`).
-
-### Step 2: Render Backend Service Configuration
-1. Connect your GitHub repository to [Render](https://render.com).
-2. Create a **Web Service** pointing to `backend/main.py`.
-3. Set Build Command:
-   ```bash
-   pip install -r backend/requirements.txt && cd backend && python -m alembic upgrade head && python seed_demo.py
-   ```
-4. Set Start Command:
-   ```bash
-   cd backend && python -m uvicorn main:app --host 0.0.0.0 --port $PORT
-   ```
-5. Environment Variables on Render:
-   - `DATABASE_URL` = `postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres`
-   - `SECRET_KEY` = `<your-jwt-secret>`
-   - `SENDGRID_API_KEY` = `<your-sendgrid-key>`
-   - `TWILIO_ACCOUNT_SID` = `<your-twilio-sid>`
-
-### Step 3: Vercel Frontend Deployment
-1. Connect repository to [Vercel](https://vercel.com).
-2. Set Environment Variables:
-   - `VITE_API_URL` = `https://urbanpulse-backend-it4i.onrender.com`
-   - `VITE_WS_URL` = `wss://urbanpulse-backend-it4i.onrender.com/ws`
-
----
-
-## 3. Production Health Diagnostic Endpoint
-
-Check backend and database health:
-```bash
-curl https://urbanpulse-backend-it4i.onrender.com/health
+```
+┌─────────────────────────┐       HTTPS / WS       ┌─────────────────────────┐
+│     Vercel Frontend     │ ─────────────────────► │     Render Backend      │
+│  (React 19 + Vite SPA)  │                        │ (FastAPI + WebSockets)  │
+└─────────────────────────┘                        └────────────┬────────────┘
+                                                                │
+                                                         psycopg │ PostgreSQL
+                                                                ▼
+                                                   ┌─────────────────────────┐
+                                                   │    Supabase Database    │
+                                                   │  (PostgreSQL + Storage) │
+                                                   └─────────────────────────┘
 ```
 
-Expected Output:
+---
+
+## 🔑 Environment Variables Matrix
+
+### Frontend (`frontend/.env` or Vercel Settings)
+
+| Variable | Description | Example Value |
+| :--- | :--- | :--- |
+| `VITE_API_URL` | Backend HTTP API Base URL | `https://urbanpulse-api.onrender.com` |
+| `VITE_WS_URL` | Backend WebSocket URL | `wss://urbanpulse-api.onrender.com/ws` |
+
+> **Production Rule**: Never use `localhost` URLs in production Vercel environments.
+
+### Backend (`backend/.env` or Render Settings)
+
+| Variable | Description | Example Value |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | Supabase PostgreSQL Connection String | `postgresql://postgres:password@db.xxx.supabase.co:5432/postgres` |
+| `JWT_SECRET` | Secret key for JWT signing | `urbanpulse-sih-2026-production-jwt-secret-key` |
+| `SENDGRID_API_KEY` | SendGrid Email Notification Key | `SG.xxxxxxxxxxxxxxxxxxxxxx` |
+| `SENDGRID_FROM_EMAIL` | Sender Email Address | `alerts@urbanpulse.ai` |
+| `TWILIO_ACCOUNT_SID` | Twilio SMS Account SID | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_AUTH_TOKEN` | Twilio SMS Auth Token | `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_FROM_NUMBER` | Twilio Sender Phone Number | `+18005550199` |
+| `MODEL_PROVIDER` | AI Inference Provider (`simulated` or `onnx`) | `simulated` |
+
+---
+
+## 🚀 1. Frontend Deployment on Vercel
+
+1. Push repository to GitHub/GitLab.
+2. In Vercel, import project root and set Root Directory to `frontend`.
+3. Set Build Command: `npm run build`
+4. Set Output Directory: `dist`
+5. Configure Environment Variables:
+   - `VITE_API_URL` = `https://urbanpulse-api.onrender.com`
+   - `VITE_WS_URL` = `wss://urbanpulse-api.onrender.com/ws`
+6. Deploy. Vercel routes all SPA URLs via `vercel.json`.
+
+### `vercel.json` Configuration
 ```json
 {
-  "status": "HEALTHY",
-  "api": "ok",
-  "database": "ok",
-  "database_type": "postgresql"
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
 ```
+
+---
+
+## 🚀 2. Backend Deployment on Render
+
+1. Create a new **Web Service** on Render connected to your repository.
+2. Set Root Directory: `backend`
+3. Environment: `Python 3`
+4. Build Command: `pip install -r requirements.txt`
+5. Start Command: `python main.py` or `uvicorn main:app --host 0.0.0.0 --port $PORT`
+6. Add Environment Variables (`DATABASE_URL`, `JWT_SECRET`, etc.).
+
+---
+
+## 🚀 3. Database Migration on Supabase PostgreSQL
+
+When `DATABASE_URL` is configured, `database.py` automatically initializes PostgreSQL mode via `db_adapter.py`:
+
+```bash
+# Run database schema migrations
+cd backend
+python -m alembic upgrade head
+
+# Seed massive demo dataset (100 buses, 40 service vehicles, 1000 road segments, etc.)
+python seed_demo.py
+```
+
+### Percent Sign Escaping (`psycopg`)
+`db_adapter.py` seamlessly translates SQLite positional `?` parameters to `%s` and escapes literal percent signs (`%` → `%%`) so psycopg executes DDL and queries without error.
