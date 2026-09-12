@@ -25,8 +25,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
     }
   };
 
-  const handleQuickDemoClick = async (roleKey: string) => {
+  const handleQuickDemoClick = async (roleKey: string, demoEmail: string) => {
     setIsDemoLoading(roleKey);
+    setUsername(demoEmail);
+    setPassword('password123');
     setErrorMsg('');
     try {
       const u = await demoLogin(roleKey);
@@ -235,7 +237,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                   <button
                     key={role.key}
                     type="button"
-                    onClick={() => handleQuickDemoClick(role.key)}
+                    onClick={() => handleQuickDemoClick(role.key, role.email)}
                     disabled={!!isDemoLoading}
                     className={`w-full p-3 border rounded-sm transition-all flex items-start justify-between text-left ${role.color}`}
                   >

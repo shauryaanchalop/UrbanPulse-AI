@@ -116,15 +116,19 @@ export function App() {
     'Heavy congestion registered on University Underpass (+14m delay)'
   ]);
 
-  // Global Keyboard Shortcut: Ctrl+K or /
+  // Global Keyboard Shortcut: Ctrl+K for search, K for Kiosk mode toggle
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName || '');
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsCommandPaletteOpen(prev => !prev);
-      } else if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      } else if (e.key === '/' && !isInputActive) {
         e.preventDefault();
         setIsCommandPaletteOpen(true);
+      } else if ((e.key === 'k' || e.key === 'K') && !isInputActive && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setAppSurface(prev => (prev === 'kiosk' ? 'command' : 'kiosk'));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -407,9 +411,22 @@ export function App() {
     return (
       <LandingPageView
         onLaunchCommandCenter={handleLaunchCommand}
+        onLaunchCitizenPortal={() => {
+          setAppSurface('command');
+          setActiveTab('citizen-portal');
+          window.location.hash = '#report';
+        }}
+        onNavigateLogin={() => {
+          setAppSurface('login');
+          window.location.hash = '#login';
+        }}
         buses={buses}
         defects={defects}
         kpis={kpis}
+        trafficEvents={trafficEvents}
+        incidents={incidents}
+        tickets={tickets}
+        routes={routes}
       />
     );
   }
