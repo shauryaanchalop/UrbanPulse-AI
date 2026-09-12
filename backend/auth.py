@@ -122,8 +122,8 @@ def authenticate_user(db_path: str, username_or_email: str, password: str) -> Op
 
     # DB Query fallback
     try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
+        from db_adapter import get_db_connection
+        conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(username) = ?", (lowered, lowered))
         row = cur.fetchone()

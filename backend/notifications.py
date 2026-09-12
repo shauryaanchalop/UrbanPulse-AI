@@ -1,8 +1,8 @@
 import os
 import time
 import json
-import sqlite3
 from typing import Dict, Any, List
+from db_adapter import get_db_connection
 
 class NotificationService:
     def __init__(self, db_path: str = "urbanpulse.db"):
@@ -14,23 +14,23 @@ class NotificationService:
         self.twilio_from_number = os.getenv("TWILIO_FROM_NUMBER", "+18005550199")
 
     def init_tables(self):
-        conn = sqlite3.connect(self.db_path)
+        conn = get_db_connection()
         cur = conn.cursor()
         
         # Notification Log Table
         cur.execute("""
             CREATE TABLE IF NOT EXISTS notifications (
-                id TEXT PRIMARY KEY,
-                eventType TEXT,
-                severity TEXT,
-                department TEXT,
-                title TEXT,
-                message TEXT,
-                targetEmail TEXT,
-                targetPhone TEXT,
-                channel TEXT,
-                status TEXT,
-                timestamp TEXT,
+                id VARCHAR(50) PRIMARY KEY,
+                eventType VARCHAR(100) NOT NULL,
+                severity VARCHAR(50) NOT NULL,
+                department VARCHAR(100) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                message TEXT NOT NULL,
+                targetEmail VARCHAR(255),
+                targetPhone VARCHAR(50),
+                channel VARCHAR(50) NOT NULL,
+                status VARCHAR(50) NOT NULL,
+                timestamp VARCHAR(50) NOT NULL,
                 metadataJson TEXT
             )
         """)
@@ -38,21 +38,23 @@ class NotificationService:
         # Notification Rules Table
         cur.execute("""
             CREATE TABLE IF NOT EXISTS notification_rules (
-                id TEXT PRIMARY KEY,
-                eventType TEXT,
-                minSeverity TEXT,
-                department TEXT,
-                targetEmail TEXT,
-                targetPhone TEXT,
-                emailEnabled INTEGER,
-                smsEnabled INTEGER,
-                active INTEGER
+                id VARCHAR(50) PRIMARY KEY,
+                eventType VARCHAR(100) NOT NULL,
+                minSeverity VARCHAR(50) NOT NULL,
+                department VARCHAR(100) NOT NULL,
+                targetEmail VARCHAR(255),
+                targetPhone VARCHAR(50),
+                emailEnabled INT DEFAULT 1,
+                smsEnabled INT DEFAULT 1,
+                active INT DEFAULT 1
             )
         """)
 
         # Seed initial rules if empty
         cur.execute("SELECT COUNT(*) FROM notification_rules")
-        if cur.fetchone()[0] == 0:
+        res = cur.fetchone()
+        count = res[0] if res else 0
+        if count == 0:
             default_rules = [
                 ("rule-101", "CRITICAL_DEFECT", "Critical", "Road Engineering", "engineering@pune.gov.in", "+919822011223", 1, 1, 1),
                 ("rule-102", "SAFETY_ACCIDENT", "High", "Police Command", "traffic.police@pune.gov.in", "+919822099887", 1, 1, 1),
@@ -72,8 +74,7 @@ class NotificationService:
         now_str = time.strftime('%Y-%m-%d %H:%M:%S')
 
         # Check configured rules
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM notification_rules WHERE active = 1 AND (eventType = ? OR eventType = 'ALL')", (event_type,))
         rules = [dict(r) for r in cur.fetchall()]
@@ -114,8 +115,7 @@ class NotificationService:
         return deliveries
 
     def get_notifications(self, limit: int = 50) -> List[Dict[str, Any]]:
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM notifications ORDER BY timestamp DESC LIMIT ?", (limit,))
         rows = [dict(r) for r in cur.fetchall()]
@@ -123,8 +123,7 @@ class NotificationService:
         return rows
 
     def get_rules(self) -> List[Dict[str, Any]]:
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM notification_rules")
         rows = [dict(r) for r in cur.fetchall()]

@@ -64,13 +64,15 @@ A single optical detection can suffer from glare, shadow occlusions, or camera d
 - Python 3.10+
 - Node.js v18+ & npm
 
-### 1. Start the FastAPI Backend
+### 1. Start the FastAPI Backend (SQLite or Supabase PostgreSQL Mode)
 ```bash
 cd backend
-python -m pip install fastapi uvicorn websockets pydantic
-python database.py   # Seeds 32 buses, 160 defects, 60 traffic events, 80 tickets
-python main.py       # Starts server at http://localhost:8000
+pip install -r requirements.txt
+python -m alembic upgrade head   # Applies schema migrations
+python seed_demo.py              # Seeds 30 buses, 120 defects, 40 traffic events, 23 tables
+python -m uvicorn main:app --reload --port 8000
 ```
+> **Database Selection**: If `DATABASE_URL` environment variable is set (e.g. Supabase), PostgreSQL mode is activated automatically. Otherwise, local development defaults to `./urbanpulse.db`.
 
 ### 2. Start the React Frontend
 ```bash

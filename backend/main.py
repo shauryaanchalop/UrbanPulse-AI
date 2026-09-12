@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
 from database import DB_PATH, init_db, get_db_connection
+from db_adapter import get_db_type
 from models import (
     Bus, ServiceVehicle, Route, RoadSegment, RoadDefect, CitizenReport, RewardAccount, RewardRule,
     TrafficEvent, SafetyIncident, DistressAlert, ANPRDetection, WatchlistItem, WatchlistMatch,
@@ -26,13 +27,10 @@ notification_service = NotificationService(DB_PATH)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if not os.path.exists(DB_PATH):
+    try:
         init_db()
-    else:
-        try:
-            init_db()
-        except Exception:
-            pass
+    except Exception as e:
+        print("[Startup Init DB Error]", e)
 
     sim_task = asyncio.create_task(simulation_engine.run_loop())
     yield
@@ -44,6 +42,30 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan
 )
+
+@app.get("/health")
+@app.get("/api/health")
+def health_check():
+    db_type = get_db_type()
+    db_status = "error"
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        res = cur.fetchone()
+        if res:
+            db_status = "ok"
+        conn.close()
+    except Exception as e:
+        print("[Health Check DB Error]", e)
+        db_status = "error"
+
+    return {
+        "status": "HEALTHY",
+        "api": "ok",
+        "database": db_status,
+        "database_type": db_type
+    }
 
 app.add_middleware(
     CORSMiddleware,
@@ -324,8 +346,7 @@ async def submit_citizen_report(report_data: Dict[str, Any]):
     desc = report_data.get("description", "Reported via UrbanPulse Citizen Portal")
     photo = report_data.get("photoUrl", "/evidence/road_defect_1.jpg")
 
-    # AI Quick Classification Simulation
-    ai_class = "Pothole" if category == "Road Problem" else ("Vehicle Incident" if category == "Accident / Incident" else "Safety Hazard")
+    ai_class = "Pothole" if category in ["Pothole", "Road Problem"] else ("Vehicle Incident" if category in ["Vehicle Incident", "Accident / Incident"] else "Safety Hazard")
     ai_conf = 0.91
     ai_sev = "High" if category in ["Accident / Incident", "Safety / Distress"] else "Medium"
     points = 10  # Initial valid report reward
@@ -394,54 +415,63 @@ def get_reward_leaderboard():
     return leaderboard
 
 # --- EVIDENCE & INCIDENT ROUTE MATCHING ---
+@app.get("/api/evidence/search")
 @app.post("/api/evidence/search")
-def search_evidence(payload: Dict[str, Any]):
-    """
-    Search bus trajectories and camera clips near an incident location & time window.
-    Returns ranked evidence clips.
-    """
-    lat = float(payload.get("latitude", 18.5912))
-    lng = float(payload.get("longitude", 73.7389))
-    radius_m = int(payload.get("radiusMeters", 500))
+def search_evidence(
+    location: Optional[str] = Query(None),
+    minutesRadius: Optional[int] = Query(None),
+    payload: Optional[Dict[str, Any]] = Body(None)
+):
+    p = payload or {}
+    lat = float(p.get("latitude", 18.5912))
+    lng = float(p.get("longitude", 73.7389))
+    radius_m = int(p.get("radiusMeters", 500))
     now_dt = datetime.now()
 
-    # Sample candidate clips from nearby buses
-    candidate_clips = [
-        {
-            "id": "CLIP-004-F",
-            "busId": "BUS-004",
-            "cameraName": "front",
-            "startTime": (now_dt - datetime.timedelta(seconds=45)).strftime("%Y-%m-%d %H:%M:%S"),
-            "endTime": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
-            "latitude": 18.5915,
-            "longitude": 73.7391,
-            "address": "Wakad Flyover Ramp, Sector 18",
-            "videoUrl": "/evidence/clip_event_1.mp4",
-            "thumbnailUrl": "/evidence/incident_frame_1.jpg",
-            "matchedEvents": ["Pothole Defect", "Passing Vehicle UP-16-AB-1234"]
-        },
-        {
-            "id": "CLIP-012-R",
-            "busId": "BUS-012",
-            "cameraName": "rear",
-            "startTime": (now_dt - datetime.timedelta(seconds=120)).strftime("%Y-%m-%d %H:%M:%S"),
-            "endTime": (now_dt - datetime.timedelta(seconds=60)).strftime("%Y-%m-%d %H:%M:%S"),
-            "latitude": 18.5921,
-            "longitude": 73.7398,
-            "address": "Wakad Bridge Crossway",
-            "videoUrl": "/evidence/clip_event_2.mp4",
-            "thumbnailUrl": "/evidence/incident_frame_2.jpg",
-            "matchedEvents": ["Multi-bus defect verification"]
-        }
-    ]
+    # Query video clips from database
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM video_clips LIMIT 10")
+    rows = c.fetchall()
+    conn.close()
 
-    ranked = evidence_ranking_engine.rank_clips(lat, lng, now_dt, candidate_clips, max_distance_m=radius_m)
-    return {
-        "caseRef": f"CASE-AC-2026-{random.randint(100, 999)}",
-        "searchLocation": {"lat": lat, "lng": lng},
-        "matchedCount": len(ranked),
-        "clips": ranked
-    }
+    clips = []
+    for r in rows:
+        clips.append({
+            "id": r["id"],
+            "busId": r["busId"],
+            "cameraName": r["cameraName"],
+            "startTime": r["startTime"],
+            "endTime": r["endTime"],
+            "latitude": r["latitude"],
+            "longitude": r["longitude"],
+            "address": r["address"],
+            "videoUrl": r["videoUrl"],
+            "thumbnailUrl": r["thumbnailUrl"],
+            "relevanceScore": r["relevanceScore"],
+            "matchedEvents": json.loads(r["matchedEvents"] or "[]")
+        })
+
+    if not clips:
+        clips = [
+            {
+                "id": "CLIP-004-F",
+                "busId": "BUS-004",
+                "cameraName": "front",
+                "startTime": (now_dt - timedelta(seconds=45)).strftime("%Y-%m-%d %H:%M:%S"),
+                "endTime": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                "latitude": 18.5915,
+                "longitude": 73.7391,
+                "address": "Wakad Flyover Ramp, Sector 18",
+                "videoUrl": "/evidence/clip_event_1.mp4",
+                "thumbnailUrl": "/evidence/incident_frame_1.jpg",
+                "relevanceScore": 0.94,
+                "matchedEvents": ["Pothole Defect", "Passing Vehicle UP-16-AB-1234"]
+            }
+        ]
+
+    # Return clips list directly when GET query is used
+    return clips
 
 # --- WATCHLIST & HUMAN VERIFICATION ---
 @app.get("/api/watchlist", response_model=List[WatchlistItem])
@@ -493,6 +523,28 @@ def get_watchlist_matches():
             reviewedBy=r["reviewedBy"]
         ))
     return matches
+
+@app.get("/api/watchlist/matches/{plate_number}")
+def check_watchlist_plate(plate_number: str):
+    clean_plate = plate_number.replace("-", "").replace(" ", "").upper()
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM watchlist_matches")
+    rows = c.fetchall()
+    conn.close()
+
+    match_found = None
+    for r in rows:
+        r_plate = r["plateNumber"].replace("-", "").replace(" ", "").upper()
+        if r_plate == clean_plate or clean_plate in r_plate:
+            match_found = dict(r)
+            break
+
+    return {
+        "isWatchlistMatch": match_found is not None,
+        "plateNumber": plate_number,
+        "match": match_found
+    }
 
 @app.post("/api/watchlist/matches/{match_id}/action")
 async def action_watchlist_match(match_id: str, payload: Dict[str, Any]):
@@ -1115,4 +1167,5 @@ def get_evidence_image(file_name: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
