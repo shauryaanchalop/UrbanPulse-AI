@@ -1,0 +1,16 @@
+# UrbanPulse AI - Road Damage YOLO Dataset Definition
+
+path: ml/datasets/road_damage
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: pothole
+  1: longitudinal_crack
+  2: transverse_crack
+  3: alligator_crack
+  4: road_edge_damage
+  5: manhole_damage
+  6: road_debris
+  7: repaired_patch

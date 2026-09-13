@@ -1,0 +1,57 @@
+# UrbanPulse AI — Road Damage Model Configuration
+
+model:
+  name: "UrbanPulse Road Damage Detector"
+  architecture: "yolo11s"  # Preferred Ultralytics small model, fallback to yolov8s / custom ONNX
+  weights_path: "ml/models/production/road_damage.pt"
+  onnx_path: "ml/models/production/road_damage.onnx"
+  pretrained_path: "ml/models/pretrained/yolo11s.pt"
+  manifest_path: "ml/models/production/model_manifest.json"
+  metrics_path: "ml/models/production/model_metrics.json"
+
+dataset:
+  name: "UrbanPulse Combined Road Damage Dataset"
+  path: "ml/datasets/road_damage"
+  yaml_path: "ml/datasets/road_damage/data.yaml"
+  imgsz: 640
+  batch_size: 16
+  workers: 4
+
+hyperparameters:
+  epochs: 100
+  patience: 20
+  confidence_threshold: 0.35
+  iou_threshold: 0.45
+  device: "auto"  # cuda, mps, or cpu
+
+taxonomy:
+  classes:
+    0: "pothole"
+    1: "longitudinal_crack"
+    2: "transverse_crack"
+    3: "alligator_crack"
+    4: "road_edge_damage"
+    5: "manhole_damage"
+    6: "road_debris"
+    7: "repaired_patch"
+
+  # Source dataset taxonomy mapping layer
+  source_mappings:
+    "D00": "longitudinal_crack"
+    "D10": "transverse_crack"
+    "D20": "alligator_crack"
+    "D40": "pothole"
+    "pothole": "pothole"
+    "crack": "alligator_crack"
+
+augmentation:
+  hflip: 0.5
+  vflip: 0.0
+  degrees: 5.0
+  translate: 0.1
+  scale: 0.2
+  shear: 2.0
+  perspective: 0.0005
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4

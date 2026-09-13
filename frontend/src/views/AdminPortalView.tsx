@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Users, Truck, Eye, Award, Settings, FileText, Database, Lock, Check, AlertTriangle } from 'lucide-react';
-import type { User, WatchlistItem, AuditLog, RewardRule } from '../types';
+import { Shield, Users, Truck, Eye, Award, Settings, FileText, Database, Lock, Check, AlertTriangle, Plus, X } from 'lucide-react';
+import type { User, WatchlistItem, AuditLog } from '../types';
 import { api } from '../services/api';
 
 export function AdminPortalView() {
@@ -8,6 +8,13 @@ export function AdminPortalView() {
   const [users, setUsers] = useState<User[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [logs, setLogs] = useState<AuditLog[]>([]);
+
+  // Provision New User Modal State
+  const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserRole, setNewUserRole] = useState<string>('Municipal Road Engineer');
+  const [newUserDept, setNewUserDept] = useState('PWD Road Maintenance Division');
 
   useEffect(() => {
     loadAdminData();
@@ -28,27 +35,65 @@ export function AdminPortalView() {
     }
   };
 
+  const handleProvisionUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUserName || !newUserEmail) return;
+
+    const newUserObj: User = {
+      id: `usr_${Date.now()}`,
+      username: newUserEmail.split('@')[0],
+      fullName: newUserName,
+      role: newUserRole as any,
+      department: newUserDept,
+      email: newUserEmail,
+      status: 'Active',
+      createdDate: new Date().toISOString().split('T')[0]
+    };
+
+    setUsers(prev => [newUserObj, ...prev]);
+
+    // Add log entry
+    const newLog: AuditLog = {
+      id: `log_${Date.now()}`,
+      userId: 'usr_admin',
+      username: 'admin',
+      role: 'System Admin',
+      action: 'USER_PROVISIONED',
+      resource: 'USER_MANAGEMENT',
+      details: `Provisioned user account for ${newUserName} (${newUserRole})`,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      ipAddress: '192.168.1.100',
+      operatorName: 'SUPER ADMIN'
+    };
+    setLogs(prev => [newLog, ...prev]);
+
+    // Reset form
+    setNewUserName('');
+    setNewUserEmail('');
+    setIsProvisionModalOpen(false);
+  };
+
   return (
-    <div className="h-full w-full bg-slate-950 text-slate-100 flex flex-col p-6 overflow-y-auto font-sans space-y-6">
+    <div className="h-full w-full bg-theme-bg text-theme-primary flex flex-col p-6 overflow-y-auto font-sans space-y-6 transition-colors select-none">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+      <div className="flex justify-between items-center border-b border-theme-border pb-4">
         <div>
           <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-red-500" />
-            <h1 className="text-xl font-bold tracking-tight text-white">System Administration & RBAC Portal</h1>
+            <Shield className="w-5 h-5 text-brand" />
+            <h1 className="text-xl font-bold tracking-tight text-theme-primary">System Administration & RBAC Portal</h1>
           </div>
-          <p className="text-xs text-slate-400 font-mono mt-1">
+          <p className="text-xs text-theme-muted font-mono mt-1">
             Manage users, permissions, watchlist definitions, reward thresholds, and system audit logs.
           </p>
         </div>
-        <div className="px-3 py-1 bg-red-950/60 border border-red-800 text-red-400 font-mono text-xs rounded-lg flex items-center space-x-2">
+        <div className="px-3 py-1 bg-brand/10 border border-brand/40 text-brand font-mono text-xs rounded-sm flex items-center space-x-2">
           <Lock className="w-3.5 h-3.5" />
           <span>SUPER ADMIN ACCESS ACTIVE</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-slate-800 pb-2 font-mono text-xs">
+      <div className="flex space-x-2 border-b border-theme-border pb-2 font-mono text-xs">
         {[
           { id: 'users', label: 'User Roles & Access', icon: Users },
           { id: 'watchlist', label: 'Vehicle Watchlist Rules', icon: Eye },
@@ -60,10 +105,10 @@ export function AdminPortalView() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors ${
+              className={`px-4 py-2 rounded-sm flex items-center space-x-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-slate-800 text-white font-bold border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-theme-panel text-theme-primary font-bold border border-theme-border shadow-sm'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-elevated'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -76,41 +121,39 @@ export function AdminPortalView() {
       {/* Content Panels */}
       {activeTab === 'users' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 font-mono">Registered Platform Accounts ({users.length})</h3>
-            <button className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors">
-              + Provision New User
+          <div className="flex justify-between items-center font-mono">
+            <h3 className="text-xs font-semibold uppercase text-theme-muted tracking-wider">Registered Platform Accounts ({users.length})</h3>
+            <button
+              onClick={() => setIsProvisionModalOpen(true)}
+              className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-sm shadow-md transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>PROVISION NEW USER</span>
             </button>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden text-xs">
+          <div className="bg-theme-surface border border-theme-border rounded-sm overflow-hidden text-xs shadow-sm">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950 text-slate-400 font-mono border-b border-slate-800">
+                <tr className="bg-theme-panel text-theme-muted font-mono border-b border-theme-border text-[11px]">
                   <th className="p-3">User</th>
                   <th className="p-3">Role</th>
                   <th className="p-3">Department</th>
                   <th className="p-3">Email</th>
-                  <th className="p-3 text-right">Actions</th>
+                  <th className="p-3 text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-theme-border">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-880">
-                    <td className="p-3 font-semibold text-white">{u.fullName}</td>
-                    <td className="p-3">
-                      <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
-                        u.role === 'SUPER ADMIN' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                        u.role === 'POLICE / AUTHORIZED INVESTIGATOR' ? 'bg-purple-500/20 text-purple-400' :
-                        u.role === 'ROAD ENGINEER' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="p-3 text-slate-300">{u.department}</td>
-                    <td className="p-3 text-slate-400 font-mono">{u.email}</td>
+                  <tr key={u.id} className="hover:bg-theme-elevated">
+                    <td className="p-3 font-semibold text-theme-primary">{u.fullName}</td>
+                    <td className="p-3 font-mono text-brand font-bold">{u.role}</td>
+                    <td className="p-3 text-theme-secondary">{u.department}</td>
+                    <td className="p-3 font-mono text-theme-muted">{u.email}</td>
                     <td className="p-3 text-right">
-                      <button className="text-slate-400 hover:text-white font-mono text-[11px] underline">Edit Role</button>
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 text-[10px] font-mono font-bold">
+                        {u.status || 'Active'}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -120,86 +163,157 @@ export function AdminPortalView() {
         </div>
       )}
 
+      {/* Watchlist Tab */}
       {activeTab === 'watchlist' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 font-mono">Police Vehicle-of-Interest Watchlist ({watchlist.length})</h3>
-            <button className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors">
-              + Add Vehicle to Watchlist
-            </button>
+          <div className="flex justify-between items-center font-mono">
+            <h3 className="text-xs font-semibold uppercase text-theme-muted tracking-wider">Authorized ANPR Watchlist Rules ({watchlist.length})</h3>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {watchlist.map((item) => (
-              <div key={item.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2 text-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-white text-sm font-mono">{item.plateNumber}</h4>
-                    <p className="text-[11px] text-slate-400">{item.department}</p>
-                  </div>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono">
-                    ACTIVE WATCHLIST
-                  </span>
-                </div>
-                <p className="text-slate-300">{item.reason}</p>
-                <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-400">
-                  <span>Added By: {item.addedBy}</span>
-                  <span>Valid: {item.validFrom} to {item.validUntil}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'rewards' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4 text-xs">
-          <h3 className="text-sm font-bold text-white">Citizen Reward Policy Configuration</h3>
-          <p className="text-slate-400">Admin configurable points awarded for valid, verified, and critical citizen reports.</p>
-          
-          <div className="space-y-3">
-            {[
-              { event: 'Valid Report Submission', points: 10, desc: 'Awarded when report passes initial AI validity check' },
-              { event: 'Verified Road Defect', points: 25, desc: 'Awarded when defect is confirmed by bus sensor or engineer' },
-              { event: 'Critical Actionable Incident', points: 50, desc: 'Awarded for urgent public safety or accident alerts' },
-              { event: 'Repair Verification Photo', points: 20, desc: 'Bonus points when citizen photo verifies municipal repair work' }
-            ].map((rule) => (
-              <div key={rule.event} className="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-white">{rule.event}</h4>
-                  <p className="text-[11px] text-slate-400">{rule.desc}</p>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="number"
-                    defaultValue={rule.points}
-                    className="w-16 bg-slate-900 border border-slate-700 text-center font-mono font-bold text-amber-400 py-1 rounded"
-                  />
-                  <span className="font-mono text-slate-500">PTS</span>
-                </div>
-              </div>
-            ))}
+          <div className="bg-theme-surface border border-theme-border rounded-sm overflow-hidden text-xs">
+            <table className="w-full text-left border-collapse font-mono">
+              <thead>
+                <tr className="bg-theme-panel text-theme-muted border-b border-theme-border text-[11px]">
+                  <th className="p-3">License Plate</th>
+                  <th className="p-3">Risk Level</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Reason / Description</th>
+                  <th className="p-3 text-right">Added Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-theme-border">
+                {watchlist.map((w) => (
+                  <tr key={w.id} className="hover:bg-theme-elevated">
+                    <td className="p-3 font-bold text-amber-500">{w.plateNumber}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 text-[10px] font-bold border ${
+                        w.riskLevel === 'HIGH' ? 'bg-red-500/10 text-red-500 border-red-500/30' : 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                      }`}>
+                        {w.riskLevel}
+                      </span>
+                    </td>
+                    <td className="p-3 text-theme-secondary">{w.category}</td>
+                    <td className="p-3 text-theme-muted font-sans text-xs">{w.reason}</td>
+                    <td className="p-3 text-right text-theme-muted">{w.addedDate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
+      {/* Audit Logs Tab */}
       {activeTab === 'logs' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 text-xs">
-          <h3 className="text-xs font-semibold uppercase text-slate-400 font-mono">Security & Audit Activity Logs</h3>
-          <div className="space-y-2">
-            {logs.map((log) => (
-              <div key={log.id} className="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs font-mono">
-                <div>
-                  <span className="text-red-400 font-bold">{log.action}</span>
-                  <span className="text-slate-400 ml-2">by {log.username} ({log.role})</span>
-                  <p className="text-[11px] text-slate-300 mt-0.5">{log.details}</p>
-                </div>
-                <div className="text-right text-[10px] text-slate-500">
-                  <div>{log.timestamp}</div>
-                  <div>IP: {log.ipAddress}</div>
-                </div>
+        <div className="space-y-4 font-mono text-xs">
+          <h3 className="text-xs font-semibold uppercase text-theme-muted tracking-wider">System Operational Audit Logs ({logs.length})</h3>
+          <div className="bg-theme-surface border border-theme-border rounded-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-theme-panel text-theme-muted border-b border-theme-border text-[11px]">
+                  <th className="p-3">Timestamp</th>
+                  <th className="p-3">Operator</th>
+                  <th className="p-3">Action</th>
+                  <th className="p-3">Details</th>
+                  <th className="p-3 text-right">IP Address</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-theme-border">
+                {logs.map((l) => (
+                  <tr key={l.id} className="hover:bg-theme-elevated">
+                    <td className="p-3 text-theme-muted text-[11px]">{l.timestamp}</td>
+                    <td className="p-3 font-bold text-theme-primary">{l.operatorName}</td>
+                    <td className="p-3 text-brand font-bold">{l.action}</td>
+                    <td className="p-3 text-theme-secondary text-[11px] font-sans">{l.details}</td>
+                    <td className="p-3 text-right text-theme-muted">{l.ipAddress}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Provision New User Modal */}
+      {isProvisionModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-theme-surface border border-theme-border p-6 max-w-md w-full rounded-sm font-sans space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-theme-border pb-3">
+              <div className="flex items-center space-x-2">
+                <Users className="w-5 h-5 text-brand" />
+                <h3 className="font-bold text-sm text-theme-primary">PROVISION NEW PLATFORM USER</h3>
               </div>
-            ))}
+              <button onClick={() => setIsProvisionModalOpen(false)} className="text-theme-muted hover:text-theme-primary">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleProvisionUser} className="space-y-3 text-xs">
+              <div>
+                <label className="text-[10px] font-bold text-theme-muted uppercase font-mono block mb-1">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                  placeholder="e.g. Inspector Rajesh Kumar"
+                  className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-theme-primary focus:outline-none focus:border-brand"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-theme-muted uppercase font-mono block mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                  placeholder="e.g. rajesh.kumar@punemunicipal.gov.in"
+                  className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-theme-primary focus:outline-none focus:border-brand"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-theme-muted uppercase font-mono block mb-1">System Role</label>
+                <select
+                  value={newUserRole}
+                  onChange={(e) => setNewUserRole(e.target.value)}
+                  className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-theme-primary focus:outline-none focus:border-brand font-mono"
+                >
+                  <option value="Command Center Operator">Command Center Operator</option>
+                  <option value="Municipal Road Engineer">Municipal Road Engineer</option>
+                  <option value="Traffic Control Officer">Traffic Control Officer</option>
+                  <option value="Fleet Administrator">Fleet Administrator</option>
+                  <option value="System Admin">System Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-theme-muted uppercase font-mono block mb-1">Department</label>
+                <input
+                  type="text"
+                  value={newUserDept}
+                  onChange={(e) => setNewUserDept(e.target.value)}
+                  placeholder="e.g. PWD Road Maintenance Division 4"
+                  className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-theme-primary focus:outline-none focus:border-brand"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsProvisionModalOpen(false)}
+                  className="px-4 py-2 bg-theme-panel border border-theme-border text-theme-secondary hover:text-theme-primary rounded-sm font-mono"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-brand hover:bg-brand-hover text-white font-bold rounded-sm shadow-md font-mono"
+                >
+                  PROVISION USER
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

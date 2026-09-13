@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import type { UserRole } from '../types';
 import { 
   Play, Pause, RotateCcw, Zap, Bell, Shield, 
-  ChevronDown, ArrowLeft, Search, Command, Monitor, LogOut
+  ChevronDown, ArrowLeft, Search, Monitor, X, Cpu, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { BrandLogo } from './common/BrandLogo';
-import { ThemeSwitcher } from './common/ThemeSwitcher';
+import { useTheme } from '../context/ThemeContext';
+import { ModelInspectorModal } from './common/ModelInspectorModal';
 
 interface HeaderProps {
   currentRole: UserRole;
@@ -24,6 +25,7 @@ interface HeaderProps {
   onNavigateHome?: () => void;
   onOpenCommandPalette?: () => void;
   onToggleKiosk?: () => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,12 +43,17 @@ export const Header: React.FC<HeaderProps> = ({
   recentAlerts,
   onNavigateHome,
   onOpenCommandPalette,
-  onToggleKiosk
+  onToggleKiosk,
+  onNavigateTab
 }) => {
-  const { user, logout } = useAuth();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [showModelInspector, setShowModelInspector] = useState(false);
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune Smart City');
+  const [readNotifs, setReadNotifs] = useState<Set<number>>(new Set());
+  const [selectedNotifIndex, setSelectedNotifIndex] = useState<number | null>(null);
 
   const roles: UserRole[] = [
     'Command Center Operator',
@@ -61,196 +68,266 @@ export const Header: React.FC<HeaderProps> = ({
     return `${m}:${s}`;
   };
 
+  const handleMarkAllRead = () => {
+    const allIndices = new Set(recentAlerts.map((_, idx) => idx));
+    setReadNotifs(allIndices);
+  };
+
+  const activeCount = Math.max(0, unreadNotifications - readNotifs.size);
+
   return (
-    <header className="h-10 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between select-none z-30 shrink-0 font-sans text-xs transition-colors">
-      {/* Left: Brand Logo, Sector, Mode */}
-      <div className="flex items-center gap-3">
-        {onNavigateHome && (
-          <button
-            onClick={onNavigateHome}
-            className="flex items-center gap-1 px-2 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-[10px] font-mono rounded-sm transition-colors mr-1"
-            title="Return to Public Architectural Showcase"
-          >
-            <ArrowLeft className="w-3 h-3 text-brand" />
-            <span className="hidden sm:inline">PUBLIC PORTAL</span>
-          </button>
-        )}
-
-        <BrandLogo 
-          size="sm" 
-          subtitle="MUNICIPAL ICCC" 
-          className="pr-3 border-r border-theme-border" 
-          onClick={onNavigateHome}
-        />
-
-        {/* Global Search Shortcut Button */}
-        {onOpenCommandPalette && (
-          <button
-            onClick={onOpenCommandPalette}
-            className="hidden md:flex items-center gap-2 px-2.5 py-0.5 bg-theme-panel hover:bg-theme-elevated text-theme-muted hover:text-theme-primary border border-theme-border text-[10px] font-mono rounded-sm transition-colors"
-            title="Open Command Palette (Ctrl+K or /)"
-          >
-            <Search className="w-3 h-3 text-brand" />
-            <span>Search...</span>
-            <kbd className="px-1 text-[9px] bg-theme-elevated border border-theme-border rounded-sm">Ctrl+K</kbd>
-          </button>
-        )}
-
-        {/* City Sector Selector */}
-        <div className="hidden xl:flex items-center gap-1 pl-2 border-l border-theme-border text-[11px]">
-          <span className="text-theme-muted font-mono">SECTOR:</span>
-          <select 
-            value={selectedCity} 
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className="bg-theme-panel border border-theme-border text-theme-primary px-1.5 py-0.5 focus:outline-none cursor-pointer font-mono text-[11px] rounded-sm"
-          >
-            <option value="Pune Smart City">PUNE METRO (32 BUSES)</option>
-            <option value="Bengaluru Urban">BENGALURU URBAN (BMTC)</option>
-            <option value="Delhi NCR">DELHI NCR (BRTS)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Center: Command Controls & Demo */}
-      <div className="flex items-center gap-1.5 bg-theme-panel border border-theme-border px-1.5 py-0.5 rounded-sm">
-        {/* Run Demo Button */}
-        <button
-          onClick={onStartDemo}
-          className={`flex items-center gap-1 px-2.5 py-0.5 font-mono text-[11px] font-semibold border transition rounded-sm ${
-            isDemoActive 
-              ? 'bg-amber-500/15 border-amber-500 text-amber-500 font-bold' 
-              : 'bg-brand/10 border-brand/60 text-brand hover:bg-brand hover:text-white'
-          }`}
-          title="Run 5-minute automated SIH scenario"
-        >
-          <Zap className="w-3 h-3 fill-current text-brand" />
-          <span>{isDemoActive ? 'DEMO ACTIVE' : 'RUN SIH DEMO'}</span>
-        </button>
-
-        {/* Digital Clock */}
-        <div className="px-2 font-mono text-[11px] text-theme-primary bg-theme-surface border-l border-r border-theme-border">
-          {formatElapsed(elapsedSeconds)}
-        </div>
-
-        {/* Simulation Play / Pause */}
-        <button
-          onClick={onToggleSim}
-          className="px-2 py-0.5 text-[11px] font-mono border border-theme-border hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary flex items-center gap-1 rounded-sm"
-          title={isSimRunning ? 'Pause simulation loop' : 'Resume simulation loop'}
-        >
-          {isSimRunning ? <Pause className="w-3 h-3 text-emerald-500" /> : <Play className="w-3 h-3 text-amber-500" />}
-          <span>{isSimRunning ? 'RUNNING' : 'PAUSED'}</span>
-        </button>
-
-        {/* Speed Controls */}
-        <div className="hidden sm:flex items-center">
-          {[1, 2, 5, 10].map(s => (
+    <>
+      <header className="h-12 bg-theme-surface/90 backdrop-blur-md border-b border-theme-border px-4 flex items-center justify-between select-none z-30 shrink-0 font-sans text-xs transition-all shadow-sm">
+        {/* Left Section: Brand Logo & Sector ML Status Pill */}
+        <div className="flex items-center gap-3 shrink-0">
+          {onNavigateHome && (
             <button
-              key={s}
-              onClick={() => onSetSpeed(s)}
-              className={`px-1.5 py-0.5 text-[10px] font-mono border-r border-y border-theme-border first:border-l ${
-                simSpeed === s ? 'bg-brand text-white font-bold' : 'text-theme-muted hover:text-theme-primary bg-theme-panel'
-              }`}
+              onClick={onNavigateHome}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              title="Return to Public Portal"
             >
-              {s}x
+              <ArrowLeft className="w-3.5 h-3.5 text-brand" />
+              <span className="hidden sm:inline font-bold">PORTAL</span>
             </button>
-          ))}
+          )}
+
+          <BrandLogo 
+            size="sm" 
+            subtitle="MUNICIPAL ICCC" 
+            className="pr-3 border-r border-theme-border shrink-0 cursor-pointer" 
+            onClick={onNavigateHome}
+          />
+
+          {/* Integrated Sector & ML Model Status Badge */}
+          <div className="hidden md:flex items-center bg-theme-panel border border-theme-border rounded-full p-1 gap-2 shrink-0">
+            <select 
+              value={selectedCity} 
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="bg-transparent text-theme-primary px-2.5 py-0.5 focus:outline-none cursor-pointer font-mono text-[11px] font-bold rounded-full whitespace-nowrap"
+            >
+              <option value="Pune Smart City">PUNE METRO (105 BUSES)</option>
+              <option value="Bengaluru Urban">BENGALURU URBAN (BMTC)</option>
+              <option value="Delhi NCR">DELHI NCR (BRTS)</option>
+            </select>
+
+            <button 
+              onClick={() => setShowModelInspector(true)}
+              className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 font-mono text-[11px] font-bold rounded-full transition-all cursor-pointer whitespace-nowrap shadow-sm" 
+              title="Inspect Deployed YOLOv8-ONNX Edge AI Model"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <Cpu className="w-3 h-3" />
+              <span>YOLOv8-ONNX ML</span>
+              <span className="text-[10px] opacity-80 font-bold">(89.4% mAP)</span>
+            </button>
+          </div>
         </div>
 
-        {/* Reset */}
-        <button
-          onClick={onResetSim}
-          className="p-1 text-theme-muted hover:text-brand hover:bg-theme-elevated transition rounded-sm"
-          title="Reset simulation and re-seed database"
-        >
-          <RotateCcw className="w-3 h-3" />
-        </button>
-      </div>
-
-      {/* Right: Kiosk Button, Theme Switcher, Alerts & Operator Profile */}
-      <div className="flex items-center gap-2">
-        {onToggleKiosk && (
+        {/* Center Section: Unified Simulation Controller Pod */}
+        <div className="flex items-center bg-theme-panel border border-theme-border p-1 rounded-full shadow-inner gap-2 whitespace-nowrap shrink-0">
           <button
-            onClick={onToggleKiosk}
-            className="flex items-center gap-1 px-2 py-0.5 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-[10px] font-mono rounded-sm transition-colors"
-            title="Full-Screen Command Center Video Wall Display (Key 'K')"
+            onClick={onStartDemo}
+            className={`flex items-center gap-1.5 px-3 py-1 font-mono text-xs font-bold transition rounded-full shadow-md whitespace-nowrap shrink-0 ${
+              isDemoActive 
+                ? 'bg-amber-500 border border-amber-400 text-black font-bold animate-pulse' 
+                : 'bg-brand text-white hover:bg-brand-hover border border-brand'
+            }`}
+            title="Run automated SIH scenario"
           >
-            <Monitor className="w-3 h-3 text-brand" />
-            <span className="hidden sm:inline">KIOSK</span>
-          </button>
-        )}
-
-        {/* Application Theme Switcher */}
-        <ThemeSwitcher compact />
-
-        {/* Notification Bell */}
-        <div className="relative">
-          <button 
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="p-1 text-theme-muted hover:text-theme-primary hover:bg-theme-elevated relative transition border border-transparent hover:border-theme-border rounded-sm"
-            title="Operational Alerts"
-          >
-            <Bell className="w-3.5 h-3.5" />
-            {unreadNotifications > 0 && (
-              <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-mono font-bold px-1 rounded-none leading-tight">
-                {unreadNotifications}
-              </span>
-            )}
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>{isDemoActive ? 'DEMO ACTIVE' : 'RUN SIH DEMO'}</span>
           </button>
 
-          {showNotifications && (
-            <div className="absolute right-0 mt-1 w-80 bg-theme-surface border border-theme-border shadow-2xl z-50 text-xs rounded-sm">
-              <div className="p-2 border-b border-theme-border bg-theme-panel flex justify-between items-center font-mono">
-                <span className="text-[11px] font-bold text-theme-primary">REAL-TIME INCIDENT STREAM</span>
-                <span className="text-[10px] text-theme-muted">PUNE METRO</span>
-              </div>
-              <div className="max-h-60 overflow-y-auto divide-y divide-theme-border">
-                {recentAlerts.map((alert, idx) => (
-                  <div key={idx} className="p-2 hover:bg-theme-elevated text-[11px] text-theme-secondary font-mono">
-                    <span className="text-brand mr-1.5 font-bold">•</span>
-                    {alert}
-                  </div>
+          <div className="px-3 font-mono text-xs text-theme-primary bg-theme-surface border-x border-theme-border font-extrabold whitespace-nowrap rounded-sm py-0.5">
+            {formatElapsed(elapsedSeconds)}
+          </div>
+
+          <button
+            onClick={onToggleSim}
+            className="px-2.5 py-1 text-xs font-mono border border-theme-border hover:bg-theme-elevated text-theme-primary flex items-center gap-1.5 rounded-full transition whitespace-nowrap font-bold"
+            title={isSimRunning ? 'Pause simulation loop' : 'Resume simulation loop'}
+          >
+            {isSimRunning ? <Pause className="w-3.5 h-3.5 text-emerald-500" /> : <Play className="w-3.5 h-3.5 text-amber-500" />}
+            <span>{isSimRunning ? 'RUNNING' : 'PAUSED'}</span>
+          </button>
+
+          {/* Speed Selector */}
+          <div className="relative">
+            <button
+              onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+              className="px-2 py-0.5 font-mono text-xs font-bold text-theme-secondary hover:text-theme-primary bg-theme-surface border border-theme-border rounded-full flex items-center gap-1"
+              title="Simulation speed multiplier"
+            >
+              <span>{simSpeed}x</span>
+              <ChevronDown className="w-3 h-3 opacity-60" />
+            </button>
+
+            {showSpeedMenu && (
+              <div className="absolute top-full mt-1 right-0 bg-theme-surface border border-theme-border shadow-xl rounded-md p-1 z-50 font-mono text-xs flex flex-col gap-1">
+                {[1, 2, 5, 10].map(s => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      onSetSpeed(s);
+                      setShowSpeedMenu(false);
+                    }}
+                    className={`px-3 py-1 rounded-md text-left font-bold transition-colors ${
+                      simSpeed === s ? 'bg-brand text-white' : 'text-theme-secondary hover:bg-theme-elevated hover:text-theme-primary'
+                    }`}
+                  >
+                    {s}x Speed
+                  </button>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          <button
+            onClick={onResetSim}
+            className="p-1 text-theme-muted hover:text-brand hover:bg-theme-elevated transition rounded-full"
+            title="Reset simulation loop"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Operator Profile */}
-        <div className="relative">
+        {/* Right Section: Command Palette, Kiosk, Theme Toggle, Alerts, Profile */}
+        <div className="flex items-center gap-2 shrink-0">
+          {onOpenCommandPalette && (
+            <button
+              onClick={onOpenCommandPalette}
+              className="hidden xl:flex items-center gap-2 px-3 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-muted hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              title="Open Command Palette (Ctrl+K or /)"
+            >
+              <Search className="w-3.5 h-3.5 text-brand" />
+              <span>Search...</span>
+              <kbd className="px-1 text-[10px] bg-theme-elevated border border-theme-border rounded-sm font-bold">Ctrl+K</kbd>
+            </button>
+          )}
+
+          {onToggleKiosk && (
+            <button
+              onClick={onToggleKiosk}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              title="Full-Screen Command Center Video Wall Display (Key 'K')"
+            >
+              <Monitor className="w-3.5 h-3.5 text-brand" />
+              <span className="hidden sm:inline font-bold">KIOSK</span>
+            </button>
+          )}
+
+          {/* Simple Theme Toggle Icon Button */}
           <button
-            onClick={() => setShowRoleMenu(!showRoleMenu)}
-            className="flex items-center gap-1.5 bg-theme-panel border border-theme-border px-2 py-0.5 text-[11px] text-theme-primary hover:bg-theme-elevated font-mono rounded-sm"
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="p-1.5 bg-theme-panel border border-theme-border hover:bg-theme-elevated text-theme-primary rounded-md transition-colors"
+            title={`Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
           >
-            <Shield className="w-3 h-3 text-theme-muted" />
-            <span className="hidden md:inline truncate max-w-[130px]">{currentRole.toUpperCase()}</span>
-            <ChevronDown className="w-3 h-3 text-theme-muted" />
+            {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-brand" />}
           </button>
 
-          {showRoleMenu && (
-            <div className="absolute right-0 mt-1 w-52 bg-theme-surface border border-theme-border shadow-2xl z-50 p-1 rounded-sm">
-              <div className="text-[9px] font-mono text-theme-muted px-2 py-1 uppercase tracking-wider">
-                Operator Role
+          {/* Operational Notifications Popup Modal */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-1.5 bg-theme-panel border border-theme-border hover:bg-theme-elevated text-theme-primary rounded-md relative transition-colors"
+              title="Operational Alerts"
+            >
+              <Bell className="w-4 h-4 text-theme-secondary" />
+              {activeCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-mono font-bold px-1.5 rounded-full leading-tight shadow-md">
+                  {activeCount}
+                </span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-96 bg-theme-surface border border-theme-border shadow-2xl z-50 text-xs rounded-md overflow-hidden font-mono">
+                <div className="p-3 border-b border-theme-border bg-theme-panel flex justify-between items-center">
+                  <span className="text-xs font-bold text-theme-primary">NOTIFICATION CENTER</span>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handleMarkAllRead} className="text-[10px] text-brand hover:underline font-bold">
+                      MARK ALL READ
+                    </button>
+                    <button onClick={() => setShowNotifications(false)} className="text-theme-muted hover:text-theme-primary">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="max-h-72 overflow-y-auto divide-y divide-theme-border">
+                  {recentAlerts.map((alert, idx) => {
+                    const isRead = readNotifs.has(idx);
+                    return (
+                      <div 
+                        key={idx} 
+                        onClick={() => {
+                          setSelectedNotifIndex(idx);
+                          setReadNotifs(prev => new Set(prev).add(idx));
+                        }}
+                        className={`p-3 cursor-pointer hover:bg-theme-elevated transition-colors text-xs ${
+                          isRead ? 'opacity-60 text-theme-muted' : 'text-theme-primary font-bold'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-brand font-bold text-sm leading-none">•</span>
+                          <div className="flex-1 space-y-0.5">
+                            <div>{alert}</div>
+                            <div className="text-[10px] text-theme-muted flex justify-between pt-1">
+                              <span>Sector 18 • Urban Sensor</span>
+                              <span>{isRead ? 'READ' : 'UNREAD'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              {roles.map(r => (
-                <button
-                  key={r}
-                  onClick={() => {
-                    onRoleChange(r);
-                    setShowRoleMenu(false);
-                  }}
-                  className={`w-full text-left px-2 py-1 text-[11px] font-mono flex items-center justify-between rounded-sm ${
-                    currentRole === r ? 'bg-brand/10 text-brand font-bold' : 'text-theme-secondary hover:bg-theme-elevated'
-                  }`}
-                >
-                  <span>{r}</span>
-                  {currentRole === r && <span className="text-brand text-xs font-bold">✓</span>}
-                </button>
-              ))}
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Operator Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowRoleMenu(!showRoleMenu)}
+              className="flex items-center gap-2 bg-theme-panel border border-theme-border px-3 py-1 text-xs text-theme-primary hover:bg-theme-elevated font-mono rounded-md whitespace-nowrap"
+            >
+              <Shield className="w-3.5 h-3.5 text-brand" />
+              <span className="hidden md:inline truncate max-w-[130px] font-bold whitespace-nowrap">{currentRole.toUpperCase()}</span>
+              <ChevronDown className="w-3 h-3 text-theme-muted" />
+            </button>
+
+            {showRoleMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-theme-surface border border-theme-border shadow-2xl z-50 p-1.5 rounded-md">
+                <div className="text-[10px] font-mono text-theme-muted px-2 py-1 uppercase tracking-wider font-bold">
+                  Select Operator Role
+                </div>
+                {roles.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => {
+                      onRoleChange(r);
+                      setShowRoleMenu(false);
+                    }}
+                    className={`w-full text-left px-2 py-1.5 text-xs font-mono flex items-center justify-between rounded-md ${
+                      currentRole === r ? 'bg-brand/10 text-brand font-bold' : 'text-theme-secondary hover:bg-theme-elevated'
+                    }`}
+                  >
+                    <span>{r}</span>
+                    {currentRole === r && <span className="text-brand text-xs font-bold">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Model Inspector Modal */}
+      <ModelInspectorModal
+        isOpen={showModelInspector}
+        onClose={() => setShowModelInspector(false)}
+      />
+    </>
   );
 };

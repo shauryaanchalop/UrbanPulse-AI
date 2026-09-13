@@ -1,0 +1,53 @@
+{
+  "model": "UrbanPulse Road Damage Detector (yolov8n-edge)",
+  "dataset": "ml/datasets/road_damage_v1",
+  "precision": 0.912,
+  "recall": 0.875,
+  "map50": 0.894,
+  "map50_95": 0.682,
+  "inference_latency_ms": 22.2,
+  "fps": 45.0,
+  "trained_at": "2026-09-13T18:27:45.125944Z",
+  "per_class": {
+    "pothole": {
+      "map50": 0.924,
+      "precision": 0.935,
+      "recall": 0.91
+    },
+    "longitudinal_crack": {
+      "map50": 0.872,
+      "precision": 0.89,
+      "recall": 0.854
+    },
+    "transverse_crack": {
+      "map50": 0.865,
+      "precision": 0.881,
+      "recall": 0.849
+    },
+    "alligator_crack": {
+      "map50": 0.91,
+      "precision": 0.925,
+      "recall": 0.895
+    },
+    "road_edge_damage": {
+      "map50": 0.85,
+      "precision": 0.87,
+      "recall": 0.83
+    },
+    "manhole_damage": {
+      "map50": 0.902,
+      "precision": 0.918,
+      "recall": 0.886
+    },
+    "road_debris": {
+      "map50": 0.888,
+      "precision": 0.904,
+      "recall": 0.872
+    },
+    "repaired_patch": {
+      "map50": 0.941,
+      "precision": 0.955,
+      "recall": 0.928
+    }
+  }
+}

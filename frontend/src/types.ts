@@ -190,6 +190,9 @@ export interface WatchlistItem {
   validUntil: string;
   notes?: string;
   addedBy: string;
+  riskLevel?: string;
+  category?: string;
+  addedDate?: string;
 }
 
 export interface WatchlistMatch {
@@ -236,7 +239,7 @@ export interface DistressAlert {
   longitude: number;
   address: string;
   timestamp: string;
-  status: 'ACTIVE' | 'ACKNOWLEDGED' | 'DISPATCHED' | 'RESOLVED';
+  status: 'RECEIVED' | 'ACTIVE' | 'ACKNOWLEDGED' | 'DISPATCHED' | 'RESPONDING' | 'RESOLVED';
   mediaUrl?: string;
   nearestBusId?: string;
   nearestResponseUnit?: string;
@@ -302,6 +305,8 @@ export interface User {
   department: string;
   email: string;
   avatarUrl?: string;
+  status?: string;
+  createdDate?: string;
 }
 
 export interface AuditLog {
@@ -314,6 +319,7 @@ export interface AuditLog {
   details: string;
   timestamp: string;
   ipAddress: string;
+  operatorName?: string;
 }
 
 export interface SystemHealth {

@@ -53,9 +53,253 @@ export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('Command Center Operator');
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
+  // Initial Demo Road Defects
+  const DEMO_DEFECTS_INITIAL: RoadDefect[] = [
+    {
+      id: 'DEF-0001',
+      defectType: 'Pothole',
+      severity: 'Critical',
+      confidence: 0.96,
+      latitude: 18.5985,
+      longitude: 73.7621,
+      address: 'Wakad Flyover Ramp, Hinjawadi Road Corridor',
+      routeId: 'RT-101',
+      detectedByBusId: 'BUS-004',
+      firstSeen: '2026-09-10 08:30:00',
+      lastSeen: '2026-09-14 10:14:02',
+      timesConfirmed: 5,
+      status: 'Cross-verified',
+      priority: 'P1',
+      evidenceImageUrl: '/evidence/road_defect_1.jpg',
+      dimensionsEstimated: '75cm x 45cm, 12cm depth',
+      crossVerifyingBuses: ['BUS-004', 'BUS-012', 'BUS-022', 'BUS-045'],
+      segmentId: 'SEG-0012'
+    },
+    {
+      id: 'DEF-0002',
+      defectType: 'Surface Cracking',
+      severity: 'High',
+      confidence: 0.94,
+      latitude: 18.5583,
+      longitude: 73.8074,
+      address: 'Bremen Chowk, Aundh Main Arterial',
+      routeId: 'RT-101',
+      detectedByBusId: 'BUS-012',
+      firstSeen: '2026-09-11 11:20:00',
+      lastSeen: '2026-09-14 09:45:12',
+      timesConfirmed: 4,
+      status: 'Ticket Created',
+      priority: 'P2',
+      evidenceImageUrl: '/evidence/road_defect_2.jpg',
+      dimensionsEstimated: '220cm crevice length',
+      crossVerifyingBuses: ['BUS-012', 'BUS-018', 'BUS-033'],
+      segmentId: 'SEG-0045'
+    },
+    {
+      id: 'DEF-0003',
+      defectType: 'Pothole',
+      severity: 'Critical',
+      confidence: 0.98,
+      latitude: 18.5362,
+      longitude: 73.8301,
+      address: 'Pune University Circle North Underpass',
+      routeId: 'RT-101',
+      detectedByBusId: 'BUS-007',
+      firstSeen: '2026-09-08 14:15:00',
+      lastSeen: '2026-09-14 10:05:30',
+      timesConfirmed: 8,
+      status: 'Cross-verified',
+      priority: 'P1',
+      evidenceImageUrl: '/evidence/road_defect_3.jpg',
+      dimensionsEstimated: '90cm x 60cm, 15cm depth',
+      crossVerifyingBuses: ['BUS-007', 'BUS-014', 'BUS-029', 'BUS-051', 'BUS-078'],
+      segmentId: 'SEG-0089'
+    },
+    {
+      id: 'DEF-0004',
+      defectType: 'Waterlogging',
+      severity: 'High',
+      confidence: 0.91,
+      latitude: 18.5039,
+      longitude: 73.8288,
+      address: 'Deccan Gymkhana Karve Statue Junction',
+      routeId: 'RT-102',
+      detectedByBusId: 'BUS-015',
+      firstSeen: '2026-09-12 16:40:00',
+      lastSeen: '2026-09-14 08:20:15',
+      timesConfirmed: 3,
+      status: 'Reported',
+      priority: 'P2',
+      evidenceImageUrl: '/evidence/road_defect_4.jpg',
+      dimensionsEstimated: '4.5m x 2.1m submerged area',
+      crossVerifyingBuses: ['BUS-015', 'BUS-028'],
+      segmentId: 'SEG-0112'
+    },
+    {
+      id: 'DEF-0005',
+      defectType: 'Damaged Sign',
+      severity: 'Medium',
+      confidence: 0.89,
+      latitude: 18.5204,
+      longitude: 73.8567,
+      address: 'Pune Railway Station Bus Bay 3',
+      routeId: 'RT-102',
+      detectedByBusId: 'BUS-022',
+      firstSeen: '2026-09-13 09:10:00',
+      lastSeen: '2026-09-14 07:50:00',
+      timesConfirmed: 2,
+      status: 'Reported',
+      priority: 'P3',
+      evidenceImageUrl: '/evidence/road_defect_5.jpg',
+      dimensionsEstimated: 'Sign post tilted 35 degrees',
+      crossVerifyingBuses: ['BUS-022'],
+      segmentId: 'SEG-0145'
+    },
+    {
+      id: 'DEF-0006',
+      defectType: 'Broken Divider',
+      severity: 'High',
+      confidence: 0.95,
+      latitude: 18.5441,
+      longitude: 73.8862,
+      address: 'Yerawada Chowk Southbound Lane',
+      routeId: 'RT-102',
+      detectedByBusId: 'BUS-031',
+      firstSeen: '2026-09-09 12:00:00',
+      lastSeen: '2026-09-14 09:12:44',
+      timesConfirmed: 6,
+      status: 'Cross-verified',
+      priority: 'P1',
+      evidenceImageUrl: '/evidence/road_defect_6.jpg',
+      dimensionsEstimated: '3 concrete blocks dislodged',
+      crossVerifyingBuses: ['BUS-031', 'BUS-042', 'BUS-066'],
+      segmentId: 'SEG-0198'
+    },
+    {
+      id: 'DEF-0007',
+      defectType: 'Pothole',
+      severity: 'Critical',
+      confidence: 0.97,
+      latitude: 18.5679,
+      longitude: 73.9143,
+      address: 'Viman Nagar Phoenix Mall Frontage',
+      routeId: 'RT-102',
+      detectedByBusId: 'BUS-039',
+      firstSeen: '2026-09-07 07:45:00',
+      lastSeen: '2026-09-14 10:02:18',
+      timesConfirmed: 7,
+      status: 'Cross-verified',
+      priority: 'P1',
+      evidenceImageUrl: '/evidence/road_defect_7.jpg',
+      dimensionsEstimated: '85cm x 50cm, 14cm depth',
+      crossVerifyingBuses: ['BUS-039', 'BUS-058', 'BUS-071', 'BUS-092'],
+      segmentId: 'SEG-0234'
+    },
+    {
+      id: 'DEF-0008',
+      defectType: 'Missing Road Marking',
+      severity: 'Medium',
+      confidence: 0.88,
+      latitude: 18.4575,
+      longitude: 73.8588,
+      address: 'Katraj Bus Terminus Exit Loop',
+      routeId: 'RT-103',
+      detectedByBusId: 'BUS-048',
+      firstSeen: '2026-09-12 10:30:00',
+      lastSeen: '2026-09-14 06:40:00',
+      timesConfirmed: 2,
+      status: 'Ticket Created',
+      priority: 'P3',
+      evidenceImageUrl: '/evidence/road_defect_8.jpg',
+      dimensionsEstimated: '15m faded pedestrian zebra line',
+      crossVerifyingBuses: ['BUS-048'],
+      segmentId: 'SEG-0280'
+    },
+    {
+      id: 'DEF-0009',
+      defectType: 'Pothole',
+      severity: 'High',
+      confidence: 0.93,
+      latitude: 18.4791,
+      longitude: 73.8592,
+      address: 'Padmavati Corner Satara Road Spine',
+      routeId: 'RT-103',
+      detectedByBusId: 'BUS-055',
+      firstSeen: '2026-09-11 15:10:00',
+      lastSeen: '2026-09-14 09:30:22',
+      timesConfirmed: 4,
+      status: 'Cross-verified',
+      priority: 'P2',
+      evidenceImageUrl: '/evidence/road_defect_9.jpg',
+      dimensionsEstimated: '60cm x 40cm, 10cm depth',
+      crossVerifyingBuses: ['BUS-055', 'BUS-062', 'BUS-084'],
+      segmentId: 'SEG-0315'
+    },
+    {
+      id: 'DEF-0010',
+      defectType: 'Surface Cracking',
+      severity: 'Medium',
+      confidence: 0.86,
+      latitude: 18.5018,
+      longitude: 73.8586,
+      address: 'Swargate Multimodal Hub Bus Bay 1',
+      routeId: 'RT-103',
+      detectedByBusId: 'BUS-064',
+      firstSeen: '2026-09-13 11:00:00',
+      lastSeen: '2026-09-14 08:15:10',
+      timesConfirmed: 3,
+      status: 'Reported',
+      priority: 'P3',
+      evidenceImageUrl: '/evidence/road_defect_10.jpg',
+      dimensionsEstimated: '3.2m longitudinal pavement crack',
+      crossVerifyingBuses: ['BUS-064', 'BUS-079'],
+      segmentId: 'SEG-0360'
+    },
+    {
+      id: 'DEF-0011',
+      defectType: 'Pothole',
+      severity: 'Critical',
+      confidence: 0.99,
+      latitude: 18.5590,
+      longitude: 73.7868,
+      address: 'Baner High Street Commercial Entrance',
+      routeId: 'RT-104',
+      detectedByBusId: 'BUS-072',
+      firstSeen: '2026-09-06 18:20:00',
+      lastSeen: '2026-09-14 10:11:05',
+      timesConfirmed: 9,
+      status: 'Cross-verified',
+      priority: 'P1',
+      evidenceImageUrl: '/evidence/road_defect_11.jpg',
+      dimensionsEstimated: '110cm x 75cm, 16cm depth',
+      crossVerifyingBuses: ['BUS-072', 'BUS-081', 'BUS-089', 'BUS-097', 'BUS-104'],
+      segmentId: 'SEG-0410'
+    },
+    {
+      id: 'DEF-0012',
+      defectType: 'Pothole',
+      severity: 'High',
+      confidence: 0.92,
+      latitude: 18.5135,
+      longitude: 73.9312,
+      address: 'Hadapsar Magarpatta Cybercity Gate 2',
+      routeId: 'RT-105',
+      detectedByBusId: 'BUS-085',
+      firstSeen: '2026-09-10 14:00:00',
+      lastSeen: '2026-09-14 09:55:00',
+      timesConfirmed: 5,
+      status: 'Cross-verified',
+      priority: 'P2',
+      evidenceImageUrl: '/evidence/road_defect_12.jpg',
+      dimensionsEstimated: '65cm x 45cm, 9cm depth',
+      crossVerifyingBuses: ['BUS-085', 'BUS-093', 'BUS-101'],
+      segmentId: 'SEG-0475'
+    }
+  ];
+
   // Entities State
   const [buses, setBuses] = useState<Bus[]>([]);
-  const [defects, setDefects] = useState<RoadDefect[]>([]);
+  const [defects, setDefects] = useState<RoadDefect[]>(DEMO_DEFECTS_INITIAL);
   const [trafficEvents, setTrafficEvents] = useState<TrafficEvent[]>([]);
   const [incidents, setIncidents] = useState<SafetyIncident[]>([]);
   const [anprDetections, setAnprDetections] = useState<ANPRDetection[]>([]);
@@ -204,8 +448,13 @@ export function App() {
   };
 
   const handleLaunchCommand = () => {
-    setAppSurface('command');
-    window.location.hash = '#command';
+    if (!user) {
+      setAppSurface('login');
+      window.location.hash = '#login';
+    } else {
+      setAppSurface('command');
+      window.location.hash = '#command';
+    }
   };
 
   const handleNavigateHome = () => {
@@ -483,6 +732,7 @@ export function App() {
           setAppSurface('kiosk');
           window.location.hash = '#kiosk';
         }}
+        onNavigateTab={(tab) => setActiveTab(tab as any)}
       />
 
       {/* Main Workspace: Left Operational Rail + Main Content + Right Sliding Inspector */}
@@ -557,15 +807,19 @@ export function App() {
             <BusFleetView
               buses={buses}
               onSelectBus={handleSelectBus}
+              onAddBus={(newBus) => setBuses(prev => [newBus, ...prev])}
             />
           )}
+
 
           {activeTab === 'road-intelligence' && (
             <RoadIntelligenceView
               defects={defects}
               onSelectDefect={handleSelectDefect}
+              onAddDefect={(newDefect) => setDefects(prev => [newDefect, ...prev])}
             />
           )}
+
 
           {activeTab === 'traffic-intelligence' && (
             <TrafficIntelligenceView
@@ -578,8 +832,11 @@ export function App() {
               incidents={incidents}
               anprDetections={anprDetections}
               onSelectIncident={handleSelectIncident}
+              onAddIncident={(newInc) => setIncidents(prev => [newInc, ...prev])}
+              onAddANPR={(newANPR) => setAnprDetections(prev => [newANPR, ...prev])}
             />
           )}
+
 
           {activeTab === 'ai-perception' && (
             <AIPerceptionView />
@@ -589,8 +846,10 @@ export function App() {
             <MaintenanceTicketsView
               tickets={tickets}
               onTicketUpdated={loadInitialData}
+              onAddTicket={(newTkt) => setTickets(prev => [newTkt, ...prev])}
             />
           )}
+
 
           {activeTab === 'analytics' && (
             <AnalyticsView />

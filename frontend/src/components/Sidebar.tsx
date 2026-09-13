@@ -29,15 +29,34 @@ interface SidebarProps {
   onTabChange: (tab: NavTab) => void;
   openTicketsCount: number;
   criticalIncidentsCount: number;
+  userRole?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   onTabChange,
   openTicketsCount,
-  criticalIncidentsCount
+  criticalIncidentsCount,
+  userRole = 'MUNICIPAL OPERATOR'
 }) => {
-  const sections = [
+  const roleUpper = userRole.toUpperCase();
+
+  // Role filtering mapping
+  const roleAllowedTabs: Record<string, NavTab[]> = {
+    CITIZEN: ['citizen-portal'],
+    'FLEET OPERATOR': ['bus-fleet', 'live-vision', 'ai-perception', 'survey-missions'],
+    INVESTIGATOR: ['evidence-retrieval', 'safety-enforcement', 'womens-safety', 'city-map'],
+    'MUNICIPAL OPERATOR': ['command-center', 'city-map', 'road-intelligence', 'traffic-intelligence', 'safety-enforcement', 'maintenance-tickets', 'survey-missions', 'analytics'],
+    'SYSTEM ADMIN': ['admin-portal', 'command-center', 'city-map', 'bus-fleet', 'ai-perception', 'live-vision', 'road-intelligence', 'traffic-intelligence', 'safety-enforcement', 'womens-safety', 'evidence-retrieval', 'survey-missions', 'citizen-portal', 'maintenance-tickets', 'analytics', 'architecture', 'system-health']
+  };
+
+  const allowedTabs = (roleUpper.includes('CITIZEN') ? roleAllowedTabs.CITIZEN :
+                    roleUpper.includes('FLEET') ? roleAllowedTabs['FLEET OPERATOR'] :
+                    roleUpper.includes('INVESTIGATOR') || roleUpper.includes('POLICE') ? roleAllowedTabs.INVESTIGATOR :
+                    roleUpper.includes('ADMIN') ? roleAllowedTabs['SYSTEM ADMIN'] :
+                    roleAllowedTabs['MUNICIPAL OPERATOR']);
+
+  const allSections = [
     {
       title: 'PRIMARY PORTALS',
       items: [
@@ -89,12 +108,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   ];
 
+  // Filter sections by role allowed tabs
+  const sections = allSections.map(sec => ({
+    ...sec,
+    items: sec.items.filter(item => allowedTabs.includes(item.id))
+  })).filter(sec => sec.items.length > 0);
+
   return (
-    <aside className="w-52 bg-theme-surface border-r border-theme-border flex flex-col justify-between select-none shrink-0 font-sans transition-colors">
-      <div className="py-2 flex flex-col gap-3 overflow-y-auto">
+    <aside className="w-56 bg-theme-surface/95 backdrop-blur-md border-r border-theme-border flex flex-col justify-between select-none shrink-0 font-sans transition-all shadow-lg">
+      <div className="py-2 flex flex-col gap-2.5 overflow-y-auto">
+        {/* Role & Status Header */}
+        <div className="px-3 py-1.5 bg-brand/10 border-b border-theme-border flex items-center justify-between">
+          <span className="text-[10px] font-mono font-bold text-brand uppercase tracking-wider">{userRole}</span>
+          <span className="flex items-center gap-1 text-[9px] font-mono text-emerald-400 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            ACTIVE
+          </span>
+        </div>
+
+        {/* Edge AI Vision Model Card (Clickable to Access Model) */}
+        <button 
+          onClick={() => onTabChange('ai-perception')}
+          className="mx-2 p-2 bg-emerald-950/30 hover:bg-emerald-900/50 border border-emerald-500/40 hover:border-emerald-400 rounded-sm text-[10px] font-mono space-y-1 text-left transition-all cursor-pointer shadow-sm group"
+          title="Click to Access & Inspect Real YOLOv8 Edge ML Model"
+        >
+          <div className="flex justify-between items-center text-emerald-400 font-bold group-hover:text-emerald-300">
+            <span className="flex items-center gap-1">
+              <Cpu className="w-3 h-3 text-emerald-400 group-hover:scale-110 transition-transform" />
+              YOLOv8 EDGE ML
+            </span>
+            <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded-sm border border-emerald-500/40">89.4%</span>
+          </div>
+          <div className="text-[9px] text-theme-muted flex justify-between">
+            <span>Model: yolo8n-edge</span>
+            <span>45 FPS</span>
+          </div>
+        </button>
+
         {sections.map((sec, sIdx) => (
           <div key={sIdx} className="flex flex-col">
-            <div className="px-3 py-1 text-[9px] font-mono font-bold text-theme-muted uppercase tracking-wider">
+            <div className="px-3 py-1 text-[9px] font-mono font-bold text-theme-muted uppercase tracking-wider border-b border-theme-border/40 pb-0.5 mb-0.5">
               {sec.title}
             </div>
             {sec.items.map(item => {
@@ -105,24 +158,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onTabChange(item.id)}
-                  className={`flex items-center justify-between px-3 py-1.5 text-[11px] font-mono transition-colors text-left relative ${
+                  className={`flex items-center justify-between px-3 py-2 text-[11px] font-mono transition-all text-left relative group ${
                     isActive
-                      ? 'bg-theme-elevated text-theme-primary font-bold'
+                      ? 'bg-theme-elevated/90 text-theme-primary font-bold border-r-2 border-brand shadow-sm'
                       : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-elevated/60'
                   }`}
                 >
-                  {/* Subtle 2px Vertical Crimson Red Indicator */}
+                  {/* Vertical Crimson Red Glow Indicator */}
                   {isActive && (
-                    <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-brand"></span>
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-brand shadow-[0_0_8px_rgba(225,29,72,0.8)]"></span>
                   )}
 
-                  <div className="flex items-center gap-2 truncate">
-                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-brand' : 'text-theme-muted'}`} />
-                    <span className="truncate">{item.label}</span>
+                  <div className="flex items-center gap-2.5 truncate">
+                    <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${isActive ? 'text-brand scale-110' : 'text-theme-muted group-hover:text-theme-primary'}`} />
+                    <span className="truncate tracking-tight">{item.label}</span>
                   </div>
 
                   {item.badge !== undefined && (
-                    <span className={`text-[9px] font-mono px-1 py-0 border font-bold rounded-none ${item.badgeColor}`}>
+                    <span className={`text-[9px] font-mono px-1 py-0.5 border font-bold rounded-sm shadow-sm ${item.badgeColor}`}>
                       {item.badge}
                     </span>
                   )}
@@ -134,16 +187,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Operational Footer Info */}
-      <div className="p-2 border-t border-theme-border bg-theme-panel text-[10px] font-mono text-theme-muted flex flex-col gap-0.5">
-        <div className="flex justify-between items-center text-theme-secondary">
-          <span>EDGE CLUSTER</span>
-          <span className="text-emerald-500 font-semibold">32/32 ONLINE</span>
+      <div className="p-2.5 border-t border-theme-border bg-theme-panel text-[10px] font-mono text-theme-muted flex flex-col gap-1">
+        <div className="flex justify-between items-center text-theme-secondary font-semibold">
+          <span>ROLE SCOPE</span>
+          <span className="text-emerald-400 font-bold">{allowedTabs.length} MODULES</span>
         </div>
-        <div className="text-[9px] text-theme-muted truncate">
-          BUILD: 2026.1-PROD-RC
+        <div className="flex justify-between text-[9px] text-theme-muted">
+          <span>BUILD: 2026.1-PROD</span>
+          <span className="text-brand font-bold">SIH 2026</span>
         </div>
       </div>
     </aside>
   );
 };
-

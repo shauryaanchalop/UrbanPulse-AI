@@ -36,12 +36,16 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const { resolvedTheme } = useTheme();
 
+  // Trail history store for bus observation traces
+  const busTrailsRef = useRef<Record<string, Array<{ lat: number; lng: number; status: string; speed: number }>>>({});
+
   // Layer groups
   const busesLayer = useRef<L.LayerGroup>(L.layerGroup());
   const defectsLayer = useRef<L.LayerGroup>(L.layerGroup());
   const trafficLayer = useRef<L.LayerGroup>(L.layerGroup());
   const incidentsLayer = useRef<L.LayerGroup>(L.layerGroup());
   const routesLayer = useRef<L.LayerGroup>(L.layerGroup());
+  const busTrailsLayer = useRef<L.LayerGroup>(L.layerGroup());
   const highlightLayer = useRef<L.LayerGroup>(L.layerGroup());
 
   // Layer Toggles
@@ -51,6 +55,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     traffic: true,
     incidents: true,
     routes: true,
+    busTrails: true
   });
 
   const [filterSeverity, setFilterSeverity] = useState<string>('ALL');
@@ -75,7 +80,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         ? 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
         : 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png';
     }
-    // Default CARTO Basemaps API key endpoint
     const apiKeyParam = apiKey.trim() ? `?api_key=${apiKey.trim()}` : '';
     return isLight
       ? `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png${apiKeyParam}`
@@ -86,7 +90,17 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
-    // Center on Pune reference coordinates (18.534, 73.845)
+    // Restore persisted bus trails from localStorage or sessionStorage on reload if available
+    try {
+      const savedTrails = localStorage.getItem('urbanpulse_bus_trails') || sessionStorage.getItem('urbanpulse_bus_trails');
+      if (savedTrails) {
+        busTrailsRef.current = JSON.parse(savedTrails);
+      }
+    } catch (e) {
+      console.warn('[MapContainer] Failed to restore bus trails:', e);
+    }
+
+    // Center on Central Pune Metro Interchange Hub (Swargate / Deccan / Shivajinagar / Wakad corridor)
     const map = L.map(mapRef.current, {
       center: [18.534, 73.845],
       zoom: 12,
@@ -96,8 +110,10 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
     const initialUrl = getTileUrl(mapProvider, resolvedTheme, cartoKeyInput);
 
+    // FIXED: maxNativeZoom: 16 prevents "Map Data Not Available" error on zoom levels 17-19
     const tileLayer = L.tileLayer(initialUrl, {
       maxZoom: 19,
+      maxNativeZoom: 16,
       subdomains: 'abcd',
       attribution: '&copy; OpenStreetMap &copy; CARTO &copy; Esri'
     }).addTo(map);
@@ -109,6 +125,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
     // Add layer groups to map
     routesLayer.current.addTo(map);
+    busTrailsLayer.current.addTo(map);
     trafficLayer.current.addTo(map);
     defectsLayer.current.addTo(map);
     incidentsLayer.current.addTo(map);
@@ -138,7 +155,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     if (selectedItemCoordinates) {
       mapInstance.current.panTo([selectedItemCoordinates.lat, selectedItemCoordinates.lng], { animate: true });
 
-      // Focused pulsing highlight ring around selected entity
       const highlightMarker = L.circleMarker([selectedItemCoordinates.lat, selectedItemCoordinates.lng], {
         radius: 18,
         color: '#DC2626',
@@ -151,7 +167,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     }
   }, [selectedItemCoordinates]);
 
-  // Update Routes Layer
+  // Update Routes & Road Segment Health Layer (GREEN, YELLOW, ORANGE, RED segment-by-segment polylines)
   useEffect(() => {
     if (!mapInstance.current) return;
     routesLayer.current.clearLayers();
@@ -159,23 +175,214 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     if (!layersVisible.routes) return;
 
     routes.forEach(route => {
-      const latlngs = route.waypoints.map(wp => [wp.lat, wp.lng] as [number, number]);
-      const poly = L.polyline(latlngs, {
-        color: resolvedTheme === 'light' ? '#94A3B8' : '#374151',
-        weight: 1.5,
-        opacity: selectedItemCoordinates ? 0.25 : 0.6,
-        dashArray: '4, 4'
-      });
+      if (!route.waypoints || route.waypoints.length < 2) return;
 
-      poly.bindTooltip(`<span class="font-mono text-[10px]"><b>${route.id}</b>: ${route.name}</span>`, {
-        sticky: true
-      });
+      const routeDefects = defects.filter(d => d.routeId === route.id || d.address?.toLowerCase().includes(route.name.toLowerCase()));
 
-      routesLayer.current.addLayer(poly);
+      // Draw segment-by-segment polyline traces along route waypoints
+      for (let i = 0; i < route.waypoints.length - 1; i++) {
+        const wp1 = route.waypoints[i];
+        const wp2 = route.waypoints[i + 1];
+
+        // Find defects near this specific segment
+        const segDefects = routeDefects.filter(d => {
+          const dLat = d.latitude;
+          const dLng = d.longitude;
+          const minLat = Math.min(wp1.lat, wp2.lat) - 0.005;
+          const maxLat = Math.max(wp1.lat, wp2.lat) + 0.005;
+          const minLng = Math.min(wp1.lng, wp2.lng) - 0.005;
+          const maxLng = Math.max(wp1.lng, wp2.lng) + 0.005;
+          return dLat >= minLat && dLat <= maxLat && dLng >= minLng && dLng <= maxLng;
+        });
+
+        const hasCritical = segDefects.some(d => d.severity === 'Critical');
+        const hasHigh = segDefects.some(d => d.severity === 'High');
+        const hasDefects = segDefects.length > 0;
+
+        // Color coding for this specific road segment
+        const healthColor = hasCritical
+          ? '#DC2626' // RED = Critical Defect Segment
+          : hasHigh
+          ? '#F97316' // ORANGE = Attention Needed
+          : hasDefects
+          ? '#F59E0B' // YELLOW = Degrading Surface
+          : '#10B981'; // GREEN = Healthy Segment
+
+        const poly = L.polyline([[wp1.lat, wp1.lng], [wp2.lat, wp2.lng]], {
+          color: healthColor,
+          weight: hasCritical ? 5 : (hasHigh ? 4 : 3.5),
+          opacity: selectedItemCoordinates ? 0.4 : 0.9,
+          dashArray: hasCritical ? '6, 6' : undefined
+        });
+
+        const healthLabel = hasCritical ? 'CRITICAL DEFECT DETECTED' : (hasHigh ? 'ATTENTION NEEDED' : (hasDefects ? 'DEGRADED SURFACE' : 'OPTIMAL HEALTH'));
+
+        poly.bindTooltip(`
+          <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
+            <div style="font-weight: bold; color: ${healthColor};">${route.id}: ${route.name}</div>
+            <div>SEGMENT: <b>${wp1.name || 'Way-1'} → ${wp2.name || 'Way-2'}</b></div>
+            <div>STATUS: <b style="color: ${healthColor};">${healthLabel}</b></div>
+            <div>ACTIVE DEFECTS: <b>${segDefects.length}</b></div>
+          </div>
+        `, { sticky: true });
+
+        routesLayer.current.addLayer(poly);
+      }
     });
-  }, [routes, layersVisible.routes, resolvedTheme, selectedItemCoordinates]);
+  }, [routes, defects, layersVisible.routes, resolvedTheme, selectedItemCoordinates]);
 
-  // Update Buses Layer (● Bus)
+  // Update Bus Movement Trails & Detailed Pre-Seeded Observation Traces
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    busTrailsLayer.current.clearLayers();
+
+    // Accumulate or pre-seed high-density bus movement trace waypoints
+    buses.forEach(bus => {
+      const existingTrail = busTrailsRef.current[bus.id];
+
+      // Re-seed if no trail or trail has fewer than 4 detailed points
+      if (!existingTrail || existingTrail.length < 4) {
+        const assignedRoute = routes.find(r => r.id === bus.routeId);
+        const initialPoints: Array<{ lat: number; lng: number; status: string; speed: number }> = [];
+
+        if (assignedRoute && assignedRoute.waypoints && assignedRoute.waypoints.length >= 2) {
+          const wps = assignedRoute.waypoints;
+          // Interpolate dense intermediate breadcrumb points between waypoints
+          for (let k = 0; k < wps.length - 1; k++) {
+            const p1 = wps[k];
+            const p2 = wps[k + 1];
+            const steps = 3; // 3 sub-steps between route waypoints
+            for (let s = 0; s < steps; s++) {
+              const ratio = s / steps;
+              // Add slight realistic road curvature micro-offset
+              const latOffset = Math.sin(ratio * Math.PI) * 0.0004 * (k % 2 === 0 ? 1 : -1);
+              const lngOffset = Math.cos(ratio * Math.PI) * 0.0004 * (k % 2 === 0 ? -1 : 1);
+              initialPoints.push({
+                lat: p1.lat + (p2.lat - p1.lat) * ratio + latOffset,
+                lng: p1.lng + (p2.lng - p1.lng) * ratio + lngOffset,
+                status: bus.status,
+                speed: Math.max(12, Math.round(bus.speed + (Math.sin(k + s) * 10)))
+              });
+            }
+          }
+        }
+
+        // Add current bus position as the head of the trace
+        initialPoints.push({ lat: bus.latitude, lng: bus.longitude, status: bus.status, speed: bus.speed });
+
+        // Fallback: Ensure at least 4 distinct points so polyline renders detailed trajectory immediately
+        if (initialPoints.length < 4) {
+          const headingRad = ((bus.heading || 45) - 180) * (Math.PI / 180);
+          for (let bIdx = 3; bIdx >= 1; bIdx--) {
+            initialPoints.unshift({
+              lat: bus.latitude + (Math.cos(headingRad) * 0.0015 * bIdx),
+              lng: bus.longitude + (Math.sin(headingRad) * 0.0015 * bIdx),
+              status: bus.status,
+              speed: Math.max(10, Math.round(bus.speed - (bIdx * 4)))
+            });
+          }
+        }
+
+        busTrailsRef.current[bus.id] = initialPoints;
+      } else {
+        const lastPoint = existingTrail[existingTrail.length - 1];
+
+        if (!lastPoint || lastPoint.lat !== bus.latitude || lastPoint.lng !== bus.longitude) {
+          existingTrail.push({
+            lat: bus.latitude,
+            lng: bus.longitude,
+            status: bus.status,
+            speed: bus.speed
+          });
+          // Maintain a trailing history window of up to 30 detailed telemetry waypoints
+          if (existingTrail.length > 30) {
+            existingTrail.shift();
+          }
+        }
+      }
+    });
+
+    // Save updated bus trails to localStorage and sessionStorage for seamless reload persistence
+    try {
+      const trailJson = JSON.stringify(busTrailsRef.current);
+      sessionStorage.setItem('urbanpulse_bus_trails', trailJson);
+      localStorage.setItem('urbanpulse_bus_trails', trailJson);
+    } catch (e) {
+      console.warn('[MapContainer] Failed to save bus trails:', e);
+    }
+
+    if (!layersVisible.busTrails) return;
+
+    // Draw detailed high-visibility glowing observation movement traces for each active bus
+    Object.entries(busTrailsRef.current).forEach(([busId, trailPoints]) => {
+      if (trailPoints.length < 2) return;
+
+      const busObj = buses.find(b => b.id === busId);
+      const routeName = busObj ? busObj.routeName : 'Corridor Trace';
+
+      // 1. Draw segment-by-segment trace polylines with speed-based color coding
+      for (let i = 0; i < trailPoints.length - 1; i++) {
+        const pt1 = trailPoints[i];
+        const pt2 = trailPoints[i + 1];
+        const avgSpeed = (pt1.speed + pt2.speed) / 2;
+
+        // Color coding: Green = Smooth (>35km/h), Orange = Moderate (15-35km/h), Red = Slow/Congested (<15km/h)
+        const traceColor = avgSpeed > 35 ? '#10B981' : (avgSpeed >= 15 ? '#F59E0B' : '#EF4444');
+
+        // Outer Neon Glow Trace
+        const glowPoly = L.polyline([[pt1.lat, pt1.lng], [pt2.lat, pt2.lng]], {
+          color: traceColor,
+          weight: 6,
+          opacity: 0.40
+        });
+
+        // Inner Core Dash Polyline
+        const corePoly = L.polyline([[pt1.lat, pt1.lng], [pt2.lat, pt2.lng]], {
+          color: resolvedTheme === 'light' ? traceColor : '#F8FAFC',
+          weight: 2.8,
+          opacity: 0.95,
+          dashArray: '5, 5'
+        });
+
+        glowPoly.bindTooltip(`
+          <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
+            <div style="font-weight: bold; color: ${traceColor};">${busId} TELEMETRY TRACE</div>
+            <div>CORRIDOR: <b>${routeName}</b></div>
+            <div>SPEED: <b>${avgSpeed.toFixed(1)} km/h</b> • RTK GPS: <b>High Accuracy</b></div>
+            <div>EDGE SENSOR: <b>Jetson Orin AGX Active</b></div>
+          </div>
+        `, { sticky: true });
+
+        busTrailsLayer.current.addLayer(glowPoly);
+        busTrailsLayer.current.addLayer(corePoly);
+      }
+
+      // 2. Add breadcrumb telemetry dot markers along the trace for rich detail
+      trailPoints.forEach((pt, pIdx) => {
+        if (pIdx % 3 === 0 && pIdx < trailPoints.length - 1) { // Every 3rd breadcrumb point
+          const dotColor = pt.speed > 35 ? '#10B981' : (pt.speed >= 15 ? '#F59E0B' : '#EF4444');
+          const breadcrumbMarker = L.circleMarker([pt.lat, pt.lng], {
+            radius: 3,
+            color: dotColor,
+            weight: 1.5,
+            fillColor: '#FFFFFF',
+            fillOpacity: 0.9
+          });
+
+          breadcrumbMarker.bindTooltip(`
+            <div style="font-family: monospace; font-size: 9px;">
+              <b style="color: ${dotColor};">${busId} BREADCRUMB #${pIdx + 1}</b><br/>
+              Speed: ${pt.speed} km/h | 5G Latency: 4ms
+            </div>
+          `, { sticky: true });
+
+          busTrailsLayer.current.addLayer(breadcrumbMarker);
+        }
+      });
+    });
+  }, [buses, routes, layersVisible.busTrails, resolvedTheme]);
+
+  // Update Buses Layer
   useEffect(() => {
     if (!mapInstance.current) return;
     busesLayer.current.clearLayers();
@@ -194,7 +401,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
             <div style="width: 22px; height: 14px; background: ${resolvedTheme === 'light' ? '#FFFFFF' : '#0B0D0E'}; border: 1.5px solid ${isSelected ? '#DC2626' : statusColor}; border-radius: 2px; display:flex; align-items:center; justify-content:center; box-shadow: 0 1px 4px rgba(0,0,0,0.3);">
               <span style="font-family: monospace; font-size: 8px; font-weight: 700; color: ${resolvedTheme === 'light' ? '#111827' : '#F8FAFC'};">${bus.id.replace('BUS-', '')}</span>
             </div>
-            <!-- Heading indicator dot -->
             <div style="position:absolute; top: -2px; left: 10px; width: 4px; height: 4px; background: ${statusColor}; transform: rotate(${bus.heading}deg); transform-origin: 2px 11px;"></div>
           </div>
         `,
@@ -221,7 +427,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     });
   }, [buses, layersVisible.buses, selectedItemCoordinates, selectedId, resolvedTheme, onSelectBus]);
 
-  // Update Road Defects Layer (■ Road Event)
+  // Update Road Defects Layer
   useEffect(() => {
     if (!mapInstance.current) return;
     defectsLayer.current.clearLayers();
@@ -305,7 +511,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     });
   }, [trafficEvents, layersVisible.traffic, selectedItemCoordinates]);
 
-  // Update Safety Incidents Layer (▲ Safety / ◆ Incident)
+  // Update Safety Incidents Layer
   useEffect(() => {
     if (!mapInstance.current) return;
     incidentsLayer.current.clearLayers();
@@ -355,15 +561,31 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       {/* Top Right: Layer Controls HUD */}
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
         <button
+          onClick={() => {
+            if (!mapInstance.current || buses.length === 0) return;
+            const points = buses.map(b => [b.latitude, b.longitude] as [number, number]);
+            if (points.length > 0) {
+              const bounds = L.latLngBounds(points);
+              mapInstance.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+            }
+          }}
+          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2 py-1 text-[11px] font-mono text-emerald-400 hover:bg-theme-elevated rounded-sm shadow-md transition-colors font-bold cursor-pointer"
+          title="Fit view to all active bus movement traces"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>FIT TRACES ({buses.length})</span>
+        </button>
+
+        <button
           onClick={() => setShowLayerMenu(!showLayerMenu)}
-          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2 py-1 text-[11px] font-mono text-theme-primary hover:bg-theme-elevated rounded-sm shadow-md transition-colors"
+          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2 py-1 text-[11px] font-mono text-theme-primary hover:bg-theme-elevated rounded-sm shadow-md transition-colors cursor-pointer"
         >
           <Layers className="w-3 h-3 text-brand" />
           <span>LAYERS</span>
         </button>
 
         {showLayerMenu && (
-          <div className="absolute top-8 right-0 bg-theme-surface border border-theme-border p-2 z-20 w-44 flex flex-col gap-1 text-[11px] font-mono shadow-xl rounded-sm">
+          <div className="absolute top-8 right-0 bg-theme-surface border border-theme-border p-2 z-20 w-48 flex flex-col gap-1 text-[11px] font-mono shadow-xl rounded-sm">
             <div className="text-[9px] text-theme-muted pb-1 border-b border-theme-border uppercase font-bold">
               GIS Layer Visibility
             </div>
@@ -372,7 +594,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
               { key: 'defects', label: `DEFECTS (${defects.length})` },
               { key: 'traffic', label: 'CONGESTION' },
               { key: 'incidents', label: `SAFETY (${incidents.length})` },
-              { key: 'routes', label: 'ROUTES' },
+              { key: 'routes', label: 'ROAD HEALTH GRID' },
+              { key: 'busTrails', label: 'BUS TRACES' },
             ].map(l => (
               <label key={l.key} className="flex items-center gap-2 cursor-pointer py-0.5 hover:text-theme-primary text-theme-secondary">
                 <input
@@ -432,23 +655,31 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         )}
       </div>
 
-      {/* Bottom Left: Compact Professional Operational Legend */}
-      <div className="absolute bottom-2 left-2 z-10 bg-theme-surface/95 backdrop-blur-sm border border-theme-border px-2.5 py-1 text-[10px] font-mono text-theme-secondary flex items-center gap-3 rounded-sm shadow-md">
+      {/* Bottom Left: Operational Road Health Legend */}
+      <div className="absolute bottom-2 left-2 z-10 bg-theme-surface/95 backdrop-blur-sm border border-theme-border px-3 py-1.5 text-[10px] font-mono text-theme-secondary flex items-center gap-3 rounded-sm shadow-md">
         <div className="flex items-center gap-1">
+          <span className="w-2.5 h-1 bg-emerald-500 inline-block"></span>
+          <span>Healthy</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-1 bg-amber-500 inline-block"></span>
+          <span>Degrading</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-1 bg-orange-500 inline-block"></span>
+          <span>Attention</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-1 bg-red-600 inline-block"></span>
+          <span>Critical</span>
+        </div>
+        <div className="flex items-center gap-1 pl-2 border-l border-theme-border">
           <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
           <span>Bus</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-none bg-amber-500 inline-block"></span>
-          <span>Road Event</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 bg-brand inline-block rotate-45"></span>
-          <span>Incident</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 bg-emerald-400 inline-block"></span>
-          <span className="text-emerald-500 font-bold">✓ Verified</span>
+          <span className="w-2.5 h-0.5 border-b border-dashed border-emerald-400 inline-block"></span>
+          <span className="text-emerald-400">Trace</span>
         </div>
       </div>
     </div>
