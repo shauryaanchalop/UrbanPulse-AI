@@ -1,0 +1,13 @@
+{
+  "name": "urbanpulse-ai",
+  "version": "2.0.0",
+  "private": true,
+  "description": "UrbanPulse AI - Smart India Hackathon 2026 Master Prototype",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "cd backend && python -m uvicorn main:app --reload --port 8000",
+    "build": "npm --prefix frontend run build",
+    "install:all": "npm --prefix frontend install"
+  }
+}
