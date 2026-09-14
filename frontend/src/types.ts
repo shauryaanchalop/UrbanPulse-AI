@@ -307,6 +307,7 @@ export interface User {
   avatarUrl?: string;
   status?: string;
   createdDate?: string;
+  token?: string;
 }
 
 export interface AuditLog {

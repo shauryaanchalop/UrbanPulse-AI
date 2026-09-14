@@ -124,7 +124,7 @@ async def websocket_endpoint(websocket: WebSocket):
 # ================= AUTHENTICATION & DEMO ROLES =================
 
 @app.post("/api/auth/login")
-def login(payload: Dict[str, Any] = Body(...)):
+def login(payload: Dict[str, Any] = Body(default={})):
     username_or_email = payload.get("username", payload.get("email", ""))
     password = payload.get("password", "")
     user = authenticate_user(DB_PATH, username_or_email, password)
@@ -133,7 +133,7 @@ def login(payload: Dict[str, Any] = Body(...)):
     return user
 
 @app.post("/api/auth/demo-login")
-def demo_login(payload: Dict[str, Any] = Body(...)):
+def demo_login(payload: Dict[str, Any] = Body(default={})):
     role_key = payload.get("role", "operator").lower().strip()
     if role_key not in DEMO_ACCOUNTS:
         role_key = "operator"

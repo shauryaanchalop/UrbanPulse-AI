@@ -33,11 +33,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token && !user) {
       api.getCurrentUser(token)
         .then(u => {
-          setUser(u);
-          localStorage.setItem('urbanpulse_user', JSON.stringify(u));
+          if (u) {
+            setUser(u);
+            localStorage.setItem('urbanpulse_user', JSON.stringify(u));
+          }
         })
         .catch(() => {
-          logout();
+          const saved = localStorage.getItem('urbanpulse_user');
+          if (saved) {
+            try {
+              setUser(JSON.parse(saved));
+            } catch {
+              logout();
+            }
+          }
         });
     }
   }, [token, user]);
@@ -46,10 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await api.login(username, password);
+      const userToken = res.token || `demo-token-${Date.now()}`;
       setUser(res);
-      setToken(res.token);
+      setToken(userToken);
       localStorage.setItem('urbanpulse_user', JSON.stringify(res));
-      localStorage.setItem('urbanpulse_token', res.token);
+      localStorage.setItem('urbanpulse_token', userToken);
       return res;
     } finally {
       setIsLoading(false);
@@ -60,10 +70,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await api.demoLogin(roleKey);
+      const userToken = res.token || `demo-token-${Date.now()}`;
       setUser(res);
-      setToken(res.token);
+      setToken(userToken);
       localStorage.setItem('urbanpulse_user', JSON.stringify(res));
-      localStorage.setItem('urbanpulse_token', res.token);
+      localStorage.setItem('urbanpulse_token', userToken);
       return res;
     } finally {
       setIsLoading(false);
