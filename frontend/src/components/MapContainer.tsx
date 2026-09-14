@@ -559,7 +559,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
               mapInstance.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
             }
           }}
-          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2 py-1 text-[11px] font-mono text-emerald-400 hover:bg-theme-elevated rounded-sm shadow-md transition-colors font-bold cursor-pointer"
+          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2.5 py-1 text-xs font-sans text-emerald-400 hover:bg-theme-elevated rounded-sm shadow-md transition-colors font-bold cursor-pointer"
           title="Fit view to all active bus movement traces"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -568,15 +568,15 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
         <button
           onClick={() => setShowLayerMenu(!showLayerMenu)}
-          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2 py-1 text-[11px] font-mono text-theme-primary hover:bg-theme-elevated rounded-sm shadow-md transition-colors cursor-pointer"
+          className="flex items-center gap-1 bg-theme-surface border border-theme-border px-2.5 py-1 text-xs font-sans text-theme-primary hover:bg-theme-elevated rounded-sm shadow-md transition-colors cursor-pointer font-semibold"
         >
-          <Layers className="w-3 h-3 text-brand" />
+          <Layers className="w-3.5 h-3.5 text-brand" />
           <span>LAYERS</span>
         </button>
 
         {showLayerMenu && (
-          <div className="absolute top-8 right-0 bg-theme-surface border border-theme-border p-2 z-20 w-48 flex flex-col gap-1 text-[11px] font-mono shadow-xl rounded-sm">
-            <div className="text-[9px] text-theme-muted pb-1 border-b border-theme-border uppercase font-bold">
+          <div className="absolute top-8 right-0 bg-theme-surface border border-theme-border p-3 z-20 w-52 flex flex-col gap-1.5 text-xs font-sans shadow-xl rounded-sm">
+            <div className="text-[10px] text-theme-muted pb-1 border-b border-theme-border uppercase font-bold tracking-wider">
               GIS Layer Visibility
             </div>
             {[
@@ -598,13 +598,13 @@ export const MapContainer: React.FC<MapContainerProps> = ({
               </label>
             ))}
 
-            <div className="text-[9px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold">
+            <div className="text-[10px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold tracking-wider">
               Basemap Provider
             </div>
             <select
               value={mapProvider}
               onChange={(e) => setMapProvider(e.target.value as any)}
-              className="w-full bg-theme-bg border border-theme-border text-theme-primary text-[10px] p-1 font-mono rounded-none focus:outline-none focus:border-brand"
+              className="w-full bg-theme-bg border border-theme-border text-theme-primary text-xs p-1 font-sans rounded-none focus:outline-none focus:border-brand"
             >
               <option value="esri">Esri Canvas (Clean HD)</option>
               <option value="carto-cdn">CartoDB CDN (Free)</option>
@@ -614,18 +614,18 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
             {mapProvider === 'carto' && (
               <div className="flex flex-col gap-1 pt-1">
-                <div className="text-[8px] text-theme-muted uppercase font-mono">CARTO API Key</div>
+                <div className="text-[9px] text-theme-muted uppercase font-sans">CARTO API Key</div>
                 <input
                   type="text"
                   value={cartoKeyInput}
                   onChange={(e) => setCartoKeyInput(e.target.value)}
                   placeholder="Enter CARTO key..."
-                  className="w-full bg-theme-bg border border-theme-border text-theme-primary text-[9px] px-1 py-0.5 font-mono rounded-none focus:outline-none focus:border-brand"
+                  className="w-full bg-theme-bg border border-theme-border text-theme-primary text-xs px-1.5 py-0.5 font-sans rounded-none focus:outline-none focus:border-brand"
                 />
               </div>
             )}
 
-            <div className="text-[9px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold">
+            <div className="text-[10px] text-theme-muted pt-1 border-t border-theme-border uppercase mt-1 font-bold tracking-wider">
               Severity Filter
             </div>
             <div className="flex gap-1 pt-0.5">
@@ -633,7 +633,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
                 <button
                   key={sev}
                   onClick={() => setFilterSeverity(sev)}
-                  className={`px-1.5 py-0.5 text-[9px] border rounded-none ${
+                  className={`px-2 py-0.5 text-xs border rounded-none font-sans ${
                     filterSeverity === sev ? 'bg-brand/15 border-brand text-brand font-bold' : 'border-theme-border text-theme-muted'
                   }`}
                 >
@@ -646,7 +646,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       </div>
 
       {/* Bottom Left: Operational Road Health Legend */}
-      <div className="absolute bottom-2 left-2 z-10 bg-theme-surface/95 backdrop-blur-sm border border-theme-border px-3 py-1.5 text-[10px] font-mono text-theme-secondary flex items-center gap-3 rounded-sm shadow-md">
+      <div className="absolute bottom-2 left-2 z-10 bg-theme-surface/95 backdrop-blur-sm border border-theme-border px-3 py-1.5 text-xs font-sans text-theme-secondary flex items-center gap-3 rounded-sm shadow-md">
         <div className="flex items-center gap-1">
           <span className="w-2.5 h-1 bg-emerald-500 inline-block"></span>
           <span>Healthy</span>

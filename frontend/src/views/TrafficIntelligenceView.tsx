@@ -37,16 +37,16 @@ export const TrafficIntelligenceView: React.FC<TrafficIntelligenceViewProps> = (
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-mono text-xs select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-sans text-xs select-none">
       {/* Top Corridor Telemetry Strip */}
-      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0">
+      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 font-sans">
         <span className="font-bold text-theme-primary">ARTERIAL CORRIDOR TRAFFIC & VELOCITY METRICS</span>
-        <div className="flex items-center gap-3 text-[11px] text-graphite-400">
-          <span>AGGREGATED VEHICLES: <strong className="text-theme-primary font-mono">18,420</strong></span>
+        <div className="flex items-center gap-3 text-[11px] text-graphite-400 font-sans">
+          <span>AGGREGATED VEHICLES: <strong className="text-theme-primary font-sans font-bold">18,420</strong></span>
           <span>|</span>
-          <span>CORRIDOR CHOKE POINTS: <strong className="text-brand font-mono">8</strong></span>
+          <span>CORRIDOR CHOKE POINTS: <strong className="text-brand font-sans font-bold">8</strong></span>
           <span>|</span>
-          <span>AVERAGE VELOCITY: <strong className="text-emerald-500 font-mono">26.4 KM/H</strong></span>
+          <span>AVERAGE VELOCITY: <strong className="text-emerald-500 font-sans font-bold">26.4 KM/H</strong></span>
         </div>
       </div>
 

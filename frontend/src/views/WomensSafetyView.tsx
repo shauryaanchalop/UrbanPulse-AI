@@ -109,15 +109,15 @@ export function WomensSafetyView({ buses = [], incidents = [] }: WomensSafetyVie
         <div>
           <div className="flex items-center space-x-2">
             <ShieldAlert className="w-5 h-5 text-brand" />
-            <h1 className="text-xl font-bold tracking-tight text-theme-primary font-mono">WOMEN'S SAFETY & DISTRESS PORTAL</h1>
+            <h1 className="text-xl font-bold tracking-tight text-theme-primary font-sans">WOMEN'S SAFETY & DISTRESS PORTAL</h1>
           </div>
-          <p className="text-xs text-theme-secondary font-mono mt-1">
+          <p className="text-xs text-theme-secondary font-sans mt-1">
             Real-time distress alert aggregation, mobile bus camera visual tracking, and response unit dispatch.
           </p>
         </div>
         <button
           onClick={handleCreateEmergency}
-          className="px-4 py-2 bg-brand hover:bg-brand-hover text-white font-bold font-mono text-xs rounded-sm shadow-md flex items-center space-x-2 transition-colors animate-pulse uppercase tracking-wider"
+          className="px-4 py-2 bg-brand hover:bg-brand-hover text-white font-bold font-sans text-xs rounded-sm shadow-md flex items-center space-x-2 transition-colors animate-pulse uppercase tracking-wider"
         >
           <Radio className="w-4 h-4" />
           <span>TRIGGER DEMO DISTRESS ALERT</span>
@@ -127,15 +127,15 @@ export function WomensSafetyView({ buses = [], incidents = [] }: WomensSafetyVie
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Alerts Feed (1 col) */}
-        <div className="space-y-3 font-mono">
-          <h3 className="text-xs font-bold text-theme-muted uppercase tracking-wider">
+        <div className="space-y-3 font-sans">
+          <h3 className="text-xs font-bold text-theme-muted uppercase tracking-wider font-sans">
             ACTIVE DISTRESS ALERTS ({alerts.length})
           </h3>
           {alerts.map((alt) => (
             <div
               key={alt.id}
               onClick={() => setSelectedAlert(alt)}
-              className={`p-4 rounded-sm border cursor-pointer transition-all space-y-2 text-xs ${
+              className={`p-4 rounded-sm border cursor-pointer transition-all space-y-2 text-xs font-sans ${
                 selectedAlert?.id === alt.id
                   ? 'bg-brand/10 border-brand'
                   : 'bg-theme-surface border-theme-border hover:bg-theme-elevated'
@@ -143,10 +143,10 @@ export function WomensSafetyView({ buses = [], incidents = [] }: WomensSafetyVie
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-bold text-theme-primary">#{alt.alertCode}</h4>
-                  <p className="text-[11px] text-theme-muted">{alt.category} • {alt.timestamp}</p>
+                  <h4 className="font-bold text-theme-primary font-sans">#{alt.alertCode}</h4>
+                  <p className="text-[11px] text-theme-muted font-sans">{alt.category} • {alt.timestamp}</p>
                 </div>
-                <span className={`px-2 py-0.5 rounded-none text-[10px] font-bold ${
+                <span className={`px-2 py-0.5 rounded-none text-[10px] font-bold font-sans ${
                   alt.status === 'RECEIVED' ? 'bg-red-500/20 text-red-500 animate-pulse' :
                   alt.status === 'ACKNOWLEDGED' ? 'bg-amber-500/20 text-amber-500' :
                   alt.status === 'RESPONDING' ? 'bg-sky-500/20 text-sky-500' : 'bg-emerald-500/20 text-emerald-500'
@@ -155,7 +155,7 @@ export function WomensSafetyView({ buses = [], incidents = [] }: WomensSafetyVie
                 </span>
               </div>
               <p className="text-theme-secondary font-sans">{alt.address}</p>
-              <div className="pt-2 border-t border-theme-border flex justify-between items-center text-[10px] text-theme-muted">
+              <div className="pt-2 border-t border-theme-border flex justify-between items-center text-[10px] text-theme-muted font-sans">
                 <span>Bus Sensor: <strong className="text-theme-primary">{alt.nearestBusId || 'BUS-004'}</strong></span>
                 <span>Response: <strong className="text-theme-primary">{alt.nearestResponseUnit || 'PCR #12'}</strong></span>
               </div>
@@ -165,23 +165,23 @@ export function WomensSafetyView({ buses = [], incidents = [] }: WomensSafetyVie
 
         {/* Right Column: Alert Detail Workspace (2 cols) */}
         {selectedAlert && (
-          <div className="lg:col-span-2 space-y-4 font-mono text-xs">
+          <div className="lg:col-span-2 space-y-4 font-sans text-xs">
             <div className="bg-theme-surface border border-theme-border rounded-sm p-5 space-y-4">
               <div className="flex justify-between items-center border-b border-theme-border pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-theme-primary">Emergency Incident #{selectedAlert.alertCode}</h3>
-                  <p className="text-theme-muted text-[11px]">{selectedAlert.address} ({selectedAlert.latitude}, {selectedAlert.longitude})</p>
+                  <h3 className="text-base font-bold text-theme-primary font-sans">Emergency Incident #{selectedAlert.alertCode}</h3>
+                  <p className="text-theme-muted text-[11px] font-sans">{selectedAlert.address} ({selectedAlert.latitude}, {selectedAlert.longitude})</p>
                 </div>
                 <div className="flex space-x-2">
                   <button 
                     onClick={() => handleUpdateStatus('ACKNOWLEDGED')}
-                    className="px-3 py-1.5 bg-theme-panel hover:bg-theme-elevated border border-theme-border text-theme-primary font-bold rounded-sm text-xs"
+                    className="px-3 py-1.5 bg-theme-panel hover:bg-theme-elevated border border-theme-border text-theme-primary font-bold rounded-sm text-xs font-sans"
                   >
                     ACKNOWLEDGE
                   </button>
                   <button 
                     onClick={() => handleUpdateStatus('RESPONDING')}
-                    className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-sm text-xs shadow-md"
+                    className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-sm text-xs shadow-md font-sans"
                   >
                     DISPATCH PCR UNIT
                   </button>

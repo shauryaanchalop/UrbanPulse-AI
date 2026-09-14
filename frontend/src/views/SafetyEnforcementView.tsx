@@ -301,10 +301,10 @@ export const SafetyEnforcementView: React.FC<SafetyEnforcementViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-mono select-none text-xs">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-sans select-none text-xs">
       {/* Notification Toast */}
       {notification && (
-        <div className="bg-red-950/90 border-b border-red-500/40 text-red-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0">
+        <div className="bg-red-950/90 border-b border-red-500/40 text-red-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0 font-sans">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-red-400 animate-pulse" />
             <span>{notification}</span>
@@ -314,16 +314,16 @@ export const SafetyEnforcementView: React.FC<SafetyEnforcementViewProps> = ({
       )}
 
       {/* Top Header & Sub-Nav */}
-      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 gap-2">
+      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 gap-2 font-sans">
         <div className="flex items-center gap-3">
-          <span className="font-bold text-theme-primary flex items-center gap-1.5">
+          <span className="font-bold text-theme-primary flex items-center gap-1.5 font-sans">
             <ShieldAlert className="w-4 h-4 text-brand" />
             TRANSIT SAFETY & ANPR ENFORCEMENT
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setActiveTab('incidents')}
-              className={`px-2.5 py-1 text-[11px] border rounded-none ${
+              className={`px-2.5 py-1 text-[11px] border rounded-none font-sans ${
                 activeTab === 'incidents' ? 'bg-graphite-700 text-theme-primary font-bold border-graphite-600' : 'bg-graphite-950 text-graphite-400 border-graphite-700 hover:bg-graphite-800'
               }`}
             >
@@ -331,7 +331,7 @@ export const SafetyEnforcementView: React.FC<SafetyEnforcementViewProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('anpr')}
-              className={`px-2.5 py-1 text-[11px] border rounded-none ${
+              className={`px-2.5 py-1 text-[11px] border rounded-none font-sans ${
                 activeTab === 'anpr' ? 'bg-graphite-700 text-theme-primary font-bold border-graphite-600' : 'bg-graphite-950 text-graphite-400 border-graphite-700 hover:bg-graphite-800'
               }`}
             >

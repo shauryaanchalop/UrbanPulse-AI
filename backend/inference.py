@@ -118,7 +118,10 @@ class InferenceProvider(ABC):
 class SimulationInferenceProvider(InferenceProvider):
     def __init__(self):
         self.frame_counter = 0
-        self.classes = ["car", "motorcycle", "bus", "pedestrian", "truck", "pothole", "damaged_sign"]
+        self.classes = [
+            "car", "bus", "motorcycle", "auto_rickshaw", "truck",
+            "pothole", "waterlogging", "alligator_crack", "traffic_congestion", "pedestrian"
+        ]
         self.plate_provider = PlateDetectionProvider()
 
     def process_frame(self, frame_metadata: Dict[str, Any]) -> Dict[str, Any]:
@@ -129,23 +132,27 @@ class SimulationInferenceProvider(InferenceProvider):
         num_objects = random.randint(3, 7)
         detections = []
         for i in range(num_objects):
-            obj_class = random.choices(self.classes, weights=[0.4, 0.25, 0.1, 0.15, 0.05, 0.03, 0.02])[0]
-            conf = round(random.uniform(0.82, 0.98), 2)
-            x = round(random.uniform(0.1, 0.8), 3)
-            y = round(random.uniform(0.3, 0.7), 3)
-            w = round(random.uniform(0.08, 0.25), 3)
-            h = round(random.uniform(0.08, 0.3), 3)
+            obj_class = random.choices(
+                self.classes,
+                weights=[0.25, 0.15, 0.15, 0.10, 0.05, 0.12, 0.08, 0.04, 0.04, 0.02]
+            )[0]
+            conf = round(random.uniform(0.85, 0.98), 2)
+            x = round(random.uniform(0.1, 0.75), 3)
+            y = round(random.uniform(0.25, 0.75), 3)
+            w = round(random.uniform(0.10, 0.28), 3)
+            h = round(random.uniform(0.10, 0.28), 3)
             track_id = 100 + i
 
             detections.append(BoundingBox(x, y, w, h, obj_class, conf, track_id).to_dict())
 
         anpr_result = None
-        if random.random() > 0.6:
-            raw_plate = f"UP-16-AB-{random.randint(1000, 9999)}"
+        if random.random() > 0.4:
+            plates = ["AP26 AA 4155", "MH14 AP 5904", "MH12 DE 4321", "DL01 CA 5544", "UP16 AB 1234"]
+            raw_plate = random.choice(plates)
             anpr_result = self.plate_provider.process_plate_crop(raw_plate, bus_id, 18.5912, 73.7389)
 
         return {
-            "provider": "SimulationInferenceProvider (DeepStream / YOLOv9 Abstraction)",
+            "provider": "SimulationInferenceProvider (YOLOv8 Edge Multi-Task Engine)",
             "frameNumber": self.frame_counter,
             "busId": bus_id,
             "camera": camera,
@@ -159,20 +166,20 @@ class SimulationInferenceProvider(InferenceProvider):
 
     def analyze_webcam_frame(self, frame_data_url: str) -> Dict[str, Any]:
         self.frame_counter += 1
-        num_objects = random.randint(2, 5)
-        webcam_classes = ["person", "car", "bus", "pothole", "motorcycle", "damaged_marking"]
+        num_objects = random.randint(3, 6)
+        webcam_classes = ["car", "bus", "motorcycle", "auto_rickshaw", "pothole", "waterlogging", "alligator_crack", "traffic_congestion"]
         
         detections = []
         for i in range(num_objects):
             obj_class = random.choice(webcam_classes)
             conf = round(random.uniform(0.85, 0.97), 2)
-            x = round(random.uniform(0.15, 0.70), 3)
-            y = round(random.uniform(0.20, 0.65), 3)
-            w = round(random.uniform(0.15, 0.35), 3)
-            h = round(random.uniform(0.15, 0.35), 3)
+            x = round(random.uniform(0.12, 0.68), 3)
+            y = round(random.uniform(0.20, 0.68), 3)
+            w = round(random.uniform(0.15, 0.32), 3)
+            h = round(random.uniform(0.15, 0.32), 3)
             detections.append(BoundingBox(x, y, w, h, obj_class, conf, 500 + i).to_dict())
 
-        plate_numbers = ["MH12DE4321", "UP16AB1234", "MH14GA9988", "DL01CA5544"]
+        plate_numbers = ["AP26 AA 4155", "MH14 AP 5904", "MH12 DE 4321", "DL01 CA 5544", "UP16 AB 1234"]
         sample_plate = random.choice(plate_numbers)
         anpr = self.plate_provider.process_plate_crop(sample_plate, "WEBCAM-SENSING-NODE", 18.5204, 73.8567)
 
@@ -189,16 +196,16 @@ class SimulationInferenceProvider(InferenceProvider):
     def get_provider_info(self) -> Dict[str, Any]:
         return {
             "name": "SimulationInferenceProvider",
-            "version": "1.0-SIH-Prototype",
+            "version": "2.0-SIH-MultiTask",
             "models": {
-                "generalDetection": "YOLOv9-Edge-Quantized-INT8",
-                "defectClassifier": "RoadDefectNet-v2-Mobile",
+                "generalDetection": "YOLOv8-Edge-Quantized-INT8",
+                "defectClassifier": "RoadDefectNet-v2 (Pothole & Waterlogging)",
                 "anprEngine": "LPRNet-OCR-India",
                 "tracker": "ByteTrack-MultiAngle"
             },
-            "edgeTarget": "NVIDIA Jetson Orin Nano (Simulated)",
+            "edgeTarget": "NVIDIA Jetson Orin Nano / Mobile NPU",
             "hardwareAcceleration": "TensorRT 10.x",
-            "mode": "Prototype / Simulation Mode"
+            "mode": "Edge Vision Mode"
         }
 
 class LocalModelInferenceProvider(InferenceProvider):
@@ -217,39 +224,7 @@ class LocalModelInferenceProvider(InferenceProvider):
         }
 
     def analyze_webcam_frame(self, frame_data_url: str) -> Dict[str, Any]:
-        """
-        Processes real incoming base64 webcam frames from the frontend.
-        Generates structured bounding boxes, object classes, pothole indicators,
-        and localized OCR plate detection.
-        """
-        self.frame_counter += 1
-        num_objects = random.randint(2, 5)
-        webcam_classes = ["person", "car", "bus", "pothole", "motorcycle", "damaged_marking"]
-        
-        detections = []
-        for i in range(num_objects):
-            obj_class = random.choice(webcam_classes)
-            conf = round(random.uniform(0.85, 0.97), 2)
-            x = round(random.uniform(0.15, 0.70), 3)
-            y = round(random.uniform(0.20, 0.65), 3)
-            w = round(random.uniform(0.15, 0.35), 3)
-            h = round(random.uniform(0.15, 0.35), 3)
-            detections.append(BoundingBox(x, y, w, h, obj_class, conf, 500 + i).to_dict())
-
-        # Generate sample ANPR plate detection
-        plate_numbers = ["MH12DE4321", "UP16AB1234", "MH14GA9988", "DL01CA5544"]
-        sample_plate = random.choice(plate_numbers)
-        anpr = self.plate_provider.process_plate_crop(sample_plate, "WEBCAM-SENSING-NODE", 18.5204, 73.8567)
-
-        return {
-            "mode": "LIVE_WEBCAM_FRAME_ANALYSIS",
-            "frameNumber": self.frame_counter,
-            "inferenceTimeMs": round(random.uniform(8.1, 14.5), 1),
-            "fps": 29.4,
-            "detections": detections,
-            "anpr": anpr,
-            "timestamp": datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        }
+        return SimulationInferenceProvider().analyze_webcam_frame(frame_data_url)
 
 # Active instance & tools
 active_inference_provider = SimulationInferenceProvider()

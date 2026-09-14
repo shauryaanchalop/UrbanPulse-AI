@@ -183,8 +183,8 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   ].filter(a => !q || a.title.toLowerCase().includes(q));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/70 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="bg-theme-surface border border-theme-border w-full max-w-2xl shadow-2xl rounded-sm overflow-hidden flex flex-col font-mono text-xs">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/70 backdrop-blur-sm p-4 animate-fadeIn font-sans">
+      <div className="bg-theme-surface border border-theme-border w-full max-w-2xl shadow-2xl rounded-sm overflow-hidden flex flex-col font-sans text-xs">
         {/* Search Input Bar */}
         <div className="h-12 px-3 border-b border-theme-border flex items-center gap-2.5 bg-theme-panel">
           <Search className="w-4 h-4 text-theme-muted shrink-0" />

@@ -30,7 +30,7 @@ export const CityMapView: React.FC<CityMapViewProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden select-none">
       {/* Top Telemetry Status Header */}
-      <div className="h-8 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between text-xs font-mono shrink-0">
+      <div className="h-8 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between text-xs font-sans shrink-0">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 bg-brand"></span>
           <span className="font-bold text-slate-200">LIVE GEOSPATIAL TRANSIT MAPPING (LEAFLET GIS)</span>

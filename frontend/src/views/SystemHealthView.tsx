@@ -19,14 +19,14 @@ export const SystemHealthView: React.FC<SystemHealthViewProps> = ({ health }) =>
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-mono text-xs select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-sans text-xs select-none">
       {/* Top Header */}
-      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0">
+      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 font-sans">
         <div className="flex items-center gap-2">
           <HeartPulse className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200">ICCC INFRASTRUCTURE DIAGNOSTICS & TELEMETRY HEALTH</span>
         </div>
-        <span className="text-[10px] text-emerald-400 font-bold">ALL SYSTEMS OPERATIONAL</span>
+        <span className="text-[10px] text-emerald-400 font-bold font-sans">ALL SYSTEMS OPERATIONAL</span>
       </div>
 
       {/* Diagnostics Table Rows */}

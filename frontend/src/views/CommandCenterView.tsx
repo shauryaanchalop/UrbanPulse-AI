@@ -123,7 +123,7 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
       />
 
       {/* 2. "WHAT NEEDS MY ATTENTION?" Actionable Priority Ribbon */}
-      <div className="h-8 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between text-xs font-mono shrink-0">
+      <div className="h-8 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between text-xs font-sans shrink-0">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
@@ -191,17 +191,17 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
         </div>
 
         {/* Right: Priority Events Queue (30% width) */}
-        <div className="w-full lg:w-96 bg-theme-surface border-t lg:border-t-0 lg:border-l border-theme-border flex flex-col h-[42%] lg:h-full shrink-0 font-mono">
-          <div className="h-8 px-3 border-b border-theme-border bg-theme-panel flex items-center justify-between shrink-0">
-            <span className="font-bold text-[11px] uppercase tracking-wider text-theme-primary">
+        <div className="w-full lg:w-96 bg-theme-surface border-t lg:border-t-0 lg:border-l border-theme-border flex flex-col h-[42%] lg:h-full shrink-0 font-sans">
+          <div className="h-8 px-3 border-b border-theme-border bg-theme-panel flex items-center justify-between shrink-0 font-sans">
+            <span className="font-bold text-[11px] uppercase tracking-wider text-theme-primary font-sans">
               PRIORITY QUEUE ({filteredQueue.length})
             </span>
-            <span className="text-[10px] text-brand font-bold">
+            <span className="text-[10px] text-brand font-bold font-sans">
               {filterMode === 'CRITICAL' ? 'FILTER: CRITICAL ONLY' : 'SORTED BY SEVERITY'}
             </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto divide-y divide-theme-border text-[11px]">
+          <div className="flex-1 overflow-y-auto divide-y divide-theme-border text-[11px] font-sans">
             {filteredQueue.map(item => {
               const isCrit = item.severity === 'Critical';
               const isSelected = selectedId === item.id;
@@ -213,28 +213,28 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
                     if (item.kind === 'incident') onSelectIncident(item.entity as SafetyIncident);
                     else onSelectDefect(item.entity as RoadDefect);
                   }}
-                  className={`p-2.5 cursor-pointer transition-colors flex flex-col gap-1 ${
+                  className={`p-2.5 cursor-pointer transition-colors flex flex-col gap-1 font-sans ${
                     isSelected ? 'bg-brand/10 border-l-2 border-brand' : 'hover:bg-theme-elevated text-theme-primary'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <span className={`w-1.5 h-1.5 rounded-full ${isCrit ? 'bg-brand' : 'bg-amber-500'}`}></span>
-                      <span className="font-bold text-theme-primary uppercase">{item.type}</span>
+                      <span className="font-bold text-theme-primary uppercase font-sans">{item.type}</span>
                     </div>
-                    <span className={`text-[10px] font-bold ${isCrit ? 'text-brand' : 'text-amber-500'}`}>
+                    <span className={`text-[10px] font-bold font-sans ${isCrit ? 'text-brand' : 'text-amber-500'}`}>
                       {item.severity.toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-theme-secondary truncate">
+                  <div className="text-[11px] text-theme-secondary truncate font-sans">
                     {item.location}
                   </div>
 
-                  <div className="flex items-center justify-between text-[10px] text-theme-muted pt-0.5">
-                    <span>BUS: <strong className="text-theme-primary">{item.busId}</strong></span>
-                    <span>CONF: <strong className="text-emerald-500">{(item.confidence * 100).toFixed(0)}%</strong></span>
-                    <span>TIME: {item.time}</span>
+                  <div className="flex items-center justify-between text-[10px] text-theme-muted pt-0.5 font-sans">
+                    <span>BUS: <strong className="text-theme-primary font-mono">{item.busId}</strong></span>
+                    <span>CONF: <strong className="text-emerald-500 font-mono">{(item.confidence * 100).toFixed(0)}%</strong></span>
+                    <span>TIME: <span className="font-mono">{item.time}</span></span>
                   </div>
                 </div>
               );
@@ -244,15 +244,15 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
       </div>
 
       {/* 4. Bottom: Scannable Live Municipal Event Stream (Height: 160px) */}
-      <div className="h-40 bg-theme-surface border-t border-theme-border flex flex-col shrink-0 font-mono text-xs overflow-hidden">
-        <div className="h-7 px-3 border-b border-theme-border bg-theme-panel flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2 text-[10px] text-theme-secondary">
+      <div className="h-40 bg-theme-surface border-t border-theme-border flex flex-col shrink-0 font-sans text-xs overflow-hidden">
+        <div className="h-7 px-3 border-b border-theme-border bg-theme-panel flex items-center justify-between shrink-0 font-sans">
+          <div className="flex items-center gap-2 text-[10px] text-theme-secondary font-sans">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="font-bold text-theme-primary">LIVE INGESTION STREAM</span>
+            <span className="font-bold text-theme-primary font-sans">LIVE INGESTION STREAM</span>
             <span>•</span>
-            <span>SHOWING DETECTIONS ACROSS 32 BUS SENSORS</span>
+            <span className="font-sans">SHOWING DETECTIONS ACROSS 32 BUS SENSORS</span>
           </div>
-          <span className="text-[10px] text-theme-muted">MQTT 5.0 PROTOCOL</span>
+          <span className="text-[10px] text-theme-muted font-sans font-semibold">MQTT 5.0 PROTOCOL</span>
         </div>
 
         <div className="flex-1 overflow-y-auto">

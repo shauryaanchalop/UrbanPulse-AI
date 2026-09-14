@@ -81,13 +81,13 @@ export const KioskView: React.FC<KioskViewProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black text-white font-mono flex flex-col select-none overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black text-white font-sans flex flex-col select-none overflow-hidden">
       {/* Top Kiosk Ribbon */}
-      <div className="h-12 bg-graphite-950 border-b border-graphite-800 px-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-4">
+      <div className="h-12 bg-graphite-950 border-b border-graphite-800 px-4 flex items-center justify-between shrink-0 font-sans">
+        <div className="flex items-center space-x-4 font-sans">
           <div className="flex items-center space-x-2">
             <Monitor className="w-4 h-4 text-brand" />
-            <span className="font-bold text-sm text-white tracking-wider">COMMAND CENTER KIOSK MODE</span>
+            <span className="font-bold text-sm text-white tracking-wider font-sans">COMMAND CENTER KIOSK MODE</span>
           </div>
 
           <div className="flex items-center space-x-1">

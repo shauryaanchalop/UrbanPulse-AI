@@ -46,14 +46,14 @@ export const ArchitectureView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-mono text-xs select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-sans text-xs select-none">
       {/* Top Header */}
       <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <Network className="w-4 h-4 text-brand" />
           <span className="font-bold text-theme-primary">SYSTEM ARCHITECTURE & COMPETITIVE POSITIONING</span>
         </div>
-        <span className="text-[10px] text-graphite-400 font-mono">EDGE-TO-CLOUD SPECIFICATION</span>
+        <span className="text-[10px] text-graphite-400 font-sans font-semibold">EDGE-TO-CLOUD SPECIFICATION</span>
       </div>
 
       {/* Architecture Flow Block Diagram */}

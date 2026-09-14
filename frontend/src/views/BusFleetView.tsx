@@ -242,10 +242,10 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
   const offlineCount = buses.filter(b => b.status === 'Idle' || b.status === 'Maintenance').length;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-theme-bg overflow-hidden font-mono select-none text-xs">
+    <div className="flex-1 flex flex-col h-full bg-theme-bg overflow-hidden font-sans select-none text-xs">
       {/* Notification Toast */}
       {notification && (
-        <div className="bg-emerald-950/90 border-b border-emerald-500/40 text-emerald-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0">
+        <div className="bg-emerald-950/90 border-b border-emerald-500/40 text-emerald-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0 font-sans">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span>{notification}</span>
@@ -255,9 +255,9 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
       )}
 
       {/* Top Filter & Operations Toolbar */}
-      <div className="h-11 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between shrink-0 gap-2">
+      <div className="h-11 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between shrink-0 gap-2 font-sans">
         <div className="flex items-center gap-3">
-          <span className="font-bold text-theme-primary flex items-center gap-1.5 whitespace-nowrap">
+          <span className="font-bold text-theme-primary flex items-center gap-1.5 whitespace-nowrap font-sans">
             <BusIcon className="w-4 h-4 text-brand" />
             FLEET TELEMETRY INVENTORY
           </span>
@@ -274,7 +274,7 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
               <button
                 key={f.key}
                 onClick={() => setStatusFilter(f.key as any)}
-                className={`px-2 py-0.5 text-[10px] border rounded-none transition-colors ${
+                className={`px-2 py-0.5 text-[10px] border rounded-none transition-colors font-sans ${
                   statusFilter === f.key
                     ? 'bg-theme-elevated text-brand font-bold border-brand'
                     : 'bg-theme-panel text-theme-muted border-theme-border hover:text-theme-primary'
@@ -286,10 +286,10 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 font-sans">
           <button
             onClick={handleDeployDemoBus}
-            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition"
+            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition font-sans"
             title="Deploy a new AI-equipped electric bus"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -298,25 +298,25 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
 
           <button
             onClick={handleSimulateTelemetry}
-            className="px-2.5 py-1 text-[11px] font-bold bg-emerald-950/80 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900/60 flex items-center gap-1 transition"
+            className="px-2.5 py-1 text-[11px] font-bold bg-emerald-950/80 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900/60 flex items-center gap-1 transition font-sans"
             title="Simulate live 5G telemetry pulse"
           >
             <Cpu className="w-3.5 h-3.5" />
             + SIMULATE TELEMETRY
           </button>
 
-          <div className="flex items-center gap-1.5 bg-theme-panel border border-theme-border px-2 py-0.5 text-xs rounded-sm">
+          <div className="flex items-center gap-1.5 bg-theme-panel border border-theme-border px-2 py-0.5 text-xs rounded-sm font-sans">
             <Search className="w-3.5 h-3.5 text-theme-muted" />
             <input
               type="text"
               placeholder="Search bus ID / route..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent border-none text-theme-primary placeholder-theme-muted focus:outline-none text-[11px] w-36"
+              className="bg-transparent border-none text-theme-primary placeholder-theme-muted focus:outline-none text-[11px] w-36 font-sans"
             />
           </div>
 
-          <span className="text-[10px] text-theme-muted hidden sm:inline whitespace-nowrap">
+          <span className="text-[10px] text-theme-muted hidden sm:inline whitespace-nowrap font-sans">
             <strong>{activeCount}</strong> JETSON ORIN UNITS SYNCED
           </span>
         </div>
@@ -424,7 +424,7 @@ export const BusFleetView: React.FC<BusFleetViewProps> = ({
         </table>
 
         {sortedBuses.length === 0 && (
-          <div className="p-8 text-center text-theme-muted font-mono text-xs">
+          <div className="p-8 text-center text-theme-muted font-sans text-xs">
             No fleet vehicles match filter "{statusFilter}" or query "{searchTerm}".
           </div>
         )}

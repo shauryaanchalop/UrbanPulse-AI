@@ -23,34 +23,34 @@ export const AnalyticsView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-mono text-xs select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-sans text-xs select-none">
       {/* Top Header Strip */}
-      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0">
-        <span className="font-bold text-theme-primary">EXECUTIVE MUNICIPAL ANALYTICS & ARTERIAL DEGRADATION</span>
-        <span className="text-[10px] text-graphite-400">REPORT CYCLE: 7-DAY AGGREGATION</span>
+      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 font-sans">
+        <span className="font-bold text-theme-primary font-sans">EXECUTIVE MUNICIPAL ANALYTICS & ARTERIAL DEGRADATION</span>
+        <span className="text-[10px] text-graphite-400 font-sans">REPORT CYCLE: 7-DAY AGGREGATION</span>
       </div>
 
       {/* Top Metric Strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-b border-graphite-700">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-b border-graphite-700 font-sans">
         <div className="bg-graphite-900 border border-graphite-700 p-2.5 rounded-sm">
-          <span className="text-graphite-400 text-[10px] uppercase">Road Surface Integrity Index</span>
-          <div className="text-lg font-bold text-amber-500 font-mono mt-0.5">68.4 / 100</div>
-          <span className="text-[9px] text-graphite-500">-2.1% degradation this month</span>
+          <span className="text-graphite-400 text-[10px] uppercase font-sans font-semibold">Road Surface Integrity Index</span>
+          <div className="text-lg font-bold text-amber-500 font-sans mt-0.5">68.4 / 100</div>
+          <span className="text-[9px] text-graphite-500 font-sans">-2.1% degradation this month</span>
         </div>
         <div className="bg-graphite-900 border border-graphite-700 p-2.5 rounded-sm">
-          <span className="text-graphite-400 text-[10px] uppercase">Arterial Congestion Index</span>
-          <div className="text-lg font-bold text-brand font-mono mt-0.5">1.42 Ratio</div>
-          <span className="text-[9px] text-graphite-500">Peak delay: +18 mins</span>
+          <span className="text-graphite-400 text-[10px] uppercase font-sans font-semibold">Arterial Congestion Index</span>
+          <div className="text-lg font-bold text-brand font-sans mt-0.5">1.42 Ratio</div>
+          <span className="text-[9px] text-graphite-500 font-sans">Peak delay: +18 mins</span>
         </div>
         <div className="bg-graphite-900 border border-graphite-700 p-2.5 rounded-sm">
-          <span className="text-graphite-400 text-[10px] uppercase">Safety Incident Frequency</span>
-          <div className="text-lg font-bold text-theme-primary font-mono mt-0.5">1.09 / 100km</div>
-          <span className="text-[9px] text-graphite-500">35 alerts logged today</span>
+          <span className="text-graphite-400 text-[10px] uppercase font-sans font-semibold">Safety Incident Frequency</span>
+          <div className="text-lg font-bold text-theme-primary font-sans mt-0.5">1.09 / 100km</div>
+          <span className="text-[9px] text-graphite-500 font-sans">35 alerts logged today</span>
         </div>
         <div className="bg-graphite-900 border border-graphite-700 p-2.5 rounded-sm">
-          <span className="text-graphite-400 text-[10px] uppercase">Fleet Geographic Coverage</span>
-          <div className="text-lg font-bold text-emerald-500 font-mono mt-0.5">74.8% Network</div>
-          <span className="text-[9px] text-graphite-500">10 active transit corridors</span>
+          <span className="text-graphite-400 text-[10px] uppercase font-sans font-semibold">Fleet Geographic Coverage</span>
+          <div className="text-lg font-bold text-emerald-500 font-sans mt-0.5">74.8% Network</div>
+          <span className="text-[9px] text-graphite-500 font-sans">10 active transit corridors</span>
         </div>
       </div>
 

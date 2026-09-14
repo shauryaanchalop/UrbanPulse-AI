@@ -100,25 +100,37 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Integrated Sector & ML Model Status Badge */}
           <div className="hidden md:flex items-center bg-theme-panel border border-theme-border rounded-full p-1 gap-2 shrink-0">
-            <select 
-              value={selectedCity} 
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent text-theme-primary px-2.5 py-0.5 focus:outline-none cursor-pointer font-sans text-[11px] font-semibold rounded-full whitespace-nowrap"
-            >
-              <option value="Pune Smart City">PUNE METRO (105 BUSES)</option>
-              <option value="Bengaluru Urban">BENGALURU URBAN (BMTC)</option>
-              <option value="Delhi NCR">DELHI NCR (BRTS)</option>
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowRoleMenu(false)}
+                className="flex items-center gap-1.5 px-3 py-1 bg-theme-surface hover:bg-theme-elevated text-theme-primary font-sans text-xs font-semibold rounded-full border border-theme-border/80 transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+                onClickCapture={() => {}}
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>{selectedCity.toUpperCase()}</span>
+                <ChevronDown className="w-3 h-3 text-theme-muted" />
+              </button>
+              <select 
+                value={selectedCity} 
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                title="Switch Operational Fleet Sector"
+              >
+                <option value="Pune Smart City" className="bg-slate-900 text-slate-100 dark:bg-slate-900 dark:text-white light:bg-white light:text-slate-900">PUNE METRO (105 BUSES)</option>
+                <option value="Bengaluru Urban" className="bg-slate-900 text-slate-100 dark:bg-slate-900 dark:text-white light:bg-white light:text-slate-900">BENGALURU URBAN (BMTC)</option>
+                <option value="Delhi NCR" className="bg-slate-900 text-slate-100 dark:bg-slate-900 dark:text-white light:bg-white light:text-slate-900">DELHI NCR (BRTS)</option>
+              </select>
+            </div>
 
             <button 
               onClick={() => setShowModelInspector(true)}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 font-sans text-[11px] font-semibold rounded-full transition-all cursor-pointer whitespace-nowrap shadow-sm" 
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 font-sans text-xs font-semibold rounded-full transition-all cursor-pointer whitespace-nowrap shadow-sm" 
               title="Inspect Deployed YOLOv8-ONNX Edge AI Model"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <Cpu className="w-3 h-3" />
+              <Cpu className="w-3.5 h-3.5 text-emerald-400" />
               <span>YOLOv8-ONNX ML</span>
-              <span className="text-[10px] font-mono opacity-80 font-bold">(89.4% mAP)</span>
+              <span className="text-[10px] font-sans opacity-90 font-bold bg-emerald-500/20 px-1 rounded">(89.4% mAP)</span>
             </button>
           </div>
         </div>

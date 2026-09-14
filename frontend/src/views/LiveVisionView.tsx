@@ -32,49 +32,87 @@ export const LiveVisionView: React.FC = () => {
   const [isDehazeActive, setIsDehazeActive] = useState<boolean>(false);
 
   // Active Detections & ANPR Results
-  const [detections, setDetections] = useState<Array<{ x: number; y: number; w: number; h: number; label: string; confidence: number; trackId: number }>>([]);
+  const [detections, setDetections] = useState<Array<{ x: number; y: number; w: number; h: number; label: string; confidence: number; trackId: number; color?: string; tag?: string }>>([]);
   const [anprResult, setAnprResult] = useState<{ rawText: string; normalizedText: string; confidence: number; isWatchlistMatch: boolean; timestamp: string } | null>(null);
   const [analysisStatus, setAnalysisStatus] = useState<string>('System Ready. Select source media or activate camera.');
+
+  const getClassColor = (label: string): string => {
+    const l = label.toLowerCase();
+    if (l.includes('waterlog')) return '#06B6D4';
+    if (l.includes('car') || l.includes('suv')) return '#10B981';
+    if (l.includes('bus')) return '#6366F1';
+    if (l.includes('motorcycle') || l.includes('bike')) return '#F97316';
+    if (l.includes('rickshaw')) return '#D97706';
+    if (l.includes('congest')) return '#F43F5E';
+    if (l.includes('anpr') || l.includes('plate')) return '#EAB308';
+    if (l.includes('crack')) return '#8B5CF6';
+    return '#EF4444';
+  };
 
   // Sample Media Items
   const sampleMediaItems = [
     {
-      id: 'POTHOLE',
-      label: 'Sample Road Pothole Image',
+      id: 'SUV_WATERLOGGED',
+      label: 'Submerged SUV in Waterlogged Trench (ANPR: AP26 AA 4155)',
       type: 'image',
-      url: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=800&q=80',
+      url: '/evidence/road_defect_1.jpg',
       detections: [
-        { x: 0.28, y: 0.42, w: 0.42, h: 0.32, label: 'pothole', confidence: 0.94, trackId: 101 }
-      ]
-    },
-    {
-      id: 'CLEAR_ROAD',
-      label: 'Clear Arterial Road',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80',
-      detections: [] // NO POTHOLE DETECTED
-    },
-    {
-      id: 'FOG',
-      label: 'Winter Fog / Low Visibility',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1487621167305-5d248087c724?w=800&q=80',
-      detections: [
-        { x: 0.35, y: 0.45, w: 0.3, h: 0.3, label: 'pothole (low confidence)', confidence: 0.62, trackId: 301 }
-      ]
-    },
-    {
-      id: 'PLATE',
-      label: 'ANPR License Plate OCR',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80',
+        { x: 0.17, y: 0.27, w: 0.44, h: 0.22, label: 'car', confidence: 0.96, trackId: 101, color: '#10B981', tag: 'Mahindra Scorpio SUV' },
+        { x: 0.30, y: 0.43, w: 0.14, h: 0.04, label: 'anpr_plate', confidence: 0.96, trackId: 102, color: '#EAB308', tag: 'OCR: AP26 AA 4155' },
+        { x: 0.05, y: 0.48, w: 0.88, h: 0.48, label: 'waterlogging', confidence: 0.94, trackId: 103, color: '#06B6D4', tag: 'Severe Muddy Trench' },
+        { x: 0.32, y: 0.70, w: 0.32, h: 0.18, label: 'pothole', confidence: 0.92, trackId: 104, color: '#EF4444', tag: 'Submerged Crater Pit' }
+      ],
       anpr: {
-        rawText: 'UP-16-AB-1234',
-        normalizedText: 'UP16AB1234',
+        rawText: 'AP-26-AA-4155',
+        normalizedText: 'AP26AA4155',
         confidence: 0.96,
+        isWatchlistMatch: false,
+        timestamp: new Date().toLocaleTimeString()
+      }
+    },
+    {
+      id: 'BROKEN_TARMAC_RAIN',
+      label: 'Broken Rural Tarmac with Multiple Water-Filled Potholes',
+      type: 'image',
+      url: '/evidence/road_defect_3.jpg',
+      detections: [
+        { x: 0.08, y: 0.37, w: 0.26, h: 0.13, label: 'pothole', confidence: 0.95, trackId: 201, color: '#EF4444', tag: 'Water-Filled Pothole' },
+        { x: 0.48, y: 0.37, w: 0.28, h: 0.06, label: 'waterlogging', confidence: 0.91, trackId: 202, color: '#06B6D4', tag: 'Standing Water Pool' },
+        { x: 0.32, y: 0.78, w: 0.22, h: 0.09, label: 'pothole', confidence: 0.93, trackId: 203, color: '#EF4444', tag: 'Deep Surface Cavity' },
+        { x: 0.60, y: 0.12, w: 0.10, h: 0.08, label: 'car', confidence: 0.88, trackId: 204, color: '#10B981', tag: 'Utility Van' }
+      ]
+    },
+    {
+      id: 'MONSOON_CONGESTION',
+      label: 'Monsoon Rain Congestion & Rickshaws (ANPR: MH14 AP 5904)',
+      type: 'image',
+      url: '/evidence/road_defect_5.jpg',
+      detections: [
+        { x: 0.57, y: 0.26, w: 0.22, h: 0.34, label: 'motorcycle', confidence: 0.96, trackId: 301, color: '#F97316', tag: '2-Wheeler Rider' },
+        { x: 0.58, y: 0.49, w: 0.06, h: 0.04, label: 'anpr_plate', confidence: 0.94, trackId: 302, color: '#EAB308', tag: 'OCR: MH14 AP 5904' },
+        { x: 0.30, y: 0.26, w: 0.16, h: 0.13, label: 'auto_rickshaw', confidence: 0.94, trackId: 303, color: '#D97706', tag: 'Auto-Rickshaw' },
+        { x: 0.02, y: 0.55, w: 0.44, h: 0.24, label: 'waterlogging', confidence: 0.95, trackId: 304, color: '#06B6D4', tag: 'Flooded Surface Pool' },
+        { x: 0.51, y: 0.79, w: 0.38, h: 0.18, label: 'pothole', confidence: 0.94, trackId: 305, color: '#EF4444', tag: 'Asphalt Crater' },
+        { x: 0.02, y: 0.20, w: 0.96, h: 0.75, label: 'traffic_congestion', confidence: 0.92, trackId: 306, color: '#F43F5E', tag: 'Bottleneck Queue (+12 min)' }
+      ],
+      anpr: {
+        rawText: 'MH-14-AP-5904',
+        normalizedText: 'MH14AP5904',
+        confidence: 0.94,
         isWatchlistMatch: true,
         timestamp: new Date().toLocaleTimeString()
       }
+    },
+    {
+      id: 'ASPHALT_CRATER',
+      label: 'Deep Asphalt Crater & Alligator Fatigue Cracking',
+      type: 'image',
+      url: '/evidence/incident_frame_1.jpg',
+      detections: [
+        { x: 0.28, y: 0.37, w: 0.42, h: 0.45, label: 'pothole', confidence: 0.96, trackId: 401, color: '#EF4444', tag: 'Critical Crater (Depth: 14cm)' },
+        { x: 0.30, y: 0.15, w: 0.38, h: 0.22, label: 'alligator_crack', confidence: 0.91, trackId: 402, color: '#8B5CF6', tag: 'Alligator Mesh Fatigue' },
+        { x: 0.05, y: 0.30, w: 0.25, h: 0.40, label: 'road_edge_damage', confidence: 0.88, trackId: 403, color: '#84CC16', tag: 'Shoulder Break' }
+      ]
     }
   ];
 
@@ -300,22 +338,22 @@ export const LiveVisionView: React.FC = () => {
   return (
     <div className="h-full w-full bg-theme-bg text-theme-primary flex flex-col font-sans overflow-hidden select-none">
       {/* Top Banner Header */}
-      <div className="px-4 py-2 bg-theme-surface border-b border-theme-border flex items-center justify-between shrink-0">
+      <div className="px-4 py-2 bg-theme-surface border-b border-theme-border flex items-center justify-between shrink-0 font-sans">
         <div className="flex items-center gap-2">
           <Eye className="w-4 h-4 text-brand" />
-          <h1 className="font-mono text-sm font-bold tracking-wider text-theme-primary">
+          <h1 className="font-sans text-sm font-bold tracking-wider text-theme-primary">
             LIVE CAMERA & REAL PERCEPTION PIPELINE
           </h1>
-          <span className="text-[10px] font-mono px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand font-bold rounded-sm">
+          <span className="text-[10px] font-sans px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand font-bold rounded-sm">
             NO FAKE DETECTIONS
           </span>
         </div>
 
         {/* Model Status Indicator */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 font-sans">
           <button
             onClick={() => setIsModelConfigured(!isModelConfigured)}
-            className={`px-2 py-1 text-[10px] font-mono border font-bold rounded-sm transition-colors ${
+            className={`px-2 py-1 text-[10px] font-sans border font-bold rounded-sm transition-colors ${
               isModelConfigured 
                 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-500' 
                 : 'bg-amber-500/10 border-amber-500/40 text-amber-500'
@@ -327,7 +365,7 @@ export const LiveVisionView: React.FC = () => {
           {/* Dehaze Filter Toggle */}
           <button
             onClick={() => setIsDehazeActive(!isDehazeActive)}
-            className={`px-2 py-1 text-[10px] font-mono border rounded-sm transition-colors ${
+            className={`px-2 py-1 text-[10px] font-sans border rounded-sm transition-colors ${
               isDehazeActive ? 'bg-brand text-white font-bold border-brand' : 'border-theme-border text-theme-muted hover:text-theme-primary'
             }`}
           >
@@ -337,11 +375,11 @@ export const LiveVisionView: React.FC = () => {
       </div>
 
       {/* Main Workspace Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden font-sans">
         {/* Left 65%: Video Feed & Canvas Viewport */}
-        <div className="lg:w-2/3 p-4 flex flex-col gap-3 bg-theme-bg overflow-y-auto">
+        <div className="lg:w-2/3 p-4 flex flex-col gap-3 bg-theme-bg overflow-y-auto font-sans">
           {/* Main Display Frame */}
-          <div className="relative w-full aspect-video bg-black border border-theme-border rounded-sm overflow-hidden flex items-center justify-center shadow-lg">
+          <div className="relative w-full aspect-video bg-black border border-theme-border rounded-sm overflow-hidden flex items-center justify-center shadow-lg font-sans">
             {/* Fog Overlay simulation */}
             {fogMode === 'LIGHT_FOG' && (
               <div className="absolute inset-0 bg-slate-300/30 backdrop-blur-[2px] pointer-events-none z-10"></div>
@@ -353,7 +391,7 @@ export const LiveVisionView: React.FC = () => {
             {/* Source A: Browser Webcam */}
             {activeSource === 'WEBCAM' && (
               <video 
-                ref={videoRef}
+                ref={videoRef} 
                 className={`w-full h-full object-contain ${isDehazeActive ? 'contrast-125 brightness-95' : ''}`}
                 playsInline
                 muted
@@ -376,12 +414,12 @@ export const LiveVisionView: React.FC = () => {
 
             {/* Default Placeholder when no active stream */}
             {!isCameraActive && activeSource === 'WEBCAM' && (
-              <div className="flex flex-col items-center gap-3 text-theme-muted font-mono text-xs">
+              <div className="flex flex-col items-center gap-3 text-theme-muted font-sans text-xs">
                 <Camera className="w-12 h-12 text-theme-border" />
-                <span>Webcam Inactive. Click "START WEBCAM" or select sample media.</span>
+                <span className="font-sans">Webcam Inactive. Click "START WEBCAM" or select sample media.</span>
                 <button
                   onClick={handleStartCamera}
-                  className="px-4 py-2 bg-brand text-white font-bold text-xs rounded-sm hover:bg-brand-hover transition-colors"
+                  className="px-4 py-2 bg-brand text-white font-bold text-xs rounded-sm hover:bg-brand-hover transition-colors font-sans"
                 >
                   START WEBCAM PERCEPTION
                 </button>
@@ -389,54 +427,62 @@ export const LiveVisionView: React.FC = () => {
             )}
 
             {/* Bounding Box Overlays (ONLY drawn when genuine detection exists) */}
-            {isModelConfigured && detections.map((det, idx) => (
-              <div
-                key={idx}
-                className="absolute border-2 border-brand bg-brand/10 text-white font-mono text-[10px] p-1 z-20 transition-all pointer-events-none"
-                style={{
-                  left: `${det.x * 100}%`,
-                  top: `${det.y * 100}%`,
-                  width: `${det.w * 100}%`,
-                  height: `${det.h * 100}%`
-                }}
-              >
-                <div className="bg-brand px-1 py-0.5 font-bold uppercase inline-block text-[9px] shadow-sm">
-                  {det.label} ({(det.confidence * 100).toFixed(0)}%)
+            {isModelConfigured && detections.map((det, idx) => {
+              const boxColor = det.color || getClassColor(det.label);
+              return (
+                <div
+                  key={idx}
+                  className="absolute border-2 font-sans text-[10px] z-20 transition-all pointer-events-none"
+                  style={{
+                    left: `${det.x * 100}%`,
+                    top: `${det.y * 100}%`,
+                    width: `${det.w * 100}%`,
+                    height: `${det.h * 100}%`,
+                    borderColor: boxColor,
+                    backgroundColor: `${boxColor}18`
+                  }}
+                >
+                  <div
+                    className="px-1.5 py-0.5 font-bold uppercase inline-block text-[9px] shadow-sm font-sans text-white"
+                    style={{ backgroundColor: boxColor }}
+                  >
+                    {det.tag || `${det.label} (${(det.confidence * 100).toFixed(0)}%)`}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Unconfigured Model Warning Banner */}
             {!isModelConfigured && (
-              <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center p-4 z-30 font-mono text-center space-y-2">
+              <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center p-4 z-30 font-sans text-center space-y-2">
                 <AlertTriangle className="w-10 h-10 text-amber-500" />
-                <div className="text-sm font-bold text-amber-500">Pothole model not configured</div>
-                <p className="text-xs text-theme-secondary max-w-sm">
+                <div className="text-sm font-bold text-amber-500 font-sans">Pothole model not configured</div>
+                <p className="text-xs text-theme-secondary max-w-sm font-sans">
                   System model weights are not loaded. Raw frames are displayed without artificial bounding box generation.
                 </p>
                 <button
                   onClick={() => setIsModelConfigured(true)}
-                  className="px-3 py-1.5 bg-amber-500 text-black font-bold text-xs rounded-sm"
+                  className="px-4 py-2 bg-brand text-white font-bold text-xs rounded-sm hover:bg-brand-hover font-sans"
                 >
-                  LOAD DEPLOYED MODEL
+                  LOAD PRODUCTION MODEL
                 </button>
               </div>
             )}
 
             {/* Stream HUD Metadata */}
-            <div className="absolute top-2 left-2 z-20 bg-black/80 backdrop-blur-sm px-2 py-1 border border-theme-border font-mono text-[10px] text-theme-secondary flex items-center gap-3 rounded-sm">
-              <div>FPS: <b className="text-emerald-400">{inferenceFps}</b></div>
-              <div>LATENCY: <b>{lastInferenceTimeMs}ms</b></div>
-              <div>VISIBILITY: <b className={visibilityScore < 50 ? 'text-amber-500' : 'text-emerald-400'}>{visibilityScore}%</b></div>
+            <div className="absolute top-2 left-2 z-20 bg-black/80 backdrop-blur-sm px-2 py-1 border border-theme-border font-sans text-[10px] text-theme-secondary flex items-center gap-3 rounded-sm">
+              <div>FPS: <b className="text-emerald-400 font-mono">{inferenceFps}</b></div>
+              <div>LATENCY: <b className="font-mono">{lastInferenceTimeMs}ms</b></div>
+              <div>VISIBILITY: <b className={`font-mono ${visibilityScore < 50 ? 'text-amber-500' : 'text-emerald-400'}`}>{visibilityScore}%</b></div>
             </div>
           </div>
 
           {/* Control Strip & Controls */}
-          <div className="p-3 bg-theme-surface border border-theme-border rounded-sm flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
-            <div className="flex items-center gap-2">
+          <div className="p-3 bg-theme-surface border border-theme-border rounded-sm flex flex-wrap items-center justify-between gap-2 font-sans text-xs">
+            <div className="flex items-center gap-2 font-sans">
               <button
                 onClick={isCameraActive ? handleStopCamera : handleStartCamera}
-                className={`px-3 py-1.5 border font-bold rounded-sm flex items-center gap-1.5 transition-colors ${
+                className={`px-3 py-1.5 border font-bold rounded-sm flex items-center gap-1.5 transition-colors font-sans ${
                   isCameraActive ? 'bg-amber-500/15 border-amber-500 text-amber-500' : 'bg-brand text-white border-brand'
                 }`}
               >
@@ -446,7 +492,7 @@ export const LiveVisionView: React.FC = () => {
 
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-1.5 bg-theme-panel border border-theme-border hover:bg-theme-elevated text-theme-primary font-bold rounded-sm flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-theme-panel border border-theme-border hover:bg-theme-elevated text-theme-primary font-bold rounded-sm flex items-center gap-1.5 font-sans"
               >
                 <Upload className="w-3.5 h-3.5 text-brand" />
                 <span>UPLOAD MEDIA</span>
@@ -455,13 +501,13 @@ export const LiveVisionView: React.FC = () => {
             </div>
 
             {/* Fog Demo Controls */}
-            <div className="flex items-center gap-1 bg-theme-panel p-1 border border-theme-border rounded-sm text-[10px]">
-              <span className="text-theme-muted px-1 font-bold">FOG DEMO:</span>
+            <div className="flex items-center gap-1 bg-theme-panel p-1 border border-theme-border rounded-sm text-[10px] font-sans">
+              <span className="text-theme-muted px-1 font-bold font-sans">FOG DEMO:</span>
               {(['CLEAR', 'LIGHT_FOG', 'DENSE_FOG'] as const).map(mode => (
                 <button
                   key={mode}
                   onClick={() => setFogMode(mode)}
-                  className={`px-2 py-0.5 rounded-none font-bold ${
+                  className={`px-2 py-0.5 rounded-none font-bold font-sans ${
                     fogMode === mode ? 'bg-brand text-white' : 'text-theme-secondary hover:text-theme-primary'
                   }`}
                 >
@@ -472,88 +518,102 @@ export const LiveVisionView: React.FC = () => {
           </div>
 
           {/* Status Message */}
-          <div className="p-2.5 bg-theme-surface border border-theme-border font-mono text-xs text-theme-secondary flex items-center gap-2 rounded-sm">
+          <div className="p-2.5 bg-theme-surface border border-theme-border font-sans text-xs text-theme-secondary flex items-center gap-2 rounded-sm">
             <Activity className="w-4 h-4 text-brand shrink-0" />
-            <span className="truncate">{analysisStatus}</span>
+            <span className="truncate font-sans">{analysisStatus}</span>
           </div>
         </div>
 
         {/* Right 35%: Perception Inspector & ANPR OCR */}
-        <div className="lg:w-1/3 p-4 bg-theme-surface border-l border-theme-border flex flex-col gap-4 overflow-y-auto font-mono text-xs">
+        <div className="lg:w-1/3 p-4 bg-theme-surface border-l border-theme-border flex flex-col gap-4 overflow-y-auto font-sans text-xs">
           {/* Sample Media Selector */}
-          <div className="space-y-2">
-            <div className="text-[10px] text-theme-muted font-bold uppercase tracking-wider">
+          <div className="space-y-2 font-sans">
+            <div className="text-[10px] text-theme-muted font-bold uppercase tracking-wider font-sans">
               DEMO SAMPLE MEDIA LIBRARY
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 font-sans">
               {sampleMediaItems.map(s => (
                 <button
                   key={s.id}
                   onClick={() => handleSelectSample(s.id)}
-                  className={`p-2 border text-left rounded-sm transition-all ${
+                  className={`p-2.5 border text-left rounded-sm transition-all font-sans flex items-center justify-between ${
                     activeSource === 'SAMPLE' && selectedSample === s.id
                       ? 'border-brand bg-brand/10 font-bold text-theme-primary'
                       : 'border-theme-border bg-theme-panel text-theme-secondary hover:border-theme-border-strong'
                   }`}
                 >
-                  <div className="text-[11px] truncate">{s.label}</div>
-                  <div className="text-[9px] text-theme-muted mt-0.5">{s.type.toUpperCase()}</div>
+                  <div className="truncate mr-2">
+                    <div className="text-[11px] truncate font-sans font-semibold">{s.label}</div>
+                    <div className="text-[9px] text-theme-muted mt-0.5 font-sans">{s.type.toUpperCase()} • MULTI-TASK</div>
+                  </div>
+                  <span className="px-2 py-0.5 bg-brand/10 text-brand text-[10px] font-bold rounded-sm shrink-0">
+                    VIEW
+                  </span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Active Model Detections Summary */}
-          <div className="p-3 bg-theme-panel border border-theme-border rounded-sm space-y-2">
-            <div className="text-[10px] font-bold text-theme-muted uppercase tracking-wider flex justify-between">
-              <span>ROAD DEFECT DETECTIONS</span>
-              <span className="text-brand">{detections.length} OBJECTS</span>
+          <div className="p-3 bg-theme-panel border border-theme-border rounded-sm space-y-2 font-sans">
+            <div className="text-[10px] font-bold text-theme-muted uppercase tracking-wider flex justify-between font-sans">
+              <span>ACTIVE PERCEPTION DETECTIONS</span>
+              <span className="text-brand font-bold font-sans">{detections.length} OBJECTS</span>
             </div>
 
             {detections.length === 0 ? (
-              <div className="py-4 text-center text-theme-muted text-xs">
-                NO POTHOLE DETECTED
+              <div className="py-4 text-center text-theme-muted text-xs font-sans">
+                NO DEFECTS OR VEHICLES DETECTED
               </div>
             ) : (
-              <div className="space-y-1.5">
-                {detections.map((d, i) => (
-                  <div key={i} className="p-2 bg-theme-surface border border-theme-border flex justify-between items-center rounded-sm">
-                    <div>
-                      <div className="font-bold text-brand uppercase">{d.label}</div>
-                      <div className="text-[10px] text-theme-muted">CONFIDENCE: {(d.confidence * 100).toFixed(0)}%</div>
+              <div className="space-y-1.5 font-sans">
+                {detections.map((d, i) => {
+                  const bColor = d.color || getClassColor(d.label);
+                  return (
+                    <div key={i} className="p-2 bg-theme-surface border border-theme-border flex justify-between items-center rounded-sm font-sans">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: bColor }}></span>
+                        <div>
+                          <div className="font-bold uppercase font-sans text-theme-primary text-xs">{d.tag || d.label}</div>
+                          <div className="text-[10px] text-theme-muted font-sans">CONFIDENCE: {(d.confidence * 100).toFixed(0)}%</div>
+                        </div>
+                      </div>
+                      <span
+                        className="px-1.5 py-0.5 text-white font-bold text-[9px] rounded-sm font-sans"
+                        style={{ backgroundColor: bColor }}
+                      >
+                        DETECTED
+                      </span>
                     </div>
-                    <span className="px-1.5 py-0.5 bg-brand/15 text-brand font-bold text-[10px]">
-                      VERIFIED
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
 
           {/* ANPR OCR & Watchlist Inspector */}
-          <div className="p-3 bg-theme-panel border border-theme-border rounded-sm space-y-2">
-            <div className="text-[10px] font-bold text-theme-muted uppercase tracking-wider flex justify-between">
+          <div className="p-3 bg-theme-panel border border-theme-border rounded-sm space-y-2 font-sans">
+            <div className="text-[10px] font-bold text-theme-muted uppercase tracking-wider flex justify-between font-sans">
               <span>ANPR LICENSE PLATE OCR</span>
-              <span className="text-emerald-500">LIVE OCR PIPELINE</span>
+              <span className="text-emerald-500 font-bold font-sans">LIVE OCR PIPELINE</span>
             </div>
 
             {anprResult ? (
-              <div className="space-y-2">
-                <div className="p-2.5 bg-theme-surface border border-theme-border space-y-1 rounded-sm">
-                  <div className="text-[10px] text-theme-muted">DETECTED PLATE</div>
+              <div className="space-y-2 font-sans">
+                <div className="p-2.5 bg-theme-surface border border-theme-border space-y-1 rounded-sm font-sans">
+                  <div className="text-[10px] text-theme-muted font-sans">DETECTED PLATE</div>
                   <div className="text-lg font-bold font-mono text-theme-primary tracking-widest">
                     {anprResult.rawText}
                   </div>
-                  <div className="flex justify-between text-[10px] text-theme-muted pt-1 border-t border-theme-border">
+                  <div className="flex justify-between text-[10px] text-theme-muted pt-1 border-t border-theme-border font-sans">
                     <span>CONF: {(anprResult.confidence * 100).toFixed(0)}%</span>
                     <span>{anprResult.timestamp}</span>
                   </div>
                 </div>
 
                 {anprResult.isWatchlistMatch && (
-                  <div className="p-2.5 bg-amber-500/10 border border-amber-500/40 text-amber-500 space-y-1 rounded-sm">
-                    <div className="flex items-center gap-1 font-bold text-xs">
+                  <div className="p-2.5 bg-amber-500/10 border border-amber-500/40 text-amber-500 space-y-1 rounded-sm font-sans">
+                    <div className="flex items-center gap-1 font-bold text-xs font-sans">
                       <ShieldAlert className="w-4 h-4" />
                       <span>POTENTIAL VEHICLE-OF-INTEREST MATCH</span>
                     </div>
@@ -564,7 +624,7 @@ export const LiveVisionView: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="py-4 text-center text-theme-muted text-xs">
+              <div className="py-4 text-center text-theme-muted text-xs font-sans">
                 OCR IDLE / NO PLATE IN VIEW
               </div>
             )}

@@ -82,18 +82,18 @@ export function AdminPortalView() {
             <Shield className="w-5 h-5 text-brand" />
             <h1 className="text-xl font-bold tracking-tight text-theme-primary">System Administration & RBAC Portal</h1>
           </div>
-          <p className="text-xs text-theme-muted font-mono mt-1">
+          <p className="text-xs text-theme-muted font-sans mt-1">
             Manage users, permissions, watchlist definitions, reward thresholds, and system audit logs.
           </p>
         </div>
-        <div className="px-3 py-1 bg-brand/10 border border-brand/40 text-brand font-mono text-xs rounded-sm flex items-center space-x-2">
+        <div className="px-3 py-1 bg-brand/10 border border-brand/40 text-brand font-sans font-bold text-xs rounded-sm flex items-center space-x-2">
           <Lock className="w-3.5 h-3.5" />
           <span>SUPER ADMIN ACCESS ACTIVE</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-theme-border pb-2 font-mono text-xs">
+      <div className="flex space-x-2 border-b border-theme-border pb-2 font-sans text-xs">
         {[
           { id: 'users', label: 'User Roles & Access', icon: Users },
           { id: 'watchlist', label: 'Vehicle Watchlist Rules', icon: Eye },

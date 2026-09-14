@@ -17,7 +17,7 @@ export const CrossBusVerificationModal: React.FC<CrossBusVerificationModalProps>
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn font-mono">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn font-sans">
       <div className="bg-theme-surface border border-theme-border w-full max-w-4xl shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="h-11 bg-theme-panel border-b border-theme-border px-4 flex items-center justify-between">

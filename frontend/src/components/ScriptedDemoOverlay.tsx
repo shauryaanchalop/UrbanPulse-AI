@@ -28,12 +28,12 @@ export const ScriptedDemoOverlay: React.FC<ScriptedDemoOverlayProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 left-52 right-0 bg-graphite-950/95 backdrop-blur-sm border-t border-brand z-40 px-3 py-2 text-xs font-mono select-none flex items-center justify-between shadow-2xl">
+    <div className="fixed bottom-0 left-52 right-0 bg-graphite-950/95 backdrop-blur-sm border-t border-brand z-40 px-3 py-2 text-xs font-sans select-none flex items-center justify-between shadow-2xl">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5 text-brand font-bold text-[11px]">
           <span className="w-2 h-2 rounded-full bg-brand animate-ping"></span>
           <span>SCRIPTED SIH DEMO:</span>
-          <span className="text-white bg-graphite-800 border border-graphite-700 px-1.5 py-0.5 rounded-sm">
+          <span className="text-white bg-graphite-800 border border-graphite-700 px-1.5 py-0.5 rounded-sm font-sans">
             STEP {demoStepIndex}/{totalSteps}
           </span>
         </div>

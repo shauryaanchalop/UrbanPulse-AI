@@ -417,10 +417,10 @@ export const RoadIntelligenceView: React.FC<RoadIntelligenceViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-mono select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-sans select-none">
       {/* Notification Toast */}
       {notification && (
-        <div className="bg-emerald-950/90 border-b border-emerald-500/40 text-emerald-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0">
+        <div className="bg-emerald-950/90 border-b border-emerald-500/40 text-emerald-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0 font-sans">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span>{notification}</span>
@@ -430,20 +430,20 @@ export const RoadIntelligenceView: React.FC<RoadIntelligenceViewProps> = ({
       )}
 
       {/* Top Telemetry & Filter Strip */}
-      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 text-xs gap-2">
+      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 text-xs gap-2 font-sans">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <span className="font-bold text-theme-primary text-[11px] whitespace-nowrap flex items-center gap-1.5">
+          <span className="font-bold text-theme-primary text-[11px] whitespace-nowrap flex items-center gap-1.5 font-sans">
             <Database className="w-3.5 h-3.5 text-brand" />
             ROAD DEFECT INVENTORY
           </span>
           
           <div className="flex items-center gap-1">
-            <span className="text-graphite-400 text-[10px]">TYPE:</span>
+            <span className="text-graphite-400 text-[10px] font-sans">TYPE:</span>
             {defectTypes.map(t => (
               <button
                 key={t}
                 onClick={() => setFilterType(t)}
-                className={`px-2 py-0.5 text-[10px] border rounded-none whitespace-nowrap ${
+                className={`px-2 py-0.5 text-[10px] border rounded-none whitespace-nowrap font-sans ${
                   filterType === t
                     ? 'bg-graphite-700 text-theme-primary font-bold border-graphite-600'
                     : 'bg-graphite-950 text-graphite-400 border-graphite-700 hover:bg-graphite-800'
@@ -455,11 +455,11 @@ export const RoadIntelligenceView: React.FC<RoadIntelligenceViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 font-sans">
           {/* Add Demo Defect Action Buttons */}
           <button
             onClick={() => handleCreateDemoDefect('Pothole')}
-            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition"
+            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition font-sans"
             title="Inject a real-time AI demo pothole detection"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -468,7 +468,7 @@ export const RoadIntelligenceView: React.FC<RoadIntelligenceViewProps> = ({
 
           <button
             onClick={() => handleCreateDemoDefect()}
-            className="px-2.5 py-1 text-[11px] font-bold bg-emerald-950/80 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900/60 flex items-center gap-1 transition"
+            className="px-2.5 py-1 text-[11px] font-bold bg-emerald-950/80 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900/60 flex items-center gap-1 transition font-sans"
             title="Simulate random AI road defect telemetry"
           >
             <Sparkles className="w-3.5 h-3.5" />

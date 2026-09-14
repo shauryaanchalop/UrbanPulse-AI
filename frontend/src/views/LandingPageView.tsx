@@ -210,30 +210,30 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
 
               {/* Live Telemetry Summary */}
-              <div className="grid grid-cols-3 gap-2 border-t border-theme-border pt-4 text-xs font-mono">
+              <div className="grid grid-cols-3 gap-2 border-t border-theme-border pt-4 text-xs font-sans">
                 <div className="p-2 bg-theme-surface border border-theme-border rounded-sm">
-                  <div className="text-[10px] text-theme-muted uppercase">ACTIVE NODES</div>
-                  <div className="font-bold text-theme-primary text-base mt-0.5">{kpis.activeBuses || 32} BUSES</div>
+                  <div className="text-[10px] text-theme-muted uppercase font-semibold">Active Nodes</div>
+                  <div className="font-bold text-theme-primary text-base mt-0.5">{kpis.activeBuses || 32} Buses</div>
                 </div>
                 <div className="p-2 bg-theme-surface border border-theme-border rounded-sm">
-                  <div className="text-[10px] text-theme-muted uppercase">ROAD HEALTH</div>
-                  <div className="font-bold text-emerald-500 text-base mt-0.5">{kpis.roadCoveragePercent || 74.8}% COV</div>
+                  <div className="text-[10px] text-theme-muted uppercase font-semibold">Road Health</div>
+                  <div className="font-bold text-emerald-500 text-base mt-0.5">{kpis.roadCoveragePercent || 74.8}% Cov</div>
                 </div>
                 <div className="p-2 bg-theme-surface border border-theme-border rounded-sm">
-                  <div className="text-[10px] text-theme-muted uppercase">VERIFIED RED</div>
-                  <div className="font-bold text-brand text-base mt-0.5">{kpis.multiBusVerifiedCount || 48} ISSUES</div>
+                  <div className="text-[10px] text-theme-muted uppercase font-semibold">Verified Red</div>
+                  <div className="font-bold text-brand text-base mt-0.5">{kpis.multiBusVerifiedCount || 48} Issues</div>
                 </div>
               </div>
             </div>
 
             {/* Right Hero GIS Map Display */}
             <div className="lg:col-span-7 h-[460px] bg-theme-surface border border-theme-border rounded-sm overflow-hidden relative shadow-2xl">
-              <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-3 py-1 bg-black/80 backdrop-blur border border-theme-border text-[10px] font-mono text-white rounded-sm">
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-3 py-1 bg-black/80 backdrop-blur border border-theme-border text-[10px] font-sans font-semibold text-white rounded-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>LIVE GIS URBAN SENSING NETWORK — PUNE METRO</span>
               </div>
 
-              <div className="absolute top-3 right-3 z-20 px-2 py-1 bg-black/80 backdrop-blur border border-theme-border text-[10px] font-mono text-amber-400 rounded-sm">
+              <div className="absolute top-3 right-3 z-20 px-2 py-1 bg-black/80 backdrop-blur border border-theme-border text-[10px] font-sans font-semibold text-amber-400 rounded-sm">
                 {buses.length || 32} BUSES SENSING LIVE
               </div>
 

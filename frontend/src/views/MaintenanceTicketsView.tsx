@@ -213,10 +213,10 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
   const resolvedCount = tickets.filter(t => (t.status as string) === 'Resolved' || t.status === 'COMPLETED' || t.status === 'RE_VERIFIED' || t.status === 'CLOSED').length;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-mono select-none text-xs">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-hidden font-sans select-none text-xs">
       {/* Notification Toast */}
       {notification && (
-        <div className="bg-amber-950/90 border-b border-amber-500/40 text-amber-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0">
+        <div className="bg-amber-950/90 border-b border-amber-500/40 text-amber-300 px-4 py-2 text-xs font-bold flex items-center justify-between animate-fadeIn shrink-0 font-sans">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
             <span>{notification}</span>
@@ -226,9 +226,9 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
       )}
 
       {/* Top Work Order Ribbon */}
-      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 gap-2">
+      <div className="h-11 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 gap-2 font-sans">
         <div className="flex items-center gap-3">
-          <span className="font-bold text-theme-primary flex items-center gap-1.5 whitespace-nowrap">
+          <span className="font-bold text-theme-primary flex items-center gap-1.5 whitespace-nowrap font-sans">
             <Wrench className="w-4 h-4 text-brand" />
             MUNICIPAL CIVIL MAINTENANCE WORK ORDERS
           </span>
@@ -237,7 +237,7 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
               <button
                 key={st}
                 onClick={() => setActiveStatus(st)}
-                className={`px-2 py-0.5 text-[10px] border rounded-none ${
+                className={`px-2 py-0.5 text-[10px] border rounded-none font-sans ${
                   activeStatus === st
                     ? 'bg-graphite-700 text-theme-primary font-bold border-graphite-600'
                     : 'bg-graphite-950 text-graphite-400 border-graphite-700 hover:bg-graphite-800'
@@ -249,10 +249,10 @@ export const MaintenanceTicketsView: React.FC<MaintenanceTicketsViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 font-sans">
           <button
             onClick={handleCreateDemoWorkOrder}
-            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition"
+            className="px-2.5 py-1 text-[11px] font-bold bg-brand/20 border border-brand/50 text-brand hover:bg-brand/30 flex items-center gap-1 transition font-sans"
             title="Dispatch a new P1 civil maintenance work order"
           >
             <Plus className="w-3.5 h-3.5" />

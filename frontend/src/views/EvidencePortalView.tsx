@@ -157,63 +157,63 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
   return (
     <div className="h-full w-full bg-theme-bg text-theme-primary flex flex-col p-6 overflow-y-auto font-sans space-y-6 transition-colors select-none">
       {/* Top Banner */}
-      <div className="flex justify-between items-center border-b border-theme-border pb-4">
+      <div className="flex justify-between items-center border-b border-theme-border pb-4 font-sans">
         <div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 font-sans">
             <Video className="w-5 h-5 text-brand" />
-            <h1 className="text-xl font-bold tracking-tight text-theme-primary">Video & Urban Evidence Retrieval Engine</h1>
+            <h1 className="text-xl font-bold tracking-tight text-theme-primary font-sans">Video & Urban Evidence Retrieval Engine</h1>
           </div>
-          <p className="text-xs text-theme-muted font-mono mt-1">
+          <p className="text-xs text-theme-muted font-sans mt-1">
             "Don't search hours of footage. Search the incident." — Geospatial trajectory & timestamp clip matcher.
           </p>
         </div>
-        <div className="px-3 py-1 bg-brand/10 border border-brand/40 text-brand font-mono text-xs rounded-sm flex items-center space-x-2">
+        <div className="px-3 py-1 bg-brand/10 border border-brand/40 text-brand font-sans font-bold text-xs rounded-sm flex items-center space-x-2">
           <Shield className="w-3.5 h-3.5" />
           <span>AUTHORIZED INVESTIGATOR PORTAL</span>
         </div>
       </div>
 
       {/* Query Form */}
-      <div className="bg-theme-surface border border-theme-border rounded-sm p-5 space-y-4 text-xs shadow-sm">
-        <h3 className="font-bold text-theme-primary uppercase text-xs tracking-wider flex items-center space-x-2 font-mono">
+      <div className="bg-theme-surface border border-theme-border rounded-sm p-5 space-y-4 text-xs shadow-sm font-sans">
+        <h3 className="font-bold text-theme-primary uppercase text-xs tracking-wider flex items-center space-x-2 font-sans">
           <Filter className="w-4 h-4 text-brand" />
           <span>Incident Query Criteria</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 font-sans">
           <div>
-            <label className="text-[10px] text-theme-muted font-mono block mb-1 uppercase font-bold">Incident Location / Corridor</label>
+            <label className="text-[10px] text-theme-muted font-sans block mb-1 uppercase font-bold">Incident Location / Corridor</label>
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand"
+              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand font-sans"
             />
           </div>
           <div>
-            <label className="text-[10px] text-theme-muted font-mono block mb-1 uppercase font-bold">Approximate Date</label>
+            <label className="text-[10px] text-theme-muted font-sans block mb-1 uppercase font-bold">Approximate Date</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand"
+              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand font-sans"
             />
           </div>
           <div>
-            <label className="text-[10px] text-theme-muted font-mono block mb-1 uppercase font-bold">Time & Window</label>
+            <label className="text-[10px] text-theme-muted font-sans block mb-1 uppercase font-bold">Time & Window</label>
             <input
               type="text"
               value={approxTime}
               onChange={(e) => setApproxTime(e.target.value)}
-              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand font-mono"
+              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand font-sans"
             />
           </div>
           <div>
-            <label className="text-[10px] text-theme-muted font-mono block mb-1 uppercase font-bold">Incident Type</label>
+            <label className="text-[10px] text-theme-muted font-sans block mb-1 uppercase font-bold">Incident Type</label>
             <select
               value={incidentCategory}
               onChange={(e) => setIncidentCategory(e.target.value)}
-              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand"
+              className="w-full bg-theme-panel border border-theme-border rounded-sm p-2 text-xs text-theme-primary focus:outline-none focus:border-brand font-sans"
             >
               <option>Vehicle Collision / Hit & Run</option>
               <option>Road Anomaly / Pothole Impact</option>
@@ -223,15 +223,15 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-2 font-mono">
-          <div className="flex items-center space-x-2 text-theme-muted text-[11px]">
+        <div className="flex justify-between items-center pt-2 font-sans">
+          <div className="flex items-center space-x-2 text-theme-muted text-[11px] font-sans">
             <span>Search Radius:</span>
-            <span className="text-theme-primary font-bold">{radiusMeters} meters</span>
+            <span className="text-theme-primary font-bold font-sans">{radiusMeters} meters</span>
           </div>
           <button
             onClick={handleSearch}
             disabled={isSearching}
-            className="px-6 py-2 bg-brand hover:bg-brand-hover disabled:opacity-50 text-white font-bold text-xs rounded-sm shadow-md flex items-center space-x-2 transition-colors uppercase tracking-wider cursor-pointer"
+            className="px-6 py-2 bg-brand hover:bg-brand-hover disabled:opacity-50 text-white font-bold text-xs rounded-sm shadow-md flex items-center space-x-2 transition-colors uppercase tracking-wider cursor-pointer font-sans"
           >
             <Search className="w-4 h-4" />
             <span>{isSearching ? 'SEARCHING BUS TRAJECTORIES...' : 'SEARCH INCIDENT CLIPS'}</span>
@@ -240,16 +240,16 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
       </div>
 
       {/* Results Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-sans">
         {/* Active Clip Player (Left 2 cols) */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-theme-surface border border-theme-border rounded-sm overflow-hidden shadow-sm">
-            <div className="p-3 bg-theme-panel border-b border-theme-border flex justify-between items-center text-xs font-mono">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-theme-primary">CASE #{caseReference}</span>
-                <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/30 text-[9px] font-bold">FORENSIC EVIDENCE</span>
+        <div className="lg:col-span-2 space-y-4 font-sans">
+          <div className="bg-theme-surface border border-theme-border rounded-sm overflow-hidden shadow-sm font-sans">
+            <div className="p-3 bg-theme-panel border-b border-theme-border flex justify-between items-center text-xs font-sans">
+              <div className="flex items-center gap-2 font-sans">
+                <span className="font-bold text-theme-primary font-sans">CASE #{caseReference}</span>
+                <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/30 text-[9px] font-bold font-sans">FORENSIC EVIDENCE</span>
               </div>
-              <span className="text-emerald-500 font-bold">
+              <span className="text-emerald-500 font-bold font-sans">
                 MATCH RELEVANCE: {activeClip ? `${((activeClip.relevanceScore || 0.95) * 100).toFixed(0)}%` : '96%'}
               </span>
             </div>
@@ -267,21 +267,21 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
                   {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
                 </button>
               </div>
-              <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-sm border border-slate-700 text-xs font-mono text-slate-200">
+              <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-sm border border-slate-700 text-xs font-sans text-slate-200">
                 NODE: {activeClip?.busId || 'BUS-004'} • CAM: {(activeClip?.cameraName || 'front').toUpperCase()} • {activeClip?.startTime || '10:14:15'}
               </div>
             </div>
-            <div className="p-4 flex justify-between items-center text-xs">
+            <div className="p-4 flex justify-between items-center text-xs font-sans">
               <div>
-                <h4 className="font-bold text-theme-primary">{activeClip?.address || 'Wakad Flyover Ramp'}</h4>
-                <p className="text-theme-muted text-[11px] font-mono">
+                <h4 className="font-bold text-theme-primary font-sans">{activeClip?.address || 'Wakad Flyover Ramp'}</h4>
+                <p className="text-theme-muted text-[11px] font-sans">
                   Matched events: {(activeClip?.matchedEvents || ['Hit & Run Alert']).join(', ')}
                 </p>
               </div>
-              <div className="flex space-x-2 font-mono">
+              <div className="flex space-x-2 font-sans">
                 <button
                   onClick={() => activeClip && handleAddToCase(activeClip.id)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-sm flex items-center space-x-1 border cursor-pointer ${
+                  className={`px-3 py-1.5 text-xs font-bold rounded-sm flex items-center space-x-1 border cursor-pointer font-sans ${
                     activeClip && addedCaseClips.has(activeClip.id)
                       ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                       : 'bg-theme-panel border-theme-border text-theme-primary hover:bg-theme-elevated'
@@ -301,7 +301,7 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
                 </button>
                 <button
                   onClick={() => alert(`Exporting forensic evidence package for ${activeClip?.busId}`)}
-                  className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-sm text-xs flex items-center space-x-1 shadow-sm cursor-pointer"
+                  className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-sm text-xs flex items-center space-x-1 shadow-sm cursor-pointer font-sans"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>EXPORT EVIDENCE</span>
@@ -312,30 +312,30 @@ export function EvidencePortalView({ buses = [], incidents = [] }: EvidencePorta
         </div>
 
         {/* Matches List (Right 1 col) */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-theme-muted uppercase tracking-wider font-mono">
+        <div className="space-y-3 font-sans">
+          <h3 className="text-xs font-semibold text-theme-muted uppercase tracking-wider font-sans">
             Ranked Evidence Clips ({clipsList.length})
           </h3>
           {clipsList.map((clip) => (
             <div
               key={clip.id}
               onClick={() => setActiveClip(clip)}
-              className={`p-3 rounded-sm border cursor-pointer transition-all space-y-2 text-xs ${
+              className={`p-3 rounded-sm border cursor-pointer transition-all space-y-2 text-xs font-sans ${
                 activeClip?.id === clip.id
                   ? 'bg-theme-elevated border-brand shadow-sm'
                   : 'bg-theme-surface border-theme-border hover:border-theme-border-strong'
               }`}
             >
-              <div className="flex justify-between items-start font-mono">
+              <div className="flex justify-between items-start font-sans">
                 <div>
-                  <h4 className="font-bold text-theme-primary">{clip.busId} • CAM-{(clip.cameraName || 'front').toUpperCase()}</h4>
-                  <p className="text-[11px] text-theme-muted">{clip.startTime}</p>
+                  <h4 className="font-bold text-theme-primary font-sans">{clip.busId} • CAM-{(clip.cameraName || 'front').toUpperCase()}</h4>
+                  <p className="text-[11px] text-theme-muted font-sans">{clip.startTime}</p>
                 </div>
-                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 text-[10px] font-bold">
+                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 text-[10px] font-bold font-sans">
                   {((clip.relevanceScore || 0.95) * 100).toFixed(0)}% MATCH
                 </span>
               </div>
-              <div className="text-[11px] text-theme-secondary font-mono flex justify-between">
+              <div className="text-[11px] text-theme-secondary font-sans flex justify-between">
                 <span>Distance: {clip.distanceMeters || 46}m</span>
                 <span>Delta: {clip.timeDeltaSeconds || 12}s</span>
               </div>

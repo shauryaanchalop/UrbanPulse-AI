@@ -72,19 +72,19 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-white">{title}</h3>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase border font-mono ${
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase border font-sans ${
                   severity === 'Critical' ? 'bg-rose-950 text-rose-400 border-rose-600/50' : 'bg-amber-950 text-amber-400 border-amber-600/50'
                 }`}>
                   {severity}
                 </span>
                 {isDefect && defect.status === 'Cross-verified' && (
-                  <span className="text-[10px] font-bold bg-sky-950 text-sky-300 border border-sky-600/60 px-2 py-0.5 rounded flex items-center gap-1">
+                  <span className="text-[10px] font-bold bg-sky-950 text-sky-300 border border-sky-600/60 px-2 py-0.5 rounded flex items-center gap-1 font-sans">
                     <CheckCheck className="w-3 h-3 text-sky-400" />
                     Cross-verified ({defect.timesConfirmed} buses)
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+              <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5 font-sans">
                 <MapPin className="w-3 h-3 text-slate-500" />
                 <span>{address}</span>
               </p>
@@ -93,29 +93,29 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition font-sans"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-4 overflow-y-auto flex flex-col gap-4 text-xs text-slate-300">
+        <div className="p-4 overflow-y-auto flex flex-col gap-4 text-xs text-slate-300 font-sans">
           {actionSuccessMsg && (
-            <div className="p-3 bg-emerald-950/60 border border-emerald-600/50 rounded-xl text-emerald-300 flex items-center gap-2">
+            <div className="p-3 bg-emerald-950/60 border border-emerald-600/50 rounded-xl text-emerald-300 flex items-center gap-2 font-sans">
               <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{actionSuccessMsg}</span>
             </div>
           )}
 
           {/* AI Perception Evidence View */}
-          <div className="rounded-xl overflow-hidden border border-iccc-border bg-slate-950 flex flex-col">
-            <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px]">
-              <span className="font-mono text-sky-400 font-semibold flex items-center gap-1.5">
+          <div className="rounded-xl overflow-hidden border border-iccc-border bg-slate-950 flex flex-col font-sans">
+            <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] font-sans">
+              <span className="font-sans text-sky-400 font-semibold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 Mobile Camera Evidence & AI Bounding Overlays
               </span>
-              <span className="text-slate-400 font-mono">Edge Model: INT8 Quantized</span>
+              <span className="text-slate-400 font-sans">Edge Model: INT8 Quantized</span>
             </div>
             <div className="w-full h-56 bg-slate-900 flex items-center justify-center relative overflow-hidden">
               {evidenceUrl ? (

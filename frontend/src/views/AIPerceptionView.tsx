@@ -32,22 +32,22 @@ export const AIPerceptionView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-mono text-xs select-none">
+    <div className="flex-1 flex flex-col h-full bg-graphite-950 overflow-y-auto font-sans text-xs select-none">
       {/* Top Header */}
-      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
+      <div className="h-10 bg-graphite-900 border-b border-graphite-700 px-3 flex items-center justify-between shrink-0 font-sans">
+        <div className="flex items-center gap-2 font-sans">
           <Cpu className="w-4 h-4 text-brand" />
-          <span className="font-bold text-theme-primary">EDGE AI PERCEPTION PIPELINE & INFERENCE ABSTRACTION</span>
+          <span className="font-bold text-theme-primary font-sans">EDGE AI PERCEPTION PIPELINE & INFERENCE ABSTRACTION</span>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-graphite-400">
-          <span>TARGET HARDWARE: <strong className="text-theme-primary">NVIDIA JETSON ORIN NANO</strong></span>
+        <div className="flex items-center gap-2 text-[11px] text-graphite-400 font-sans">
+          <span>TARGET HARDWARE: <strong className="text-theme-primary font-sans">NVIDIA JETSON ORIN NANO</strong></span>
           <span>|</span>
-          <span>QUANTIZATION: <strong className="text-emerald-500">INT8 TENSORRT / ONNX</strong></span>
+          <span>QUANTIZATION: <strong className="text-emerald-500 font-sans">INT8 TENSORRT / ONNX</strong></span>
         </div>
       </div>
 
       {/* Hero ML Model Access & Weights Control Panel */}
-      <div className="m-3 p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-sm font-mono text-xs space-y-3 shadow-md">
+      <div className="m-3 p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-sm font-sans text-xs space-y-3 shadow-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-emerald-500/30 pb-2">
           <div>
             <div className="flex items-center gap-2">

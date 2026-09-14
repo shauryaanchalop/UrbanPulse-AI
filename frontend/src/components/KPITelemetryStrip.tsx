@@ -13,7 +13,7 @@ export const KPITelemetryStrip: React.FC<KPITelemetryStripProps> = ({
   onFilterVerified
 }) => {
   return (
-    <div className="bg-theme-surface border-b border-theme-border px-3 py-1.5 flex items-center justify-between overflow-x-auto text-xs shrink-0 select-none font-mono">
+    <div className="bg-theme-surface border-b border-theme-border px-3 py-1.5 flex items-center justify-between overflow-x-auto text-xs shrink-0 select-none font-sans">
       <div className="flex items-center divide-x divide-theme-border">
         {/* FLEET */}
         <div className="px-3 first:pl-0 flex items-baseline gap-2">

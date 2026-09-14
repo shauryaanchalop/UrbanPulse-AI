@@ -59,7 +59,7 @@ export const InspectorDrawer: React.FC<InspectorDrawerProps> = ({
   };
 
   return (
-    <div className="w-96 lg:w-[440px] bg-theme-surface border-l border-theme-border flex flex-col h-full z-20 shrink-0 select-none font-mono text-xs shadow-2xl transition-colors">
+    <div className="w-96 lg:w-[440px] bg-theme-surface border-l border-theme-border flex flex-col h-full z-20 shrink-0 select-none font-sans text-xs shadow-2xl transition-colors">
       {/* Drawer Title Bar */}
       <div className="h-9 px-3 border-b border-theme-border bg-theme-panel flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
