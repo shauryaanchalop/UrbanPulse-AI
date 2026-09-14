@@ -208,60 +208,70 @@ export const MapContainer: React.FC<MapContainerProps> = ({
           ? '#F59E0B' // YELLOW = Degrading Surface
           : '#10B981'; // GREEN = Healthy Segment
 
-        const poly = L.polyline([[wp1.lat, wp1.lng], [wp2.lat, wp2.lng]], {
+        // Soft outer glow for crisp road boundary
+        const glowLine = L.polyline([[wp1.lat, wp1.lng], [wp2.lat, wp2.lng]], {
           color: healthColor,
-          weight: hasCritical ? 5 : (hasHigh ? 4 : 3.5),
-          opacity: selectedItemCoordinates ? 0.4 : 0.9,
-          dashArray: hasCritical ? '6, 6' : undefined
+          weight: hasCritical ? 6 : (hasHigh ? 5 : 4),
+          opacity: 0.25,
+          lineCap: 'round',
+          lineJoin: 'round'
         });
 
-        const healthLabel = hasCritical ? 'CRITICAL DEFECT DETECTED' : (hasHigh ? 'ATTENTION NEEDED' : (hasDefects ? 'DEGRADED SURFACE' : 'OPTIMAL HEALTH'));
+        // Crisp solid core road line
+        const poly = L.polyline([[wp1.lat, wp1.lng], [wp2.lat, wp2.lng]], {
+          color: healthColor,
+          weight: hasCritical ? 3.5 : (hasHigh ? 3 : 2.5),
+          opacity: selectedItemCoordinates ? 0.5 : 0.95,
+          dashArray: hasCritical ? '6, 6' : undefined,
+          lineCap: 'round',
+          lineJoin: 'round'
+        });
+
+        const healthLabel = hasCritical ? 'Critical Defect Detected' : (hasHigh ? 'Attention Needed' : (hasDefects ? 'Degraded Surface' : 'Optimal Health'));
 
         poly.bindTooltip(`
-          <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
-            <div style="font-weight: bold; color: ${healthColor};">${route.id}: ${route.name}</div>
-            <div>SEGMENT: <b>${wp1.name || 'Way-1'} → ${wp2.name || 'Way-2'}</b></div>
-            <div>STATUS: <b style="color: ${healthColor};">${healthLabel}</b></div>
-            <div>ACTIVE DEFECTS: <b>${segDefects.length}</b></div>
+          <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; line-height: 1.4; padding: 2px;">
+            <div style="font-weight: 700; color: ${healthColor};">${route.id}: ${route.name}</div>
+            <div style="color: #64748B; font-size: 10px;">Segment: <b>${wp1.name || 'Way-1'} → ${wp2.name || 'Way-2'}</b></div>
+            <div>Status: <b style="color: ${healthColor};">${healthLabel}</b></div>
+            <div>Active Defects: <b>${segDefects.length}</b></div>
           </div>
         `, { sticky: true });
 
+        routesLayer.current.addLayer(glowLine);
         routesLayer.current.addLayer(poly);
       }
     });
   }, [routes, defects, layersVisible.routes, resolvedTheme, selectedItemCoordinates]);
 
-  // Update Bus Movement Trails & Detailed Pre-Seeded Observation Traces
+  // Update Bus Movement Trails & Pre-Seeded Observation Traces
   useEffect(() => {
     if (!mapInstance.current) return;
     busTrailsLayer.current.clearLayers();
 
-    // Accumulate or pre-seed high-density bus movement trace waypoints
+    // Accumulate or pre-seed clean bus movement trace waypoints
     buses.forEach(bus => {
       const existingTrail = busTrailsRef.current[bus.id];
 
-      // Re-seed if no trail or trail has fewer than 4 detailed points
+      // Re-seed if no trail or trail has fewer than 4 points
       if (!existingTrail || existingTrail.length < 4) {
         const assignedRoute = routes.find(r => r.id === bus.routeId);
         const initialPoints: Array<{ lat: number; lng: number; status: string; speed: number }> = [];
 
         if (assignedRoute && assignedRoute.waypoints && assignedRoute.waypoints.length >= 2) {
           const wps = assignedRoute.waypoints;
-          // Interpolate dense intermediate breadcrumb points between waypoints
+          // Clean geometric interpolation between authentic route waypoints
           for (let k = 0; k < wps.length - 1; k++) {
             const p1 = wps[k];
             const p2 = wps[k + 1];
-            const steps = 3; // 3 sub-steps between route waypoints
+            const steps = 3;
             for (let s = 0; s < steps; s++) {
               const ratio = s / steps;
-              // Add slight realistic road curvature micro-offset
-              const latOffset = Math.sin(ratio * Math.PI) * 0.0004 * (k % 2 === 0 ? 1 : -1);
-              const lngOffset = Math.cos(ratio * Math.PI) * 0.0004 * (k % 2 === 0 ? -1 : 1);
               initialPoints.push({
-                lat: p1.lat + (p2.lat - p1.lat) * ratio + latOffset,
-                lng: p1.lng + (p2.lng - p1.lng) * ratio + lngOffset,
+                lat: p1.lat + (p2.lat - p1.lat) * ratio,
+                lng: p1.lng + (p2.lng - p1.lng) * ratio,
                 status: bus.status,
-                speed: Math.max(12, Math.round(bus.speed + (Math.sin(k + s) * 10)))
+                speed: Math.max(18, Math.round(bus.speed))
               });
             }
           }
@@ -270,15 +280,15 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         // Add current bus position as the head of the trace
         initialPoints.push({ lat: bus.latitude, lng: bus.longitude, status: bus.status, speed: bus.speed });
 
-        // Fallback: Ensure at least 4 distinct points so polyline renders detailed trajectory immediately
+        // Fallback if no route assigned: align along current heading
         if (initialPoints.length < 4) {
           const headingRad = ((bus.heading || 45) - 180) * (Math.PI / 180);
           for (let bIdx = 3; bIdx >= 1; bIdx--) {
             initialPoints.unshift({
-              lat: bus.latitude + (Math.cos(headingRad) * 0.0015 * bIdx),
-              lng: bus.longitude + (Math.sin(headingRad) * 0.0015 * bIdx),
+              lat: bus.latitude + (Math.cos(headingRad) * 0.0012 * bIdx),
+              lng: bus.longitude + (Math.sin(headingRad) * 0.0012 * bIdx),
               status: bus.status,
-              speed: Math.max(10, Math.round(bus.speed - (bIdx * 4)))
+              speed: Math.max(15, Math.round(bus.speed - (bIdx * 3)))
             });
           }
         }
@@ -294,8 +304,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
             status: bus.status,
             speed: bus.speed
           });
-          // Maintain a trailing history window of up to 30 detailed telemetry waypoints
-          if (existingTrail.length > 30) {
+          // Maintain a trailing history window of up to 24 telemetry waypoints
+          if (existingTrail.length > 24) {
             existingTrail.shift();
           }
         }
@@ -313,14 +323,14 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
     if (!layersVisible.busTrails) return;
 
-    // Draw detailed high-visibility glowing observation movement traces for each active bus
+    // Draw clean, smooth telemetry movement traces for each active bus
     Object.entries(busTrailsRef.current).forEach(([busId, trailPoints]) => {
       if (trailPoints.length < 2) return;
 
       const busObj = buses.find(b => b.id === busId);
       const routeName = busObj ? busObj.routeName : 'Corridor Trace';
 
-      // 1. Draw segment-by-segment trace polylines with speed-based color coding
+      // 1. Draw smooth segment-by-segment trace polylines with speed-based color coding
       for (let i = 0; i < trailPoints.length - 1; i++) {
         const pt1 = trailPoints[i];
         const pt2 = trailPoints[i + 1];
@@ -329,56 +339,36 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         // Color coding: Green = Smooth (>35km/h), Orange = Moderate (15-35km/h), Red = Slow/Congested (<15km/h)
         const traceColor = avgSpeed > 35 ? '#10B981' : (avgSpeed >= 15 ? '#F59E0B' : '#EF4444');
 
-        // Outer Neon Glow Trace
+        // Outer Glow Trace
         const glowPoly = L.polyline([[pt1.lat, pt1.lng], [pt2.lat, pt2.lng]], {
           color: traceColor,
-          weight: 6,
-          opacity: 0.40
+          weight: 4.5,
+          opacity: 0.35,
+          lineCap: 'round',
+          lineJoin: 'round'
         });
 
-        // Inner Core Dash Polyline
+        // Inner Sharp Trace Line
         const corePoly = L.polyline([[pt1.lat, pt1.lng], [pt2.lat, pt2.lng]], {
-          color: resolvedTheme === 'light' ? traceColor : '#F8FAFC',
-          weight: 2.8,
-          opacity: 0.95,
-          dashArray: '5, 5'
+          color: resolvedTheme === 'light' ? traceColor : '#E2E8F0',
+          weight: 2,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round'
         });
 
         glowPoly.bindTooltip(`
-          <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
-            <div style="font-weight: bold; color: ${traceColor};">${busId} TELEMETRY TRACE</div>
-            <div>CORRIDOR: <b>${routeName}</b></div>
-            <div>SPEED: <b>${avgSpeed.toFixed(1)} km/h</b> • RTK GPS: <b>High Accuracy</b></div>
-            <div>EDGE SENSOR: <b>Jetson Orin AGX Active</b></div>
+          <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; line-height: 1.4; padding: 2px;">
+            <div style="font-weight: 700; color: ${traceColor};">${busId} Telemetry Trace</div>
+            <div>Corridor: <b>${routeName}</b></div>
+            <div>Speed: <b>${avgSpeed.toFixed(1)} km/h</b> • RTK GPS Active</div>
+            <div style="font-size: 10px; color: #64748B;">Edge AI: Jetson Orin AGX (29.4 FPS)</div>
           </div>
         `, { sticky: true });
 
         busTrailsLayer.current.addLayer(glowPoly);
         busTrailsLayer.current.addLayer(corePoly);
       }
-
-      // 2. Add breadcrumb telemetry dot markers along the trace for rich detail
-      trailPoints.forEach((pt, pIdx) => {
-        if (pIdx % 3 === 0 && pIdx < trailPoints.length - 1) { // Every 3rd breadcrumb point
-          const dotColor = pt.speed > 35 ? '#10B981' : (pt.speed >= 15 ? '#F59E0B' : '#EF4444');
-          const breadcrumbMarker = L.circleMarker([pt.lat, pt.lng], {
-            radius: 3,
-            color: dotColor,
-            weight: 1.5,
-            fillColor: '#FFFFFF',
-            fillOpacity: 0.9
-          });
-
-          breadcrumbMarker.bindTooltip(`
-            <div style="font-family: monospace; font-size: 9px;">
-              <b style="color: ${dotColor};">${busId} BREADCRUMB #${pIdx + 1}</b><br/>
-              Speed: ${pt.speed} km/h | 5G Latency: 4ms
-            </div>
-          `, { sticky: true });
-
-          busTrailsLayer.current.addLayer(breadcrumbMarker);
-        }
-      });
     });
   }, [buses, routes, layersVisible.busTrails, resolvedTheme]);
 
@@ -411,11 +401,11 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       const marker = L.marker([bus.latitude, bus.longitude], { icon: customIcon });
 
       marker.bindTooltip(`
-        <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
-          <div style="font-weight: bold; color: ${statusColor};">${bus.id} • ROUTE ${bus.routeId}</div>
-          <div style="color: ${resolvedTheme === 'light' ? '#4B5563' : '#9CA3AF'};">${bus.routeName}</div>
-          <div>SPEED: <b>${bus.speed} km/h</b> • FPS: <b>${bus.edgeFps}</b></div>
-          <div style="color: #DC2626; margin-top: 2px; font-weight: bold;">▶ CLICK TO INSPECT</div>
+        <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; line-height: 1.4; padding: 2px;">
+          <div style="font-weight: 700; color: ${statusColor};">${bus.id} • Route ${bus.routeId}</div>
+          <div style="color: ${resolvedTheme === 'light' ? '#4B5563' : '#94A3B8'}; font-size: 10px;">${bus.routeName}</div>
+          <div>Speed: <b>${bus.speed} km/h</b> • FPS: <b>${bus.edgeFps}</b></div>
+          <div style="color: #DC2626; margin-top: 2px; font-weight: 700; font-size: 10px;">▶ Click to inspect</div>
         </div>
       `, { sticky: true });
 
@@ -461,11 +451,11 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       const marker = L.marker([defect.latitude, defect.longitude], { icon: customIcon });
 
       marker.bindTooltip(`
-        <div style="font-family: monospace; font-size: 10px; line-height: 1.4;">
-          <div style="font-weight: bold; color: ${color};">${defect.defectType.toUpperCase()} [${defect.severity}]</div>
-          <div style="color: ${resolvedTheme === 'light' ? '#4B5563' : '#CBD5E1'};">${defect.address}</div>
-          <div>CONF: <b>${(defect.confidence * 100).toFixed(0)}%</b> • ${defect.timesConfirmed} PASSES</div>
-          ${isVerified ? `<div style="color: #10B981; font-weight: bold;">✓ CROSS-VERIFIED</div>` : ''}
+        <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; line-height: 1.4; padding: 2px;">
+          <div style="font-weight: 700; color: ${color};">${defect.defectType} [${defect.severity}]</div>
+          <div style="color: ${resolvedTheme === 'light' ? '#4B5563' : '#94A3B8'}; font-size: 10px;">${defect.address}</div>
+          <div>Conf: <b>${(defect.confidence * 100).toFixed(0)}%</b> • ${defect.timesConfirmed} passes</div>
+          ${isVerified ? `<div style="color: #10B981; font-weight: 700;">✓ Cross-Verified</div>` : ''}
         </div>
       `, { sticky: true });
 
@@ -501,9 +491,9 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       });
 
       circle.bindTooltip(`
-        <div style="font-family: monospace; font-size: 10px;">
-          <b style="color: ${color};">${evt.corridorName}</b><br/>
-          FLOW: <b>${evt.congestionLevel}</b> • SPEED: ${evt.averageSpeedKmH} km/h (+${evt.delayMinutes}m)
+        <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; padding: 2px;">
+          <b style="color: ${color}; font-weight: 700;">${evt.corridorName}</b><br/>
+          <span style="font-size: 10px;">Flow: <b>${evt.congestionLevel}</b> • Speed: ${evt.averageSpeedKmH} km/h (+${evt.delayMinutes}m delay)</span>
         </div>
       `, { sticky: true });
 
@@ -538,10 +528,10 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       const marker = L.marker([inc.latitude, inc.longitude], { icon: customIcon });
 
       marker.bindTooltip(`
-        <div style="font-family: monospace; font-size: 10px;">
-          <div style="font-weight: bold; color: ${color};">${inc.incidentType} [${inc.severity}]</div>
-          <div>${inc.address}</div>
-          <div>TARGET: <b>${inc.trackedObject}</b> • ${inc.busId}</div>
+        <div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; padding: 2px;">
+          <div style="font-weight: 700; color: ${color};">${inc.incidentType} [${inc.severity}]</div>
+          <div style="font-size: 10px; color: #94A3B8;">${inc.address}</div>
+          <div>Target: <b>${inc.trackedObject}</b> • ${inc.busId}</div>
         </div>
       `, { sticky: true });
 

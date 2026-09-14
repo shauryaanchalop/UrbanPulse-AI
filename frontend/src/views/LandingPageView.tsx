@@ -136,14 +136,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <header className="sticky top-0 z-40 bg-theme-surface/95 backdrop-blur-md border-b border-theme-border h-14 px-4 sm:px-6 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <BrandLogo size="md" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
-          <nav className="hidden lg:flex items-center gap-5 font-mono text-xs text-theme-secondary">
-            <button onClick={() => scrollToSection('platform')} className="hover:text-theme-primary transition-colors uppercase font-bold">PLATFORM</button>
-            <button onClick={() => scrollToSection('how-it-works')} className="hover:text-theme-primary transition-colors uppercase font-bold">HOW IT WORKS</button>
-            <button onClick={() => scrollToSection('road-health')} className="hover:text-theme-primary transition-colors uppercase font-bold">ROAD HEALTH</button>
-            <button onClick={() => scrollToSection('coverage')} className="hover:text-theme-primary transition-colors uppercase font-bold font-mono">SAFETY & COVERAGE</button>
-            <button onClick={() => scrollToSection('evidence')} className="hover:text-theme-primary transition-colors uppercase font-bold font-mono">EVIDENCE</button>
-            <button onClick={() => scrollToSection('economics')} className="hover:text-theme-primary transition-colors uppercase font-bold">FOR CITIES</button>
-            <button onClick={() => scrollToSection('edge-ai')} className="hover:text-theme-primary transition-colors uppercase font-bold">IMPACT</button>
+          <nav className="hidden lg:flex items-center gap-5 font-sans text-xs text-theme-secondary">
+            <button onClick={() => scrollToSection('platform')} className="hover:text-theme-primary transition-colors uppercase font-semibold">Platform</button>
+            <button onClick={() => scrollToSection('how-it-works')} className="hover:text-theme-primary transition-colors uppercase font-semibold">How It Works</button>
+            <button onClick={() => scrollToSection('road-health')} className="hover:text-theme-primary transition-colors uppercase font-semibold">Road Health</button>
+            <button onClick={() => scrollToSection('coverage')} className="hover:text-theme-primary transition-colors uppercase font-semibold">Safety & Coverage</button>
+            <button onClick={() => scrollToSection('evidence')} className="hover:text-theme-primary transition-colors uppercase font-semibold">Evidence</button>
+            <button onClick={() => scrollToSection('economics')} className="hover:text-theme-primary transition-colors uppercase font-semibold">For Cities</button>
+            <button onClick={() => scrollToSection('edge-ai')} className="hover:text-theme-primary transition-colors uppercase font-semibold">Impact</button>
           </nav>
         </div>
 
@@ -152,16 +152,16 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
           <button
             onClick={onNavigateLogin || onLaunchCommandCenter}
-            className="px-3 py-1.5 bg-theme-panel hover:bg-theme-elevated text-theme-primary border border-theme-border text-xs font-mono font-bold rounded-sm transition-colors"
+            className="px-3.5 py-1.5 bg-theme-panel hover:bg-theme-elevated text-theme-primary border border-theme-border text-xs font-sans font-semibold rounded-sm transition-colors"
           >
-            LOGIN
+            Login
           </button>
 
           <button
             onClick={onLaunchCommandCenter}
-            className="flex items-center gap-2 px-4 py-1.5 bg-brand hover:bg-brand-hover text-white text-xs font-mono font-bold tracking-wide rounded-sm transition-all shadow-md active:translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-1.5 bg-brand hover:bg-brand-hover text-white text-xs font-sans font-bold tracking-wide rounded-sm transition-all shadow-md active:translate-y-0.5"
           >
-            <span>LAUNCH COMMAND CENTER</span>
+            <span>Launch Command Center</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -173,17 +173,17 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Hero Copy */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-theme-surface border border-theme-border rounded-sm font-mono text-[11px] text-theme-secondary">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-theme-surface border border-theme-border rounded-sm font-sans text-[11px] text-theme-secondary font-medium">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand animate-ping"></span>
-                <span className="text-brand font-bold uppercase">SMART INDIA HACKATHON 2026</span>
+                <span className="text-brand font-bold uppercase">Smart India Hackathon 2026</span>
                 <span className="text-theme-muted">•</span>
-                <span>PS ID: 26124</span>
+                <span className="font-mono">PS ID: 26124</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-theme-primary uppercase font-mono leading-[1.1]">
-                EVERY BUS. <br />
-                <span className="text-brand">A MOBILE SENSOR.</span> <br />
-                ONE INTELLIGENT CITY.
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-theme-primary uppercase font-sans leading-[1.1]">
+                Every Bus. <br />
+                <span className="text-brand">A Mobile Sensor.</span> <br />
+                One Intelligent City.
               </h1>
 
               <p className="text-sm sm:text-base text-theme-secondary font-sans leading-relaxed">
@@ -193,18 +193,18 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <button
                   onClick={onLaunchCommandCenter}
-                  className="flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-hover text-white text-xs font-mono font-bold tracking-wide rounded-sm shadow-xl shadow-brand/20 transition-all"
+                  className="flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-hover text-white text-xs font-sans font-bold tracking-wide rounded-sm shadow-xl shadow-brand/20 transition-all"
                 >
-                  <span>LAUNCH COMMAND CENTER</span>
+                  <span>Launch Command Center</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 {onLaunchCitizenPortal && (
                   <button
                     onClick={onLaunchCitizenPortal}
-                    className="flex items-center gap-2 px-5 py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/40 text-xs font-mono font-bold rounded-sm transition-colors"
+                    className="flex items-center gap-2 px-5 py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/40 text-xs font-sans font-bold rounded-sm transition-colors"
                   >
-                    <span>REPORT A ROAD ISSUE →</span>
+                    <span>Report a Road Issue →</span>
                   </button>
                 )}
               </div>
@@ -253,9 +253,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 2: THE PROBLEM */}
       <section id="problem" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border">
         <div className="max-w-3xl mb-12">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">THE MUNICIPAL BLIND SPOT</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            THE CITY IS MOVING. THE DATA ISN'T.
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">The Municipal Blind Spot</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            The City Is Moving. The Data Isn't.
           </h2>
           <p className="text-sm text-theme-secondary mt-3 leading-relaxed">
             Current smart city infrastructure relies on static fixed points or manual surveys, leaving 92% of the road network completely unmonitored between annual inspections.
@@ -265,42 +265,42 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-theme-surface border border-theme-border p-6 rounded-sm flex flex-col justify-between space-y-4">
             <div>
-              <div className="font-mono text-xs text-theme-muted mb-1 font-bold">MODE 01</div>
-              <h3 className="font-mono text-base font-bold text-theme-primary">FIXED CCTV CAMERAS</h3>
+              <div className="font-sans text-xs text-theme-muted mb-1 font-bold">MODE 01</div>
+              <h3 className="font-sans text-base font-bold text-theme-primary">Fixed CCTV Cameras</h3>
               <p className="text-xs text-theme-secondary mt-2 leading-relaxed">
                 Limited spatial coverage. Only sees stationary intersections, missing 90%+ of arterial and feeder road defects.
               </p>
             </div>
-            <div className="pt-3 border-t border-theme-border font-mono text-[11px] text-brand font-bold">
+            <div className="pt-3 border-t border-theme-border font-sans text-[11px] text-brand font-semibold">
               ✗ ₹3.5L per pole • High spatial blindspot
             </div>
           </div>
 
           <div className="bg-theme-surface border border-theme-border p-6 rounded-sm flex flex-col justify-between space-y-4">
             <div>
-              <div className="font-mono text-xs text-theme-muted mb-1 font-bold">MODE 02</div>
-              <h3 className="font-mono text-base font-bold text-theme-primary">MANUAL INSPECTION VANS</h3>
+              <div className="font-sans text-xs text-theme-muted mb-1 font-bold">MODE 02</div>
+              <h3 className="font-sans text-base font-bold text-theme-primary">Manual Inspection Vans</h3>
               <p className="text-xs text-theme-secondary mt-2 leading-relaxed">
                 Slow and periodic. Survey vans operate once every 12 to 18 months. Reports are obsolete before repair work orders are drafted.
               </p>
             </div>
-            <div className="pt-3 border-t border-theme-border font-mono text-[11px] text-brand font-bold">
+            <div className="pt-3 border-t border-theme-border font-sans text-[11px] text-brand font-semibold">
               ✗ ₹1.2 Cr per van • 6-week report latency
             </div>
           </div>
 
           <div className="bg-theme-surface border-2 border-brand/50 p-6 rounded-sm flex flex-col justify-between space-y-4 relative shadow-lg">
-            <div className="absolute top-0 right-0 bg-brand text-white font-mono text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
-              URBANPULSE APPROACH
+            <div className="absolute top-0 right-0 bg-brand text-white font-sans text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
+              UrbanPulse Approach
             </div>
             <div>
-              <div className="font-mono text-xs text-brand mb-1 font-bold">MODE 03</div>
-              <h3 className="font-mono text-base font-bold text-theme-primary">PASSIVE BUS FLEET SENSING</h3>
+              <div className="font-sans text-xs text-brand mb-1 font-bold">MODE 03</div>
+              <h3 className="font-sans text-base font-bold text-theme-primary">Passive Bus Fleet Sensing</h3>
               <p className="text-xs text-theme-secondary mt-2 leading-relaxed">
                 Converts existing public transit fleets into continuously moving mobile sensors. Every bus audits road health every 45 minutes with zero added drivers or fuel.
               </p>
             </div>
-            <div className="pt-3 border-t border-theme-border font-mono text-[11px] text-emerald-500 font-bold">
+            <div className="pt-3 border-t border-theme-border font-sans text-[11px] text-emerald-500 font-semibold">
               ✓ ₹45k retrofit • Continuous daily audit • Sub-minute alerts
             </div>
           </div>
@@ -310,9 +310,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 3: THE INSIGHT */}
       <section id="how-it-works" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border bg-theme-panel/30">
         <div className="max-w-3xl mb-12">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">SYSTEMIC INSIGHT</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            THE CITY ALREADY HAS THE SENSORS.
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">Systemic Insight</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            The City Already Has The Sensors.
           </h2>
           <p className="text-sm text-theme-secondary mt-3 leading-relaxed">
             By piggybacking lightweight AI hardware onto municipal vehicles and synthesizing citizen telemetry, UrbanPulse builds a complete 24/7 city neural network.
@@ -321,10 +321,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
         {/* Animated Formula Visual */}
         <div className="bg-theme-surface border border-theme-border p-8 rounded-sm text-center">
-          <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center font-mono">
+          <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center font-sans">
             <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-1">
               <Truck className="w-6 h-6 text-brand mx-auto mb-2" />
-              <div className="font-bold text-sm text-theme-primary">PUBLIC BUSES</div>
+              <div className="font-bold text-sm text-theme-primary">Public Buses</div>
               <div className="text-[10px] text-theme-muted">Arterial Roads</div>
             </div>
 
@@ -332,7 +332,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
             <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-1">
               <Compass className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-              <div className="font-bold text-sm text-theme-primary">MUNICIPAL FLEET</div>
+              <div className="font-bold text-sm text-theme-primary">Municipal Fleet</div>
               <div className="text-[10px] text-theme-muted">Local & Feeder Streets</div>
             </div>
 
@@ -340,7 +340,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
             <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-1">
               <Eye className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
-              <div className="font-bold text-sm text-theme-primary">CITIZEN SIGNALS</div>
+              <div className="font-bold text-sm text-theme-primary">Citizen Signals</div>
               <div className="text-[10px] text-theme-muted">Last-Mile Exceptions</div>
             </div>
 
@@ -348,7 +348,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
             <div className="p-4 bg-brand/10 border border-brand/50 rounded-sm space-y-1">
               <Zap className="w-6 h-6 text-brand mx-auto mb-2" />
-              <div className="font-bold text-sm text-brand">CITY-WIDE SENSING</div>
+              <div className="font-bold text-sm text-brand">City-Wide Sensing</div>
               <div className="text-[10px] text-brand">100% Coverage Grid</div>
             </div>
           </div>
@@ -358,9 +358,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 4: LIVE ROAD HEALTH & LIFECYCLE SIMULATOR */}
       <section id="road-health" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border">
         <div className="max-w-3xl mb-8">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">FLAGSHIP PRODUCT FEATURE</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            LIVE ROAD HEALTH & DEFECT LIFECYCLE
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">Flagship Product Feature</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            Live Road Health & Defect Lifecycle
           </h2>
           <p className="text-sm text-theme-secondary mt-2">
             Experience how a single road segment transitions from observation to detection, cross-verification, repair, and re-verification.
@@ -368,27 +368,27 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         </div>
 
         {/* Segment Legend */}
-        <div className="flex flex-wrap gap-3 mb-6 font-mono text-xs">
-          <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 rounded-sm font-bold">● GREEN: Healthy</span>
-          <span className="px-2.5 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded-sm font-bold">● YELLOW: Degrading</span>
-          <span className="px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-sm font-bold">● ORANGE: Needs Attention</span>
-          <span className="px-2.5 py-1 bg-brand/10 text-brand border border-brand/30 rounded-sm font-bold">● RED: Critical Defect</span>
-          <span className="px-2.5 py-1 bg-slate-500/10 text-slate-400 border border-slate-500/30 rounded-sm font-bold">● GRAY: Insufficient Coverage</span>
+        <div className="flex flex-wrap gap-3 mb-6 font-sans text-xs">
+          <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 rounded-sm font-semibold">● GREEN: Healthy</span>
+          <span className="px-2.5 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded-sm font-semibold">● YELLOW: Degrading</span>
+          <span className="px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-sm font-semibold">● ORANGE: Needs Attention</span>
+          <span className="px-2.5 py-1 bg-brand/10 text-brand border border-brand/30 rounded-sm font-semibold">● RED: Critical Defect</span>
+          <span className="px-2.5 py-1 bg-slate-500/10 text-slate-400 border border-slate-500/30 rounded-sm font-semibold">● GRAY: Insufficient Coverage</span>
         </div>
 
         {/* Interactive Lifecycle Simulator Controls */}
         <div className="bg-theme-surface border border-theme-border p-6 rounded-sm space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-theme-border pb-4 font-mono text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-theme-border pb-4 font-sans text-xs">
             <div>
               <span className="text-theme-muted">TARGET ROAD SEGMENT: </span>
-              <span className="font-bold text-theme-primary">{selectedRoadSegment}</span>
+              <span className="font-bold text-theme-primary font-mono">{selectedRoadSegment}</span>
             </div>
             <div className="flex items-center gap-2">
               {(['OBSERVE', 'DETECT', 'VERIFY', 'REPAIR', 'RE_VERIFY'] as const).map((step, idx) => (
                 <button
                   key={step}
                   onClick={() => setSimStep(step)}
-                  className={`px-3 py-1 border rounded-sm font-mono text-[11px] font-bold transition-all ${
+                  className={`px-3 py-1 border rounded-sm font-sans text-[11px] font-semibold transition-all ${
                     simStep === step
                       ? 'bg-brand text-white border-brand shadow-sm'
                       : 'bg-theme-panel text-theme-secondary border-theme-border hover:text-theme-primary'
@@ -404,7 +404,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             {/* Visual Segment Health Bar */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-3 font-mono text-xs">
+              <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-3 font-sans text-xs">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-theme-primary">SEGMENT PCI SCORE</span>
                   <span className={`font-bold text-sm ${
@@ -424,8 +424,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
 
               {/* Step Description Card */}
-              <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-2 font-mono text-xs">
-                <div className="text-brand font-bold uppercase">STATE DEMONSTRATION LOG:</div>
+              <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-2 font-sans text-xs">
+                <div className="text-brand font-bold uppercase tracking-wide">STATE DEMONSTRATION LOG:</div>
                 {simStep === 'OBSERVE' && (
                   <p className="text-theme-secondary">Bus UP-042 scans University Road corridor. Surface smooth. PCI 92. State: <span className="text-emerald-500 font-bold">GREEN</span>.</p>
                 )}
@@ -445,23 +445,23 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             </div>
 
             {/* Quick Action Simulator Panel */}
-            <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-3 font-mono text-xs">
+            <div className="p-4 bg-theme-panel border border-theme-border rounded-sm space-y-3 font-sans text-xs">
               <div className="font-bold text-theme-primary uppercase border-b border-theme-border pb-2">SIMULATOR CONTROLS</div>
               <button
                 onClick={() => setSimStep('DETECT')}
-                className="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 font-bold text-[11px] rounded-sm text-left px-3"
+                className="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 font-semibold text-[11px] rounded-sm text-left px-3 transition-colors"
               >
                 1. Simulate Bus Pothole Detection
               </button>
               <button
                 onClick={() => setSimStep('VERIFY')}
-                className="w-full py-2 bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 font-bold text-[11px] rounded-sm text-left px-3"
+                className="w-full py-2 bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 font-semibold text-[11px] rounded-sm text-left px-3 transition-colors"
               >
                 2. Simulate 2nd Bus Cross-Verification
               </button>
               <button
                 onClick={() => setSimStep('RE_VERIFY')}
-                className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-bold text-[11px] rounded-sm text-left px-3"
+                className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-semibold text-[11px] rounded-sm text-left px-3 transition-colors"
               >
                 3. Simulate Repair & Re-Verification
               </button>
@@ -473,9 +473,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 5: MULTI-SOURCE COVERAGE & SMART SURVEY MISSIONS */}
       <section id="coverage" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border">
         <div className="max-w-3xl mb-8">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">COVERAGE INTELLIGENCE</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            MULTI-SOURCE COVERAGE & SURVEY MISSIONS
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">Coverage Intelligence</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            Multi-Source Coverage & Survey Missions
           </h2>
           <p className="text-sm text-theme-secondary mt-2">
             When unknown road segments receive multiple citizen reports, UrbanPulse automatically dispatches targeted municipal survey missions.
@@ -483,30 +483,30 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         </div>
 
         <div className="bg-theme-surface border border-theme-border p-6 rounded-sm space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 font-sans text-xs">
             <div className="p-3 bg-theme-panel border border-theme-border rounded-sm">
-              <div className="text-brand font-bold mb-1">BUS FLEET</div>
+              <div className="text-brand font-bold mb-1">Bus Fleet</div>
               <div className="text-theme-secondary text-[11px]">Covers 100% of major arterial transit routes every 45 mins.</div>
             </div>
             <div className="p-3 bg-theme-panel border border-theme-border rounded-sm">
-              <div className="text-amber-500 font-bold mb-1">SERVICE VEHICLES</div>
+              <div className="text-amber-500 font-bold mb-1">Service Vehicles</div>
               <div className="text-theme-secondary text-[11px]">Covers local ward streets, waste trucks & municipal rovers.</div>
             </div>
             <div className="p-3 bg-theme-panel border border-theme-border rounded-sm">
-              <div className="text-emerald-500 font-bold mb-1">CITIZEN REPORTS</div>
+              <div className="text-emerald-500 font-bold mb-1">Citizen Reports</div>
               <div className="text-theme-secondary text-[11px]">Flags last-mile exceptions in narrow residential lanes.</div>
             </div>
             <div className="p-3 bg-theme-panel border border-theme-border rounded-sm">
-              <div className="text-purple-500 font-bold mb-1">SURVEY MISSIONS</div>
+              <div className="text-purple-500 font-bold mb-1">Survey Missions</div>
               <div className="text-theme-secondary text-[11px]">Auto-dispatches municipal rovers to zero-coverage gray zones.</div>
             </div>
           </div>
 
           {/* Interactive Trigger Demo */}
-          <div className="p-4 bg-theme-panel border border-theme-border rounded-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div className="p-4 bg-theme-panel border border-theme-border rounded-sm flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs">
             <div>
-              <span className="text-theme-muted uppercase font-bold">SCENARIO DEMO: </span>
-              <span className="text-theme-primary font-bold">UNKNOWN ROAD + 2 CITIZEN REPORTS → SMART SURVEY MISSION</span>
+              <span className="text-theme-muted uppercase font-bold">Scenario Demo: </span>
+              <span className="text-theme-primary font-semibold">Unknown Road + 2 Citizen Reports → Smart Survey Mission</span>
             </div>
 
             <button
@@ -515,7 +515,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 surveyTriggered ? 'bg-purple-600 text-white border-purple-500' : 'bg-brand text-white border-brand hover:bg-brand-hover'
               }`}
             >
-              {surveyTriggered ? '✓ MISSION DISPATCHED (ROVER #SURV-04)' : 'DISPATCH SURVEY MISSION →'}
+              {surveyTriggered ? '✓ Mission Dispatched (Rover #SURV-04)' : 'Dispatch Survey Mission →'}
             </button>
           </div>
         </div>
@@ -524,13 +524,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 6: INTELLIGENCE MODULES */}
       <section className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border">
         <div className="max-w-3xl mb-8">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">MULTI-DEPARTMENTAL CAPABILITIES</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            FOUR DOMAINS OF URBAN INTELLIGENCE
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">Multi-Departmental Capabilities</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            Four Domains of Urban Intelligence
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-mono text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-sans text-xs">
           {domains.map((d, idx) => (
             <button
               key={d.id}
@@ -538,10 +538,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               className={`p-3 text-left border rounded-sm transition-all ${
                 selectedDomain === idx 
                   ? 'border-brand bg-brand/10 text-theme-primary font-bold' 
-                  : 'border-theme-border bg-theme-surface text-theme-muted hover:text-theme-primary'
+                  : 'border-theme-border bg-theme-surface text-theme-muted hover:text-theme-primary font-medium'
               }`}
             >
-              <div className="text-[10px] text-brand">DOMAIN 0{idx + 1}</div>
+              <div className="text-[10px] text-brand font-semibold">DOMAIN 0{idx + 1}</div>
               <div className="font-semibold truncate mt-0.5">{d.title}</div>
             </button>
           ))}
@@ -551,22 +551,22 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
               <div>
-                <span className="font-mono text-[11px] text-brand uppercase font-bold">
+                <span className="font-sans text-[11px] text-brand uppercase font-bold tracking-wider">
                   {domains[selectedDomain].tagline}
                 </span>
-                <h3 className="font-mono text-xl font-extrabold text-theme-primary mt-1">
+                <h3 className="font-sans text-xl font-extrabold text-theme-primary mt-1">
                   {domains[selectedDomain].title}
                 </h3>
               </div>
-              <p className="text-sm text-theme-secondary leading-relaxed">
+              <p className="text-sm text-theme-secondary leading-relaxed font-sans">
                 {domains[selectedDomain].desc}
               </p>
 
               <div className="pt-2">
-                <div className="font-mono text-xs text-theme-muted uppercase mb-2 font-bold">Core Modules:</div>
+                <div className="font-sans text-xs text-theme-muted uppercase mb-2 font-bold">Core Modules:</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {domains[selectedDomain].features.map((feat, fidx) => (
-                    <div key={fidx} className="flex items-center gap-2 font-mono text-xs text-theme-primary bg-theme-panel p-2 border border-theme-border rounded-sm">
+                    <div key={fidx} className="flex items-center gap-2 font-sans text-xs text-theme-primary bg-theme-panel p-2 border border-theme-border rounded-sm">
                       <CheckCircle2 className="w-3.5 h-3.5 text-brand shrink-0" />
                       <span>{feat}</span>
                     </div>
@@ -577,13 +577,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
             <div className="bg-theme-panel border border-theme-border p-4 flex flex-col justify-between rounded-sm">
               <div>
-                <div className="font-mono text-xs text-theme-muted uppercase mb-3 border-b border-theme-border pb-2 font-bold">
+                <div className="font-sans text-xs text-theme-muted uppercase mb-3 border-b border-theme-border pb-2 font-bold">
                   LIVE BENCHMARKS
                 </div>
                 <div className="space-y-3">
                   {domains[selectedDomain].metrics.map((met, midx) => (
-                    <div key={midx} className="font-mono text-xs bg-theme-surface p-2.5 border border-theme-border rounded-sm">
-                      <div className="text-[10px] text-theme-muted">TELEMETRY STAT 0{midx + 1}</div>
+                    <div key={midx} className="font-sans text-xs bg-theme-surface p-2.5 border border-theme-border rounded-sm">
+                      <div className="text-[10px] text-theme-muted font-medium">TELEMETRY STAT 0{midx + 1}</div>
                       <div className="text-theme-primary font-bold mt-0.5">{met}</div>
                     </div>
                   ))}
@@ -592,7 +592,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
               <button
                 onClick={onLaunchCommandCenter}
-                className="mt-6 w-full py-2 bg-theme-surface hover:bg-theme-elevated text-theme-primary border border-theme-border text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors rounded-sm"
+                className="mt-6 w-full py-2 bg-theme-surface hover:bg-theme-elevated text-theme-primary border border-theme-border text-xs font-sans font-bold flex items-center justify-center gap-1.5 transition-colors rounded-sm"
               >
                 <span>Inspect in Live Console</span>
                 <ChevronRight className="w-3.5 h-3.5 text-brand" />
@@ -605,9 +605,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 7: EVIDENCE INTELLIGENCE SEARCH DEMO */}
       <section id="evidence" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-b border-theme-border">
         <div className="max-w-3xl mb-8">
-          <div className="font-mono text-xs text-brand uppercase font-bold tracking-wider mb-2">POLICE & INVESTIGATOR TOOL</div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-mono text-theme-primary uppercase">
-            DON'T SEARCH HOURS OF FOOTAGE. SEARCH THE INCIDENT.
+          <div className="font-sans text-xs text-brand uppercase font-bold tracking-wider mb-2">Police & Investigator Tool</div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-sans text-theme-primary uppercase tracking-tight">
+            Don't search hours of footage. Search the incident.
           </h2>
           <p className="text-sm text-theme-secondary mt-2">
             Query time and location coordinates. UrbanPulse spatio-temporally ranks all nearby buses and extracts relevant video clips in seconds.
@@ -616,18 +616,18 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
         <div className="bg-theme-surface border border-theme-border p-6 rounded-sm space-y-6">
           {/* Incident Search Form */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans text-xs">
             <div>
-              <label className="text-[11px] text-theme-muted font-bold block mb-1">INCIDENT TIME</label>
+              <label className="text-[11px] text-theme-muted font-bold block mb-1 uppercase">Incident Time</label>
               <input
                 type="text"
                 value={evidenceTime}
                 onChange={(e) => setEvidenceTime(e.target.value)}
-                className="w-full bg-theme-panel border border-theme-border p-2 rounded-sm text-theme-primary focus:outline-none focus:border-brand"
+                className="w-full bg-theme-panel border border-theme-border p-2 rounded-sm text-theme-primary font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div>
-              <label className="text-[11px] text-theme-muted font-bold block mb-1">LOCATION / SECTOR</label>
+              <label className="text-[11px] text-theme-muted font-bold block mb-1 uppercase">Location / Sector</label>
               <input
                 type="text"
                 value={evidenceSector}
@@ -639,26 +639,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <button
                 onClick={handleRunEvidenceSearch}
                 disabled={isSearchingEvidence}
-                className="w-full py-2 bg-brand hover:bg-brand-hover text-white font-bold text-xs rounded-sm shadow-md flex items-center justify-center gap-2"
+                className="w-full py-2 bg-brand hover:bg-brand-hover text-white font-bold text-xs rounded-sm shadow-md flex items-center justify-center gap-2 transition-colors"
               >
                 <Search className="w-3.5 h-3.5" />
-                <span>{isSearchingEvidence ? 'MATCHING BUS CLIPS...' : 'SEARCH EVIDENCE →'}</span>
+                <span>{isSearchingEvidence ? 'Matching Bus Clips...' : 'Search Evidence →'}</span>
               </button>
             </div>
           </div>
 
           {/* Search Results Display */}
           {evidenceResults && (
-            <div className="space-y-3 border-t border-theme-border pt-4 font-mono text-xs">
+            <div className="space-y-3 border-t border-theme-border pt-4 font-sans text-xs">
               <div className="text-emerald-500 font-bold text-xs uppercase">
-                MATCHED {evidenceResults.length} BUS CAMERAS WITHIN 150m RADIUS AT {evidenceTime}
+                Matched {evidenceResults.length} bus cameras within 150m radius at {evidenceTime}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {evidenceResults.map((res, idx) => (
-                  <div key={idx} className="bg-theme-panel border border-theme-border p-3 rounded-sm space-y-2">
+                  <div key={idx} className="bg-theme-panel border border-theme-border p-3 rounded-sm space-y-2 font-sans">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-theme-primary">{res.busId}</span>
+                      <span className="font-bold text-theme-primary font-mono">{res.busId}</span>
                       <span className="text-[10px] font-bold text-brand">{res.relevance}% RELEVANCE</span>
                     </div>
                     <div className="text-[11px] text-theme-secondary">
@@ -666,10 +666,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                     </div>
                     <button
                       onClick={() => setPlayingClip(res.busId)}
-                      className="w-full py-1.5 bg-theme-surface hover:bg-theme-elevated border border-theme-border text-theme-primary text-[11px] font-bold rounded-sm flex items-center justify-center gap-1.5"
+                      className="w-full py-1.5 bg-theme-surface hover:bg-theme-elevated border border-theme-border text-theme-primary text-[11px] font-bold rounded-sm flex items-center justify-center gap-1.5 transition-colors"
                     >
                       <Play className="w-3 h-3 text-brand" />
-                      <span>PLAY FORENSIC CLIP</span>
+                      <span>Play Forensic Clip</span>
                     </button>
                   </div>
                 ))}
@@ -679,7 +679,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
           {/* Video Player Modal */}
           {playingClip && (
-            <div className="p-4 bg-slate-950 border border-brand/40 rounded-sm text-center space-y-3 font-mono text-xs">
+            <div className="p-4 bg-slate-950 border border-brand/40 rounded-sm text-center space-y-3 font-sans text-xs">
               <div className="flex justify-between items-center">
                 <span className="text-emerald-400 font-bold">PLAYING FORENSIC CLIP: {playingClip}</span>
                 <button onClick={() => setPlayingClip(null)} className="text-slate-400 hover:text-white">✕ CLOSE</button>
@@ -696,9 +696,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* SECTION 8: FINAL CTA */}
       <section id="economics" className="py-24 px-4 sm:px-6 text-center max-w-4xl mx-auto">
         <BrandLogo size="lg" className="justify-center mb-6" />
-        <h2 className="text-3xl sm:text-5xl font-black font-mono text-theme-primary uppercase tracking-tight">
-          THE CITY IS ALREADY MOVING. <br />
-          <span className="text-brand">START LISTENING TO IT.</span>
+        <h2 className="text-3xl sm:text-5xl font-black font-sans text-theme-primary uppercase tracking-tight">
+          The City Is Already Moving. <br />
+          <span className="text-brand">Start Listening To It.</span>
         </h2>
         <p className="text-base text-theme-secondary font-sans mt-4 max-w-2xl mx-auto leading-relaxed">
           Experience the live Smart City Integrated Command & Control Centre (ICCC) prototype now with real-time simulated buses, multi-camera vision AI, and role-based workflows.
@@ -707,23 +707,23 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={onLaunchCommandCenter}
-            className="flex items-center gap-2 px-8 py-4 bg-brand hover:bg-brand-hover text-white text-base font-mono font-bold tracking-wide rounded-sm shadow-2xl shadow-brand/30 transition-all active:scale-98"
+            className="flex items-center gap-2 px-8 py-4 bg-brand hover:bg-brand-hover text-white text-base font-sans font-bold tracking-wide rounded-sm shadow-2xl shadow-brand/30 transition-all active:scale-98"
           >
-            <span>LAUNCH COMMAND CENTER</span>
+            <span>Launch Command Center</span>
             <ArrowRight className="w-5 h-5" />
           </button>
 
           {onLaunchCitizenPortal && (
             <button
               onClick={onLaunchCitizenPortal}
-              className="flex items-center gap-2 px-6 py-4 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/40 text-base font-mono font-bold rounded-sm transition-colors"
+              className="flex items-center gap-2 px-6 py-4 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/40 text-base font-sans font-bold rounded-sm transition-colors"
             >
-              <span>REPORT AN ISSUE →</span>
+              <span>Report an Issue →</span>
             </button>
           )}
         </div>
 
-        <div className="mt-14 font-mono text-xs text-theme-muted border-t border-theme-border pt-6">
+        <div className="mt-14 font-sans text-xs text-theme-muted border-t border-theme-border pt-6">
           Smart India Hackathon 2026 • Problem Statement 26124 • UrbanPulse AI Platform
         </div>
       </section>

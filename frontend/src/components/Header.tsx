@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onNavigateHome && (
             <button
               onClick={onNavigateHome}
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-sans font-semibold rounded-md transition-colors whitespace-nowrap"
               title="Return to Public Portal"
             >
               <ArrowLeft className="w-3.5 h-3.5 text-brand" />
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
             <select 
               value={selectedCity} 
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent text-theme-primary px-2.5 py-0.5 focus:outline-none cursor-pointer font-mono text-[11px] font-bold rounded-full whitespace-nowrap"
+              className="bg-transparent text-theme-primary px-2.5 py-0.5 focus:outline-none cursor-pointer font-sans text-[11px] font-semibold rounded-full whitespace-nowrap"
             >
               <option value="Pune Smart City">PUNE METRO (105 BUSES)</option>
               <option value="Bengaluru Urban">BENGALURU URBAN (BMTC)</option>
@@ -112,13 +112,13 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button 
               onClick={() => setShowModelInspector(true)}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 font-mono text-[11px] font-bold rounded-full transition-all cursor-pointer whitespace-nowrap shadow-sm" 
+              className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 font-sans text-[11px] font-semibold rounded-full transition-all cursor-pointer whitespace-nowrap shadow-sm" 
               title="Inspect Deployed YOLOv8-ONNX Edge AI Model"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <Cpu className="w-3 h-3" />
               <span>YOLOv8-ONNX ML</span>
-              <span className="text-[10px] opacity-80 font-bold">(89.4% mAP)</span>
+              <span className="text-[10px] font-mono opacity-80 font-bold">(89.4% mAP)</span>
             </button>
           </div>
         </div>
@@ -127,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center bg-theme-panel border border-theme-border p-1 rounded-full shadow-inner gap-2 whitespace-nowrap shrink-0">
           <button
             onClick={onStartDemo}
-            className={`flex items-center gap-1.5 px-3 py-1 font-mono text-xs font-bold transition rounded-full shadow-md whitespace-nowrap shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-1 font-sans text-xs font-bold transition rounded-full shadow-md whitespace-nowrap shrink-0 ${
               isDemoActive 
                 ? 'bg-amber-500 border border-amber-400 text-black font-bold animate-pulse' 
                 : 'bg-brand text-white hover:bg-brand-hover border border-brand'
@@ -144,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onToggleSim}
-            className="px-2.5 py-1 text-xs font-mono border border-theme-border hover:bg-theme-elevated text-theme-primary flex items-center gap-1.5 rounded-full transition whitespace-nowrap font-bold"
+            className="px-2.5 py-1 text-xs font-sans border border-theme-border hover:bg-theme-elevated text-theme-primary flex items-center gap-1.5 rounded-full transition whitespace-nowrap font-semibold"
             title={isSimRunning ? 'Pause simulation loop' : 'Resume simulation loop'}
           >
             {isSimRunning ? <Pause className="w-3.5 h-3.5 text-emerald-500" /> : <Play className="w-3.5 h-3.5 text-amber-500" />}
@@ -155,15 +155,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowSpeedMenu(!showSpeedMenu)}
-              className="px-2 py-0.5 font-mono text-xs font-bold text-theme-secondary hover:text-theme-primary bg-theme-surface border border-theme-border rounded-full flex items-center gap-1"
+              className="px-2 py-0.5 font-sans text-xs font-semibold text-theme-secondary hover:text-theme-primary bg-theme-surface border border-theme-border rounded-full flex items-center gap-1"
               title="Simulation speed multiplier"
             >
-              <span>{simSpeed}x</span>
+              <span className="font-mono">{simSpeed}x</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
 
             {showSpeedMenu && (
-              <div className="absolute top-full mt-1 right-0 bg-theme-surface border border-theme-border shadow-xl rounded-md p-1 z-50 font-mono text-xs flex flex-col gap-1">
+              <div className="absolute top-full mt-1 right-0 bg-theme-surface border border-theme-border shadow-xl rounded-md p-1 z-50 font-sans text-xs flex flex-col gap-1">
                 {[1, 2, 5, 10].map(s => (
                   <button
                     key={s}
@@ -171,11 +171,11 @@ export const Header: React.FC<HeaderProps> = ({
                       onSetSpeed(s);
                       setShowSpeedMenu(false);
                     }}
-                    className={`px-3 py-1 rounded-md text-left font-bold transition-colors ${
+                    className={`px-3 py-1 rounded-md text-left font-semibold transition-colors ${
                       simSpeed === s ? 'bg-brand text-white' : 'text-theme-secondary hover:bg-theme-elevated hover:text-theme-primary'
                     }`}
                   >
-                    {s}x Speed
+                    <span className="font-mono">{s}x</span> Speed
                   </button>
                 ))}
               </div>
@@ -196,19 +196,19 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenCommandPalette && (
             <button
               onClick={onOpenCommandPalette}
-              className="hidden xl:flex items-center gap-2 px-3 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-muted hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              className="hidden xl:flex items-center gap-2 px-3 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-muted hover:text-theme-primary border border-theme-border text-xs font-sans font-medium rounded-md transition-colors whitespace-nowrap"
               title="Open Command Palette (Ctrl+K or /)"
             >
               <Search className="w-3.5 h-3.5 text-brand" />
               <span>Search...</span>
-              <kbd className="px-1 text-[10px] bg-theme-elevated border border-theme-border rounded-sm font-bold">Ctrl+K</kbd>
+              <kbd className="px-1 text-[10px] bg-theme-elevated border border-theme-border rounded-sm font-sans font-bold">Ctrl+K</kbd>
             </button>
           )}
 
           {onToggleKiosk && (
             <button
               onClick={onToggleKiosk}
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-mono rounded-md transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-theme-panel hover:bg-theme-elevated text-theme-secondary hover:text-theme-primary border border-theme-border text-xs font-sans font-semibold rounded-md transition-colors whitespace-nowrap"
               title="Full-Screen Command Center Video Wall Display (Key 'K')"
             >
               <Monitor className="w-3.5 h-3.5 text-brand" />
@@ -234,14 +234,14 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Bell className="w-4 h-4 text-theme-secondary" />
               {activeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-mono font-bold px-1.5 rounded-full leading-tight shadow-md">
+                <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-sans font-bold px-1.5 rounded-full leading-tight shadow-md">
                   {activeCount}
                 </span>
               )}
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-96 bg-theme-surface border border-theme-border shadow-2xl z-50 text-xs rounded-md overflow-hidden font-mono">
+              <div className="absolute right-0 mt-2 w-96 bg-theme-surface border border-theme-border shadow-2xl z-50 text-xs rounded-md overflow-hidden font-sans">
                 <div className="p-3 border-b border-theme-border bg-theme-panel flex justify-between items-center">
                   <span className="text-xs font-bold text-theme-primary">NOTIFICATION CENTER</span>
                   <div className="flex items-center gap-2">
@@ -265,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setReadNotifs(prev => new Set(prev).add(idx));
                         }}
                         className={`p-3 cursor-pointer hover:bg-theme-elevated transition-colors text-xs ${
-                          isRead ? 'opacity-60 text-theme-muted' : 'text-theme-primary font-bold'
+                          isRead ? 'opacity-60 text-theme-muted' : 'text-theme-primary font-semibold'
                         }`}
                       >
                         <div className="flex items-start gap-2">
@@ -274,7 +274,7 @@ export const Header: React.FC<HeaderProps> = ({
                             <div>{alert}</div>
                             <div className="text-[10px] text-theme-muted flex justify-between pt-1">
                               <span>Sector 18 • Urban Sensor</span>
-                              <span>{isRead ? 'READ' : 'UNREAD'}</span>
+                              <span className="font-semibold">{isRead ? 'READ' : 'UNREAD'}</span>
                             </div>
                           </div>
                         </div>
@@ -290,7 +290,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className="flex items-center gap-2 bg-theme-panel border border-theme-border px-3 py-1 text-xs text-theme-primary hover:bg-theme-elevated font-mono rounded-md whitespace-nowrap"
+              className="flex items-center gap-2 bg-theme-panel border border-theme-border px-3 py-1 text-xs text-theme-primary hover:bg-theme-elevated font-sans font-semibold rounded-md whitespace-nowrap"
             >
               <Shield className="w-3.5 h-3.5 text-brand" />
               <span className="hidden md:inline truncate max-w-[130px] font-bold whitespace-nowrap">{currentRole.toUpperCase()}</span>
@@ -298,8 +298,8 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-theme-surface border border-theme-border shadow-2xl z-50 p-1.5 rounded-md">
-                <div className="text-[10px] font-mono text-theme-muted px-2 py-1 uppercase tracking-wider font-bold">
+              <div className="absolute right-0 mt-2 w-56 bg-theme-surface border border-theme-border shadow-2xl z-50 p-1.5 rounded-md font-sans">
+                <div className="text-[10px] text-theme-muted px-2 py-1 uppercase tracking-wider font-bold">
                   Select Operator Role
                 </div>
                 {roles.map(r => (
@@ -309,7 +309,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onRoleChange(r);
                       setShowRoleMenu(false);
                     }}
-                    className={`w-full text-left px-2 py-1.5 text-xs font-mono flex items-center justify-between rounded-md ${
+                    className={`w-full text-left px-2 py-1.5 text-xs font-sans font-medium flex items-center justify-between rounded-md ${
                       currentRole === r ? 'bg-brand/10 text-brand font-bold' : 'text-theme-secondary hover:bg-theme-elevated'
                     }`}
                   >

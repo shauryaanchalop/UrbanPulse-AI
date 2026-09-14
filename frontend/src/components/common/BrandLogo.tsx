@@ -53,14 +53,14 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         </span>
       </div>
 
-      {/* Industrial Wordmark */}
+      {/* Modern Wordmark */}
       <div className="flex flex-col leading-none">
-        <div className={`font-mono font-bold flex items-center ${titleSizes[size]}`}>
-          <span className="text-slate-100 tracking-tight">URBANPULSE</span>
+        <div className={`font-sans font-extrabold flex items-center ${titleSizes[size]}`}>
+          <span className="text-theme-primary tracking-tight">URBANPULSE</span>
           <span className="text-brand font-black ml-1.5">AI</span>
         </div>
         {showSubtitle && (
-          <span className={`font-mono text-graphite-400 tracking-widest mt-1 uppercase ${subSizes[size]}`}>
+          <span className={`font-sans font-semibold text-theme-muted tracking-wider mt-1 uppercase ${subSizes[size]}`}>
             {subtitle}
           </span>
         )}

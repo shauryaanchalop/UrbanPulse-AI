@@ -93,18 +93,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
       {/* Top Header Ribbon */}
       <header className="h-12 border-b border-theme-border bg-theme-surface px-4 flex items-center justify-between">
         <button onClick={onNavigateLanding} className="flex items-center space-x-2 text-left">
-          <div className="w-5 h-5 bg-brand flex items-center justify-center font-bold text-white text-[10px]">
+          <div className="w-5 h-5 bg-brand flex items-center justify-center font-bold text-white text-[10px] rounded-sm">
             UP
           </div>
-          <span className="font-mono text-sm font-bold tracking-wider text-theme-primary">URBANPULSE AI</span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-theme-elevated text-theme-secondary border border-theme-border rounded-sm">
+          <span className="font-sans text-sm font-extrabold tracking-tight text-theme-primary">URBANPULSE AI</span>
+          <span className="text-[10px] font-sans font-semibold px-1.5 py-0.5 bg-theme-elevated text-theme-secondary border border-theme-border rounded-sm">
             SIH 2026 #26124
           </span>
         </button>
 
         <button
           onClick={onNavigateLanding}
-          className="text-xs font-mono text-theme-secondary hover:text-theme-primary flex items-center space-x-1"
+          className="text-xs font-sans font-semibold text-theme-secondary hover:text-theme-primary flex items-center space-x-1 transition-colors"
         >
           <span>← Back to Showcase</span>
         </button>
@@ -115,15 +115,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
         {/* Left Side: Brand Narrative */}
         <div className="lg:w-1/2 p-8 lg:p-12 bg-theme-surface/50 border-r border-theme-border flex flex-col justify-between">
           <div className="space-y-6 max-w-lg">
-            <div className="inline-flex items-center space-x-2 px-2.5 py-1 bg-brand/10 border border-brand/30 text-brand text-xs font-mono rounded-full font-bold">
+            <div className="inline-flex items-center space-x-2 px-2.5 py-1 bg-brand/10 border border-brand/30 text-brand text-xs font-sans rounded-full font-bold">
               <Zap className="w-3.5 h-3.5" />
               <span>SMART INDIA HACKATHON 2026 MASTER PROTOTYPE</span>
             </div>
 
-            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-theme-primary leading-tight font-mono uppercase">
-              EVERY BUS. <br />
-              <span className="text-brand">A MOBILE SENSOR.</span> <br />
-              ONE INTELLIGENT CITY.
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-theme-primary leading-tight font-sans uppercase">
+              Every Bus. <br />
+              <span className="text-brand">A Mobile Sensor.</span> <br />
+              One Intelligent City.
             </h1>
 
             <p className="text-sm text-theme-secondary leading-relaxed font-sans">
@@ -131,7 +131,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
             </p>
 
             {/* Platform Highlights */}
-            <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
+            <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-sans">
               <div className="p-3 bg-theme-panel border border-theme-border rounded-sm space-y-1">
                 <div className="text-brand font-bold">32 BUSES</div>
                 <div className="text-theme-muted text-[10px]">Mobile Sensing Fleet</div>
@@ -151,7 +151,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
             </div>
           </div>
 
-          <div className="pt-8 text-[11px] font-mono text-theme-muted flex justify-between items-center border-t border-theme-border/60">
+          <div className="pt-8 text-[11px] font-sans text-theme-muted flex justify-between items-center border-t border-theme-border/60">
             <span>URBANPULSE AI ENGINE v2.0-PROD</span>
             <span className="text-emerald-500 font-bold">SYSTEM ONLINE</span>
           </div>
@@ -162,19 +162,19 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
           <div className="max-w-md mx-auto w-full space-y-6">
             {/* Form Title */}
             <div>
-              <h2 className="text-xl font-mono font-bold text-theme-primary">PORTAL AUTHENTICATION</h2>
-              <p className="text-xs text-theme-secondary">Select a 1-click Demo Role below or enter credentials</p>
+              <h2 className="text-xl font-sans font-bold text-theme-primary">Portal Authentication</h2>
+              <p className="text-xs text-theme-secondary mt-0.5">Select a 1-click Demo Role below or enter credentials</p>
             </div>
 
             {/* Error Banner */}
             {errorMsg && (
-              <div className="p-3 bg-brand/10 border border-brand/40 text-brand text-xs font-mono rounded-sm">
+              <div className="p-3 bg-brand/10 border border-brand/40 text-brand text-xs font-sans font-medium rounded-sm">
                 {errorMsg}
               </div>
             )}
 
             {/* Standard Credentials Form */}
-            <form onSubmit={handleStandardSubmit} className="space-y-3.5 font-mono text-xs">
+            <form onSubmit={handleStandardSubmit} className="space-y-3.5 font-sans text-xs">
               <div>
                 <label className="text-[11px] font-bold text-theme-secondary block mb-1 uppercase">
                   Username or Email
@@ -185,7 +185,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full bg-theme-surface border border-theme-border rounded-sm pl-9 pr-3 py-2 text-theme-primary focus:outline-none focus:border-brand"
+                    className="w-full bg-theme-surface border border-theme-border rounded-sm pl-9 pr-3 py-2 text-theme-primary focus:outline-none focus:border-brand font-sans"
                     placeholder="operator@demo.urbanpulse.ai"
                     required
                   />
@@ -202,7 +202,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-theme-surface border border-theme-border rounded-sm pl-9 pr-3 py-2 text-theme-primary focus:outline-none focus:border-brand"
+                    className="w-full bg-theme-surface border border-theme-border rounded-sm pl-9 pr-3 py-2 text-theme-primary focus:outline-none focus:border-brand font-sans"
                     placeholder="••••••••••••"
                     required
                   />
@@ -214,21 +214,21 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                 disabled={isLoading}
                 className="w-full py-2.5 bg-brand hover:bg-brand-hover disabled:opacity-50 text-white font-bold text-xs rounded-sm shadow-md flex items-center justify-center space-x-2 transition-colors uppercase tracking-wider"
               >
-                <span>{isLoading ? 'AUTHENTICATING...' : 'LOGIN TO CONSOLE'}</span>
+                <span>{isLoading ? 'Authenticating...' : 'Login to Console'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
 
             <div className="relative flex py-1 items-center">
               <div className="flex-grow border-t border-theme-border"></div>
-              <span className="flex-shrink mx-3 text-[10px] font-mono text-theme-muted uppercase font-bold tracking-wider">
+              <span className="flex-shrink mx-3 text-[10px] font-sans text-theme-muted uppercase font-bold tracking-wider">
                 OR SELECT 1-CLICK HACKATHON DEMO ROLE
               </span>
               <div className="flex-grow border-t border-theme-border"></div>
             </div>
 
             {/* 1-Click SIH Hackathon Demo Selector */}
-            <div className="space-y-2">
+            <div className="space-y-2 font-sans">
               {demoRoles.map((role) => {
                 const Icon = role.icon;
                 const isThisLoading = isDemoLoading === role.key;
@@ -247,8 +247,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                       </div>
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono font-bold text-xs">{role.title}</span>
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0 bg-theme-bg border border-theme-border rounded-none">
+                          <span className="font-sans font-bold text-xs">{role.title}</span>
+                          <span className="text-[9px] font-sans font-semibold px-1.5 py-0.5 bg-theme-bg border border-theme-border rounded-none">
                             {role.roleLabel}
                           </span>
                         </div>
@@ -256,7 +256,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onNavigate
                       </div>
                     </div>
 
-                    <div className="flex items-center text-xs font-mono font-bold shrink-0 ml-2 mt-1">
+                    <div className="flex items-center text-xs font-sans font-bold shrink-0 ml-2 mt-1">
                       <span>{isThisLoading ? 'LOGGING IN...' : 'ENTER →'}</span>
                     </div>
                   </button>

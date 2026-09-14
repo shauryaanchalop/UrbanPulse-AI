@@ -118,9 +118,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-56 bg-theme-surface/95 backdrop-blur-md border-r border-theme-border flex flex-col justify-between select-none shrink-0 font-sans transition-all shadow-lg">
       <div className="py-2 flex flex-col gap-2.5 overflow-y-auto">
         {/* Role & Status Header */}
-        <div className="px-3 py-1.5 bg-brand/10 border-b border-theme-border flex items-center justify-between">
-          <span className="text-[10px] font-mono font-bold text-brand uppercase tracking-wider">{userRole}</span>
-          <span className="flex items-center gap-1 text-[9px] font-mono text-emerald-400 font-semibold">
+        <div className="px-3 py-1.5 bg-brand/10 border-b border-theme-border flex items-center justify-between font-sans">
+          <span className="text-[10px] font-bold text-brand uppercase tracking-wider">{userRole}</span>
+          <span className="flex items-center gap-1 text-[9px] text-emerald-400 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             ACTIVE
           </span>
@@ -129,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Edge AI Vision Model Card (Clickable to Access Model) */}
         <button 
           onClick={() => onTabChange('ai-perception')}
-          className="mx-2 p-2 bg-emerald-950/30 hover:bg-emerald-900/50 border border-emerald-500/40 hover:border-emerald-400 rounded-sm text-[10px] font-mono space-y-1 text-left transition-all cursor-pointer shadow-sm group"
+          className="mx-2 p-2 bg-emerald-950/30 hover:bg-emerald-900/50 border border-emerald-500/40 hover:border-emerald-400 rounded-sm text-[10px] font-sans space-y-1 text-left transition-all cursor-pointer shadow-sm group"
           title="Click to Access & Inspect Real YOLOv8 Edge ML Model"
         >
           <div className="flex justify-between items-center text-emerald-400 font-bold group-hover:text-emerald-300">
@@ -137,17 +137,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Cpu className="w-3 h-3 text-emerald-400 group-hover:scale-110 transition-transform" />
               YOLOv8 EDGE ML
             </span>
-            <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded-sm border border-emerald-500/40">89.4%</span>
+            <span className="text-[9px] font-mono bg-emerald-500/20 text-emerald-300 px-1 rounded-sm border border-emerald-500/40">89.4%</span>
           </div>
-          <div className="text-[9px] text-theme-muted flex justify-between">
+          <div className="text-[9px] text-theme-muted flex justify-between font-sans">
             <span>Model: yolo8n-edge</span>
-            <span>45 FPS</span>
+            <span className="font-mono">45 FPS</span>
           </div>
         </button>
 
         {sections.map((sec, sIdx) => (
           <div key={sIdx} className="flex flex-col">
-            <div className="px-3 py-1 text-[9px] font-mono font-bold text-theme-muted uppercase tracking-wider border-b border-theme-border/40 pb-0.5 mb-0.5">
+            <div className="px-3 py-1 text-[9px] font-sans font-bold text-theme-muted uppercase tracking-wider border-b border-theme-border/40 pb-0.5 mb-0.5">
               {sec.title}
             </div>
             {sec.items.map(item => {
@@ -158,10 +158,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onTabChange(item.id)}
-                  className={`flex items-center justify-between px-3 py-2 text-[11px] font-mono transition-all text-left relative group ${
+                  className={`flex items-center justify-between px-3 py-2 text-[11px] font-sans transition-all text-left relative group ${
                     isActive
                       ? 'bg-theme-elevated/90 text-theme-primary font-bold border-r-2 border-brand shadow-sm'
-                      : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-elevated/60'
+                      : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-elevated/60 font-medium'
                   }`}
                 >
                   {/* Vertical Crimson Red Glow Indicator */}
@@ -187,7 +187,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Operational Footer Info */}
-      <div className="p-2.5 border-t border-theme-border bg-theme-panel text-[10px] font-mono text-theme-muted flex flex-col gap-1">
+      <div className="p-2.5 border-t border-theme-border bg-theme-panel text-[10px] font-sans text-theme-muted flex flex-col gap-1">
         <div className="flex justify-between items-center text-theme-secondary font-semibold">
           <span>ROLE SCOPE</span>
           <span className="text-emerald-400 font-bold">{allowedTabs.length} MODULES</span>
